@@ -142,13 +142,33 @@ setup_redis() {
     systemctl start redis-server
     systemctl enable redis-server
     
-    # 基本安全配置
-    if ! grep -q "bind 127.0.0.1" /etc/redis/redis.conf; then
-        echo "bind 127.0.0.1" >> /etc/redis/redis.conf
-        systemctl restart redis-server
-    fi
+    # 生成 Redis 密码
+    REDIS_PASSWORD=$(openssl rand -base64 32)
+    
+    # 配置 Redis 安全设置
+    cat >> /etc/redis/redis.conf << EOF
+
+# 安全配置
+bind 0.0.0.0
+protected-mode yes
+requirepass $REDIS_PASSWORD
+maxmemory 256mb
+maxmemory-policy allkeys-lru
+
+# 日志配置
+loglevel notice
+logfile /var/log/redis/redis-server.log
+EOF
+    
+    # 更新环境变量中的 Redis 密码
+    sed -i "s/your_redis_password/$REDIS_PASSWORD/" $APP_DIR/.env
+    
+    # 重启 Redis 服务
+    systemctl restart redis-server
     
     log_success "Redis 配置完成"
+    log_warning "Redis 密码: $REDIS_PASSWORD"
+    log_warning "请将此密码配置到内网同步服务中"
 }
 
 # 配置 Nginx
@@ -192,13 +212,24 @@ setup_firewall() {
     log_info "配置防火墙..."
     
     if command -v ufw &> /dev/null; then
+        # 基础端口
         ufw allow 22/tcp
         ufw allow 80/tcp
         ufw allow 443/tcp
+        
+        # Redis 端口 - 仅允许内网访问
+        # 注意：请根据实际内网 IP 段修改
+        ufw allow from 10.0.0.0/8 to any port 6379
+        ufw allow from 172.16.0.0/12 to any port 6379
+        ufw allow from 192.168.0.0/16 to any port 6379
+        
         ufw --force enable
         log_success "UFW 防火墙配置完成"
+        log_warning "Redis 端口 6379 已开放给内网访问"
+        log_warning "如需限制特定 IP，请手动配置：ufw allow from <内网服务器IP> to any port 6379"
     else
         log_warning "UFW 未安装，请手动配置防火墙"
+        log_warning "需要开放端口：22, 80, 443, 6379(仅内网)"
     fi
 }
 

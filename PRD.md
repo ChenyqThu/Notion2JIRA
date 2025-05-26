@@ -975,44 +975,27 @@ sudo nano /opt/notion2jira/webhook-server/.env
 # 设置以下关键配置：
 # NOTION_API_KEY=secret_xxx
 # ADMIN_API_KEY=生成的随机密钥
-# REDIS_PASSWORD=设置Redis密码
+# REDIS_PASSWORD=部署脚本自动生成的密码
 
-# 5. 重启服务
+# 5. 配置内网访问（可选，更安全）
+# 限制 Redis 访问到特定内网 IP
+sudo ufw delete allow from 10.0.0.0/8 to any port 6379
+sudo ufw delete allow from 172.16.0.0/12 to any port 6379
+sudo ufw delete allow from 192.168.0.0/16 to any port 6379
+sudo ufw allow from <内网服务器IP> to any port 6379
+
+# 6. 重启服务
 sudo -u webhook pm2 restart notion-webhook
 ```
 
-#### 步骤1详细：手动部署（可选）
-```bash
-# 1. 安装基础软件
-sudo apt update && sudo apt install -y nodejs npm redis-server nginx certbot python3-certbot-nginx
-
-# 2. 配置Redis
-sudo systemctl enable redis-server
-sudo systemctl start redis-server
-
-# 3. 部署代理服务
-git clone <repository>
-cd webhook-server
-npm install --production
-
-# 4. 配置PM2
-npm install -g pm2
-pm2 start ecosystem.config.js --env production
-pm2 save
-pm2 startup
-
-# 5. 配置Nginx
-sudo cp nginx.conf /etc/nginx/sites-available/notion2jira.chenge.ink
-sudo ln -s /etc/nginx/sites-available/notion2jira.chenge.ink /etc/nginx/sites-enabled/
-sudo rm -f /etc/nginx/sites-enabled/default
-sudo nginx -t
-sudo systemctl reload nginx
-
-# 6. 配置SSL证书
-sudo certbot --nginx -d notion2jira.chenge.ink
-# 设置自动续期
-echo "0 12 * * * /usr/bin/certbot renew --quiet" | sudo crontab -
-```
+#### 端口配置说明
+| 端口 | 用途 | 访问范围 | 安全措施 |
+|------|------|----------|----------|
+| 22 | SSH 管理 | 公网 | 密钥认证（推荐） |
+| 80 | HTTP | 公网 | 自动重定向到 HTTPS |
+| 443 | HTTPS 主服务 | 公网 | SSL 加密 + 限流 |
+| 7654 | Node.js 应用 | 本地 | Nginx 反向代理 |
+| 6379 | Redis 队列 | 内网 | 密码认证 + IP 限制 |
 
 #### 步骤2：内网服务器部署
 ```bash

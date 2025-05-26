@@ -202,6 +202,24 @@ sudo ./deploy.sh
 - 使用 Helmet 中间件设置安全头部
 - HSTS、CSP 等安全策略
 
+### 5. 端口安全配置
+- **22 (SSH)**：管理访问，建议配置密钥认证
+- **80 (HTTP)**：自动重定向到 HTTPS
+- **443 (HTTPS)**：主要服务端口，SSL 加密
+- **7654 (Node.js)**：仅本地访问，通过 Nginx 反向代理
+- **6379 (Redis)**：仅内网访问，密码保护 + IP 限制
+
+#### Redis 安全配置
+```bash
+# 仅允许内网 IP 段访问 Redis
+ufw allow from 10.0.0.0/8 to any port 6379
+ufw allow from 172.16.0.0/12 to any port 6379  
+ufw allow from 192.168.0.0/16 to any port 6379
+
+# 或限制特定 IP（推荐）
+ufw allow from <内网服务器IP> to any port 6379
+```
+
 ## 📊 监控和日志
 
 ### 日志文件
