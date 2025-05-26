@@ -1,43 +1,359 @@
-# 向 JIRA 添加 Issue
-请求网址
-http://rdjira.tp-link.com/secure/QuickCreateIssue.jspa?decorator=none
-请求方法
-POST
-状态代码
-200 OK
-远程地址
-172.29.88.166:80
-引荐来源网址政策
-strict-origin-when-cross-origin
-accept
-*/*
-accept-encoding
-gzip, deflate
-accept-language
-zh-CN,zh;q=0.9,en;q=0.8
-connection
-keep-alive
-content-length
-1115
-content-type
-application/x-www-form-urlencoded; charset=UTF-8
-cookie
-cebs=1; _ga_TXYPNBQGLM=GS1.1.1732851676.1.1.1732851784.0.0.0; _ga_2JYCQNQJ53=GS1.1.1734484246.2.1.1734484396.0.0.0; _ga_9G0JZ8G84G=GS1.1.1734494368.1.1.1734494380.0.0.0; _ga_CW0M4CFBZH=GS1.1.1736127147.5.0.1736127152.0.0.0; _ga_TR0LDCFZKY=GS1.1.1738919282.1.1.1738919333.0.0.0; _ga_LLJS14EDJ5=GS1.1.1738919282.1.1.1738919333.9.0.0; _ga=GA1.1.431500411.1732851676; _ga_NC072S2TL1=GS1.1.1739265484.1.0.1739265488.0.0.0; _ga_FF1DP1164D=GS1.1.1739265484.1.0.1739265488.0.0.0; jira.editor.user.mode=source; _ga_GKXVJ6W8YZ=GS1.1.1741859278.4.1.1741860803.0.0.0; _gcl_au=1.1.748489292.1742458506; _ga_Y5P3DJ4C3C=GS1.1.1743144292.30.1.1743144336.0.0.0; _ga_X5XJFE5K24=GS2.1.s1746588632$o12$g0$t1746588632$j0$l0$h0; cebsp_=118; _ce.s=v~e6fd0c9412c38749958bcacba916bac31ab6b11f~lcw~1747709334842~vir~returning~lva~1747707426361~vpv~0~v11.fhb~1746582801067~v11.lhb~1746588621351~v11.cs~379083~v11.s~0dcabb00-2ae6-11f0-a119-f5ac5aa4bf38~v11ls~0dcabb00-2ae6-11f0-a119-f5ac5aa4bf38~v11.ss~1747707429619~v11.sla~1747707462715~gtrk.la~mavx0hfe~lcw~1747709334842; _ga_218TLZ4XRP=GS2.1.s1747718897$o51$g0$t1747718901$j56$l0$h0; _ga_8C70Z419LT=GS2.1.s1747718897$o51$g0$t1747718901$j56$l0$h0; _ga_RCQS3BRPT0=GS2.1.s1747718897$o8$g0$t1747718901$j0$l0$h0; _ga_JWQELGB9VX=GS2.1.s1747897464$o57$g0$t1747897465$j0$l0$h0; JSESSIONID=5B6614C591ADBB5FC9908E3CF78BED5C; atlassian.xsrf.token=BYKN-XFPK-I8PZ-7P6M|231de4809d95c09f8a96110a6dc4b2fe41c3d587|lin; AJS.conglomerate.cookie="|hipchat.inapp.links.first.clicked.lucien.chen@tp-link.com=false"
-dnt
-1
-host
-rdjira.tp-link.com
-origin
-http://rdjira.tp-link.com
-referer
-http://rdjira.tp-link.com/projects/SMBNET/issues/SMBNET-29?filter=allopenissues
-user-agent
-Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36
-x-ausername
-lucien.chen%40tp-link.com
-x-requested-with
-XMLHttpRequest
+api/2/issueExpand all methods
+Create issue
+POST /rest/api/2/issue
+Creates an issue or a sub-task from a JSON representation.
 
-## 提交数据
-decorator=none
-pid=13904&issuetype=10001&atl_token=BYKN-XFPK-I8PZ-7P6M%7C231de4809d95c09f8a96110a6dc4b2fe41c3d587%7Clin&formToken=dbddad5a793cede534756e042e6f95c6f33644ca&summary=testJIRACard&description=&dnd-dropzone=&fixVersions=14613&assignee=-1&customfield_11302=&customfield_10006=&timetracking_originalestimate=&isCreateIssue=true&hasWorkStarted=&timetracking_remainingestimate=&worklog_timeLogged=&worklog_startDate=22%2F%E4%BA%94%E6%9C%88%2F25+7%3A33+%E4%B8%8B%E5%8D%88&worklog_adjustEstimate=auto&comment=&isCreateIssue=true&isEditIssue=false&priority=3&customfield_10700=&customfield_10203=&customfield_10701=&customfield_10717=&fieldsToRetain=project&fieldsToRetain=issuetype&fieldsToRetain=versions&fieldsToRetain=fixVersions&fieldsToRetain=components&fieldsToRetain=assignee&fieldsToRetain=customfield_10005&fieldsToRetain=customfield_11302&fieldsToRetain=customfield_10006&fieldsToRetain=labels&fieldsToRetain=priority&fieldsToRetain=customfield_10001&fieldsToRetain=customfield_10700&fieldsToRetain=customfield_10704&fieldsToRetain=customfield_10203&fieldsToRetain=customfield_10701&fieldsToRetain=customfield_10717
+The fields that can be set on create, in either the fields parameter or the update parameter can be determined using the /rest/api/2/issue/createmeta resource. If a field is not configured to appear on the create screen, then it will not be in the createmeta, and a field validation error will occur if it is submitted.
+
+Creating a sub-task is similar to creating a regular issue, with two important differences:
+
+the issueType field must correspond to a sub-task issue type (you can use /issue/createmeta to discover sub-task issue types), and
+you must provide a parent field in the issue create request containing the id or key of the parent issue.
+Request
+Example
+{
+    "update": {
+        "worklog": [
+            {
+                "add": {
+                    "timeSpent": "60m",
+                    "started": "2011-07-05T11:05:00.000+0000"
+                }
+            }
+        ]
+    },
+    "fields": {
+        "project": {
+            "id": "10000"
+        },
+        "summary": "something's wrong",
+        "issuetype": {
+            "id": "10000"
+        },
+        "assignee": {
+            "name": "homer"
+        },
+        "reporter": {
+            "name": "smithers"
+        },
+        "priority": {
+            "id": "20000"
+        },
+        "labels": [
+            "bugfix",
+            "blitz_test"
+        ],
+        "timetracking": {
+            "originalEstimate": "10",
+            "remainingEstimate": "5"
+        },
+        "security": {
+            "id": "10000"
+        },
+        "versions": [
+            {
+                "id": "10000"
+            }
+        ],
+        "environment": "environment",
+        "description": "description",
+        "duedate": "2011-03-11",
+        "fixVersions": [
+            {
+                "id": "10001"
+            }
+        ],
+        "components": [
+            {
+                "id": "10000"
+            }
+        ],
+        "customfield_30000": [
+            "10000",
+            "10002"
+        ],
+        "customfield_80000": {
+            "value": "red"
+        },
+        "customfield_20000": "06/Jul/11 3:25 PM",
+        "customfield_40000": "this is a text field",
+        "customfield_70000": [
+            "jira-administrators",
+            "jira-software-users"
+        ],
+        "customfield_60000": "jira-software-users",
+        "customfield_50000": "this is a text area. big text.",
+        "customfield_10000": "09/Jun/81"
+    }
+}
+Schema
+Responses
+Status 201 - application/jsonReturns a link to the created issue.
+Example
+{
+    "id": "10000",
+    "key": "TST-24",
+    "self": "http://www.example.com/jira/rest/api/2/issue/10000"
+}
+Schema
+Status 400Returned if the input is invalid (e.g. missing required fields, invalid field values, and so forth).
+Example
+{
+    "errorMessages": [
+        "Field 'priority' is required"
+    ],
+    "errors": {}
+}
+
+
+Add comment
+POST /rest/api/2/issue/{issueIdOrKey}/comment
+Adds a new comment to an issue.
+
+Request
+query parameters
+parameter	type	description
+expand	string	
+optional flags: renderedBody (provides body rendered in HTML)
+
+Example
+{
+    "body": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque eget venenatis elit. Duis eu justo eget augue iaculis fermentum. Sed semper quam laoreet nisi egestas at posuere augue semper.",
+    "visibility": {
+        "type": "role",
+        "value": "Administrators"
+    }
+}
+Schema
+{
+    "id": "https://docs.atlassian.com/jira/REST/schema/comment#",
+    "title": "Comment",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string"
+        },
+        "author": {
+            "$ref": "#/definitions/user"
+        },
+        "body": {
+            "type": "string"
+        },
+        "renderedBody": {
+            "type": "string"
+        },
+        "updateAuthor": {
+            "$ref": "#/definitions/user"
+        },
+        "created": {
+            "type": "string"
+        },
+        "updated": {
+            "type": "string"
+        },
+        "visibility": {
+            "title": "Visibility",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "group",
+                        "role"
+                    ]
+                },
+                "value": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        },
+        "properties": {
+            "type": "array",
+            "items": {
+                "title": "Entity Property",
+                "type": "object",
+                "properties": {
+                    "key": {
+                        "type": "string"
+                    },
+                    "value": {}
+                },
+                "additionalProperties": false
+            }
+        }
+    },
+    "definitions": {
+        "user": {
+            "title": "User",
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "key": {
+                    "type": "string"
+                },
+                "emailAddress": {
+                    "type": "string"
+                },
+                "avatarUrls": {
+                    "type": "object",
+                    "patternProperties": {
+                        ".+": {
+                            "type": "string"
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "displayName": {
+                    "type": "string"
+                },
+                "active": {
+                    "type": "boolean"
+                },
+                "timeZone": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "active"
+            ]
+        }
+    },
+    "additionalProperties": false
+}
+Responses
+Status 201Returned if add was successful
+Example
+{
+    "self": "http://www.example.com/jira/rest/api/2/issue/10010/comment/10000",
+    "id": "10000",
+    "author": {
+        "self": "http://www.example.com/jira/rest/api/2/user?username=fred",
+        "name": "fred",
+        "displayName": "Fred F. User",
+        "active": false
+    },
+    "body": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque eget venenatis elit. Duis eu justo eget augue iaculis fermentum. Sed semper quam laoreet nisi egestas at posuere augue semper.",
+    "updateAuthor": {
+        "self": "http://www.example.com/jira/rest/api/2/user?username=fred",
+        "name": "fred",
+        "displayName": "Fred F. User",
+        "active": false
+    },
+    "created": "2017-01-03T15:22:51.591+0000",
+    "updated": "2017-01-03T15:22:51.591+0000",
+    "visibility": {
+        "type": "role",
+        "value": "Administrators"
+    }
+}
+Schema
+{
+    "id": "https://docs.atlassian.com/jira/REST/schema/comment#",
+    "title": "Comment",
+    "type": "object",
+    "properties": {
+        "self": {
+            "type": "string"
+        },
+        "id": {
+            "type": "string"
+        },
+        "author": {
+            "$ref": "#/definitions/user"
+        },
+        "body": {
+            "type": "string"
+        },
+        "renderedBody": {
+            "type": "string"
+        },
+        "updateAuthor": {
+            "$ref": "#/definitions/user"
+        },
+        "created": {
+            "type": "string"
+        },
+        "updated": {
+            "type": "string"
+        },
+        "visibility": {
+            "title": "Visibility",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "group",
+                        "role"
+                    ]
+                },
+                "value": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        },
+        "properties": {
+            "type": "array",
+            "items": {
+                "title": "Entity Property",
+                "type": "object",
+                "properties": {
+                    "key": {
+                        "type": "string"
+                    },
+                    "value": {}
+                },
+                "additionalProperties": false
+            }
+        }
+    },
+    "definitions": {
+        "user": {
+            "title": "User",
+            "type": "object",
+            "properties": {
+                "self": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "key": {
+                    "type": "string"
+                },
+                "emailAddress": {
+                    "type": "string"
+                },
+                "avatarUrls": {
+                    "type": "object",
+                    "patternProperties": {
+                        ".+": {
+                            "type": "string"
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "displayName": {
+                    "type": "string"
+                },
+                "active": {
+                    "type": "boolean"
+                },
+                "timeZone": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "active"
+            ]
+        }
+    },
+    "additionalProperties": false
+}
+Status 400Returned if the input is invalid (e.g. missing required fields, invalid values, and so forth).
