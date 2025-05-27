@@ -43,10 +43,10 @@ class NotionWebhookHandler {
     const inTrash = data.in_trash;
 
     // 解析属性
-    const properties = this.parseNotionProperties(data.properties);
+    const propertiesData = this.parseNotionProperties(data.properties);
 
-    // 检查是否需要同步到 JIRA
-    const sync2jira = this.checkSync2JiraFlag(data.properties);
+    // 检查是否需要同步到 JIRA（移除 Formula 字段依赖）
+    const sync2jira = this.checkSync2JiraFlag(propertiesData.parsed);
 
     return {
       event_type: eventType,
@@ -56,7 +56,8 @@ class NotionWebhookHandler {
       created_time: createdTime,
       archived,
       in_trash: inTrash,
-      properties,
+      properties: propertiesData.parsed,
+      raw_properties: propertiesData.raw,
       sync2jira,
       raw_data: data,
       source_info: source
@@ -65,68 +66,205 @@ class NotionWebhookHandler {
 
   /**
    * 解析 Notion 属性
+   * 采用通用解析策略，存储尽可能多的字段信息，便于未来扩展
    */
   parseNotionProperties(notionProperties) {
     const parsed = {};
+    const rawProperties = {}; // 保存原始数据
     
     for (const [key, value] of Object.entries(notionProperties)) {
       try {
+        // 保存原始属性数据
+        rawProperties[key] = value;
+        
+        // 根据类型解析为易用格式
         switch (value.type) {
           case 'title':
-            parsed[key] = value.title?.[0]?.plain_text || '';
+            parsed[key] = {
+              type: 'title',
+              value: value.title?.[0]?.plain_text || '',
+              raw: value.title || []
+            };
             break;
           case 'rich_text':
-            parsed[key] = value.rich_text?.[0]?.plain_text || '';
+            parsed[key] = {
+              type: 'rich_text',
+              value: value.rich_text?.[0]?.plain_text || '',
+              raw: value.rich_text || []
+            };
             break;
           case 'select':
-            parsed[key] = value.select?.name || null;
+            parsed[key] = {
+              type: 'select',
+              value: value.select?.name || null,
+              raw: value.select
+            };
             break;
           case 'multi_select':
-            parsed[key] = value.multi_select?.map(item => item.name) || [];
+            parsed[key] = {
+              type: 'multi_select',
+              value: value.multi_select?.map(item => item.name) || [],
+              raw: value.multi_select || []
+            };
             break;
           case 'status':
-            parsed[key] = value.status?.name || null;
+            parsed[key] = {
+              type: 'status',
+              value: value.status?.name || null,
+              raw: value.status
+            };
             break;
           case 'checkbox':
-            parsed[key] = value.checkbox || false;
+            parsed[key] = {
+              type: 'checkbox',
+              value: value.checkbox || false,
+              raw: value.checkbox
+            };
             break;
           case 'url':
-            parsed[key] = value.url || null;
+            parsed[key] = {
+              type: 'url',
+              value: value.url || null,
+              raw: value.url
+            };
+            break;
+          case 'email':
+            parsed[key] = {
+              type: 'email',
+              value: value.email || null,
+              raw: value.email
+            };
+            break;
+          case 'phone_number':
+            parsed[key] = {
+              type: 'phone_number',
+              value: value.phone_number || null,
+              raw: value.phone_number
+            };
+            break;
+          case 'number':
+            parsed[key] = {
+              type: 'number',
+              value: value.number || null,
+              raw: value.number
+            };
+            break;
+          case 'date':
+            parsed[key] = {
+              type: 'date',
+              value: value.date?.start || null,
+              end: value.date?.end || null,
+              raw: value.date
+            };
             break;
           case 'people':
-            parsed[key] = value.people?.map(person => ({
-              id: person.id,
-              name: person.name,
-              email: person.person?.email
-            })) || [];
+            parsed[key] = {
+              type: 'people',
+              value: value.people?.map(person => ({
+                id: person.id,
+                name: person.name,
+                email: person.person?.email,
+                avatar_url: person.avatar_url
+              })) || [],
+              raw: value.people || []
+            };
             break;
-          case 'formula':
-            parsed[key] = value.formula?.string || value.formula?.number || null;
+          case 'files':
+            parsed[key] = {
+              type: 'files',
+              value: value.files?.map(file => ({
+                name: file.name,
+                url: file.file?.url || file.external?.url,
+                type: file.type
+              })) || [],
+              raw: value.files || []
+            };
             break;
           case 'created_time':
           case 'last_edited_time':
-            parsed[key] = value[value.type];
+            parsed[key] = {
+              type: value.type,
+              value: value[value.type],
+              raw: value[value.type]
+            };
+            break;
+          case 'created_by':
+          case 'last_edited_by':
+            parsed[key] = {
+              type: value.type,
+              value: {
+                id: value[value.type]?.id,
+                name: value[value.type]?.name,
+                email: value[value.type]?.person?.email
+              },
+              raw: value[value.type]
+            };
             break;
           case 'relation':
-            parsed[key] = value.relation || [];
+            parsed[key] = {
+              type: 'relation',
+              value: value.relation?.map(rel => rel.id) || [],
+              raw: value.relation || []
+            };
             break;
           case 'rollup':
-            parsed[key] = value.rollup;
+            parsed[key] = {
+              type: 'rollup',
+              value: value.rollup?.array || value.rollup?.number || value.rollup?.date || null,
+              raw: value.rollup
+            };
             break;
           case 'button':
             // Button 字段通常不包含具体值，但其存在表示可以触发操作
-            parsed[key] = value.button || {};
+            parsed[key] = {
+              type: 'button',
+              value: true, // 表示按钮存在
+              raw: value.button || {}
+            };
+            break;
+          case 'unique_id':
+            parsed[key] = {
+              type: 'unique_id',
+              value: value.unique_id?.number || null,
+              prefix: value.unique_id?.prefix || null,
+              raw: value.unique_id
+            };
+            break;
+          case 'verification':
+            parsed[key] = {
+              type: 'verification',
+              value: value.verification?.state || null,
+              verified_by: value.verification?.verified_by,
+              date: value.verification?.date,
+              raw: value.verification
+            };
             break;
           default:
-            parsed[key] = value;
+            // 对于未知类型，保存完整的原始数据
+            parsed[key] = {
+              type: value.type || 'unknown',
+              value: value,
+              raw: value
+            };
+            logger.info(`发现新的属性类型: ${value.type}`, { key, type: value.type });
         }
       } catch (error) {
         logger.warn(`解析属性 ${key} 失败:`, error);
-        parsed[key] = value;
+        // 解析失败时保存原始数据
+        parsed[key] = {
+          type: 'error',
+          value: null,
+          raw: value,
+          error: error.message
+        };
       }
     }
     
-    return parsed;
+    // 返回解析后的数据和原始数据
+    return {
+      parsed,
+      raw: rawProperties
+    };
   }
 
   /**
@@ -134,19 +272,29 @@ class NotionWebhookHandler {
    * 注意：同步是通过 Notion database 的 button property 点击触发的
    * 如果收到 webhook，说明用户已经点击了同步按钮，因此默认需要同步
    */
-  checkSync2JiraFlag(notionProperties) {
+  checkSync2JiraFlag(parsedProperties) {
     // 由于 webhook 是通过点击 button property 触发的
     // 收到 webhook 就意味着用户想要同步到 JIRA
     // 但我们仍然可以检查一些条件来确认
     
-    // 检查是否有 sync2jira 相关的 checkbox 字段
-    const sync2jiraField = notionProperties.sync2jira;
-    if (sync2jiraField?.checkbox === false) {
+    // 检查是否有明确的禁用同步标志（checkbox 字段）
+    const sync2jiraField = parsedProperties['sync2jira'] || parsedProperties['同步到JIRA'] || parsedProperties['Sync to JIRA'];
+    if (sync2jiraField?.type === 'checkbox' && sync2jiraField.value === false) {
       return false; // 明确设置为不同步
     }
 
-    // 检查是否有同步按钮字段（button 类型在 webhook 中可能不会显示具体值）
+    // 检查页面是否被归档或删除
+    // 这些检查在上层已经处理，这里主要关注业务逻辑
+    
+    // 检查是否有同步按钮字段存在
+    const buttonFields = Object.values(parsedProperties).filter(prop => prop.type === 'button');
+    if (buttonFields.length > 0) {
+      // 有按钮字段存在，说明支持同步功能
+      return true;
+    }
+
     // 默认情况下，收到 webhook 就认为需要同步
+    // 这是因为 webhook 通常是由用户主动触发的操作产生的
     return true;
   }
 
@@ -154,10 +302,12 @@ class NotionWebhookHandler {
    * 处理页面创建事件
    */
   async handlePageCreated(event) {
+    const title = this.extractTitle(event.properties);
+    
     logger.info('处理页面创建事件', {
       pageId: event.page_id,
       databaseId: event.database_id,
-      title: event.properties['功能 Name'] || event.properties.title
+      title: title
     });
 
     // 检查是否需要同步到JIRA
@@ -173,10 +323,12 @@ class NotionWebhookHandler {
    * 处理页面更新事件
    */
   async handlePageUpdated(event) {
+    const title = this.extractTitle(event.properties);
+    
     logger.info('处理页面更新事件', {
       pageId: event.page_id,
       databaseId: event.database_id,
-      title: event.properties['功能 Name'] || event.properties.title,
+      title: title,
       sync2jira: event.sync2jira
     });
     
@@ -280,6 +432,30 @@ class NotionWebhookHandler {
 
     return true;
   }
+
+  /**
+   * 从属性中提取标题
+   */
+  extractTitle(properties) {
+    // 尝试多种可能的标题字段名
+    const titleFields = ['功能 Name', 'title', 'Title', 'Name', 'name', '标题'];
+    
+    for (const fieldName of titleFields) {
+      const field = properties[fieldName];
+      if (field && (field.type === 'title' || field.type === 'rich_text') && field.value) {
+        return field.value;
+      }
+    }
+    
+    // 如果没有找到标题字段，返回第一个有值的文本字段
+    for (const [key, field] of Object.entries(properties)) {
+      if ((field.type === 'title' || field.type === 'rich_text') && field.value) {
+        return field.value;
+      }
+    }
+    
+    return '未命名页面';
+  }
 }
 
 const webhookHandler = new NotionWebhookHandler();
@@ -318,12 +494,14 @@ router.post('/notion',
       const event = webhookHandler.parseNotionWebhookData(req.body);
       
       // 记录接收到的事件
+      const title = webhookHandler.extractTitle(event.properties);
       logger.info('接收到Notion Webhook事件', {
         eventType: event.event_type,
         pageId: event.page_id,
         databaseId: event.database_id,
-        title: event.properties['功能 Name'] || event.properties.title,
+        title: title,
         sync2jira: event.sync2jira,
+        propertyCount: Object.keys(event.properties).length,
         timestamp: new Date().toISOString(),
         ip: req.ip
       });

@@ -13,22 +13,14 @@ class RedisClient {
         host: process.env.REDIS_HOST || 'localhost',
         port: process.env.REDIS_PORT || 6379,
         password: process.env.REDIS_PASSWORD || undefined,
-        db: process.env.REDIS_DB || 0,
-        retry_strategy: (options) => {
-          if (options.error && options.error.code === 'ECONNREFUSED') {
-            logger.error('Redis服务器拒绝连接');
-            return new Error('Redis服务器拒绝连接');
-          }
-          if (options.total_retry_time > 1000 * 60 * 60) {
-            logger.error('Redis重试时间超过1小时，停止重试');
-            return new Error('重试时间过长');
-          }
-          if (options.attempt > 10) {
+        database: process.env.REDIS_DB || 0,
+        retry_strategy: (retries) => {
+          if (retries > 10) {
             logger.error('Redis重试次数超过10次，停止重试');
-            return undefined;
+            return null;
           }
           // 指数退避重试
-          return Math.min(options.attempt * 100, 3000);
+          return Math.min(retries * 100, 3000);
         }
       });
 
@@ -45,6 +37,11 @@ class RedisClient {
       this.client.on('end', () => {
         logger.warn('Redis连接已断开');
         this.isConnected = false;
+      });
+
+      this.client.on('ready', () => {
+        logger.info('Redis客户端就绪');
+        this.isConnected = true;
       });
 
       await this.client.connect();

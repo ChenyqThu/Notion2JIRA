@@ -58,11 +58,7 @@ pm2 save
 pm2 startup
 ```
 
-#### 一键部署脚本
-```bash
-# 在服务器上运行（需要 root 权限）
-sudo ./deploy.sh
-```
+
 
 ## ⚙️ 环境变量配置
 
@@ -76,6 +72,7 @@ sudo ./deploy.sh
 | `REDIS_PORT` | 否 | 6379 | Redis 端口 |
 | `REDIS_PASSWORD` | 否 | - | Redis 密码 |
 | `ADMIN_API_KEY` | 是 | - | 管理接口 API 密钥 |
+| `CORS_ENABLED` | 否 | true | 是否启用 CORS |
 | `ALLOWED_ORIGINS` | 否 | notion.com | 允许的 CORS 来源 |
 | `RATE_LIMIT_MAX_REQUESTS` | 否 | 100 | 限流最大请求数 |
 | `LOG_LEVEL` | 否 | info | 日志级别 |
@@ -92,7 +89,6 @@ sudo ./deploy.sh
 | `Status` | status | 状态 | "待评估 UR" |
 | `优先级 P` | select | 优先级 | "低 Low" |
 | `类型 Type` | multi_select | 类型标签 | ["APP"] |
-| `Formula` | formula | 计算字段 | "sync2jira" (非同步标志) |
 | `JIRA Card` | url | JIRA 卡片链接 | null 或 URL |
 | `需求来源 Source` | select | 需求来源 | "[反馈] - 客户拜访" |
 | `功能类别 Feature Type` | select | 功能类别 | "UI体验优化 UI Optimization" |
@@ -112,6 +108,41 @@ sudo ./deploy.sh
    - 用户点击该按钮时会自动发送 webhook
 2. **页面未被归档或删除**：`archived: false` 且 `in_trash: false`
 3. **可选的控制字段**：可以通过 checkbox 字段来控制是否允许同步
+   - 支持字段名：`sync2jira`、`同步到JIRA`、`Sync to JIRA`
+   - 当该字段值为 `false` 时，将跳过同步
+
+### 字段存储策略
+
+为了最大化兼容性和未来扩展性，系统采用以下字段存储策略：
+
+#### 1. 双重存储结构
+```json
+{
+  "properties": {
+    "字段名": {
+      "type": "字段类型",
+      "value": "解析后的值",
+      "raw": "原始数据"
+    }
+  },
+  "raw_properties": {
+    "字段名": "完整的原始 Notion 属性数据"
+  }
+}
+```
+
+#### 2. 支持的字段类型
+- **基础类型**：title, rich_text, select, multi_select, status, checkbox, url
+- **数值类型**：number, date, email, phone_number
+- **关系类型**：people, files, relation, rollup
+- **系统类型**：created_time, last_edited_time, created_by, last_edited_by
+- **特殊类型**：button, unique_id, verification
+- **未知类型**：自动保存原始数据，便于未来支持
+
+#### 3. 容错机制
+- 解析失败时保存原始数据和错误信息
+- 发现新字段类型时自动记录日志
+- 向后兼容，不会因新字段类型导致处理失败
 
 ### 数据解析逻辑
 
@@ -122,8 +153,11 @@ sudo ./deploy.sh
 - **multi_select**: 提取所有选项的 `name` 数组
 - **status**: 提取状态的 `name` 值
 - **people**: 提取用户信息（ID、姓名、邮箱）
-- **formula**: 提取计算结果（字符串或数字）
 - **url**: 直接使用 URL 值
+- **number/date/email/phone**: 提取对应类型的值
+- **files**: 提取文件信息（名称、URL、类型）
+- **relation**: 提取关联页面的 ID 数组
+- **rollup**: 提取汇总计算结果
 
 ## 📡 API 接口
 
@@ -187,14 +221,6 @@ sudo ./deploy.sh
           "id": "TPR:",
           "name": "低 Low",
           "color": "gray"
-        }
-      },
-      "Formula": {
-        "id": "vYhP",
-        "type": "formula",
-        "formula": {
-          "type": "string",
-          "string": "sync2jira"
         }
       },
       "JIRA Card": {
@@ -274,8 +300,7 @@ sudo ./deploy.sh
   "properties": {
     "功能 Name": "测试页面",
     "Status": "待评估 UR",
-    "优先级 P": "低 Low",
-    "Formula": "sync2jira"
+    "优先级 P": "低 Low"
   }
 }
 ```
@@ -309,9 +334,9 @@ sudo ./deploy.sh
 
 ### 5. 端口安全配置
 - **22 (SSH)**：管理访问，建议配置密钥认证
-- **80 (HTTP)**：自动重定向到 HTTPS
-- **443 (HTTPS)**：主要服务端口，SSL 加密
-- **7654 (Node.js)**：仅本地访问，通过 Nginx 反向代理
+- **80 (HTTP)**：自动重定向到 HTTPS（如果配置了 Nginx）
+- **443 (HTTPS)**：主要服务端口，SSL 加密（如果配置了 Nginx）
+- **7654 (Node.js)**：应用默认端口，建议通过 Nginx 反向代理，不直接暴露
 - **6379 (Redis)**：仅内网访问，密码保护 + IP 限制
 
 #### Redis 安全配置
@@ -365,10 +390,12 @@ npm run test:coverage
 ### 手动测试
 ```bash
 # 测试健康检查
-curl https://notion2jira.chenge.ink/health
+curl http://localhost:7654/health
+# 或通过域名（如果配置了 Nginx）
+curl https://your-domain.com/health
 
 # 测试 Webhook
-curl -X POST https://notion2jira.chenge.ink/webhook/notion \
+curl -X POST http://localhost:7654/webhook/notion \
   -H "Content-Type: application/json" \
   -d '{
     "source": {
@@ -397,13 +424,13 @@ curl -X POST https://notion2jira.chenge.ink/webhook/notion \
 
 # 测试管理接口
 curl -H "X-API-Key: your-admin-key" \
-  https://notion2jira.chenge.ink/admin/status
+  http://localhost:7654/admin/status
 ```
 
 ### 使用测试脚本
 ```bash
 # 设置环境变量
-export WEBHOOK_URL=https://notion2jira.chenge.ink
+export WEBHOOK_URL=http://localhost:7654
 export ADMIN_API_KEY=your-admin-key
 
 # 运行测试
@@ -412,47 +439,291 @@ node scripts/test-webhook.js
 
 ## 🚀 部署指南
 
-### 快速部署
+### 手动部署步骤
 
-1. **上传代码到服务器**
+#### 1. 系统要求
+- Ubuntu 18.04+ / CentOS 7+ / Debian 9+
+- Node.js 16.0+
+- Redis 6.0+
+- Nginx（可选，用于反向代理）
+- 公网 IP 地址
+
+#### 2. 安装系统依赖
 ```bash
+# Ubuntu/Debian
+sudo apt update
+sudo apt install -y curl wget gnupg2 software-properties-common nginx redis-server
+
+# 安装 Node.js 16.x
+curl -fsSL https://deb.nodesource.com/setup_16.x | sudo bash -
+sudo apt install -y nodejs
+
+# 安装 PM2
+sudo npm install -g pm2
+```
+
+#### 3. 创建应用用户和目录
+```bash
+# 创建专用用户
+sudo useradd -r -s /bin/bash -d /home/webhook -m webhook
+
+# 创建应用目录
+sudo mkdir -p /opt/notion2jira/webhook-server
+sudo chown webhook:webhook /opt/notion2jira/webhook-server
+```
+
+#### 4. 部署应用代码
+```bash
+# 上传代码到服务器
 scp -r webhook-server/ user@your-server:/tmp/
+
+# 复制到应用目录
+sudo cp -r /tmp/webhook-server/* /opt/notion2jira/webhook-server/
+sudo chown -R webhook:webhook /opt/notion2jira/webhook-server
+
+# 安装依赖
+cd /opt/notion2jira/webhook-server
+sudo -u webhook npm install --production
 ```
 
-2. **运行部署脚本**
+#### 5. 配置环境变量
 ```bash
-ssh user@your-server
-cd /tmp/webhook-server
-sudo ./deploy.sh
+# 复制环境变量模板
+sudo -u webhook cp env.example .env
+
+# 编辑配置文件
+sudo -u webhook nano .env
+
+# 必须配置的变量：
+# - NOTION_API_KEY: Notion API 密钥
+# - ADMIN_API_KEY: 管理接口密钥（建议使用随机生成）
+# - REDIS_PASSWORD: Redis 密码（如果设置了）
 ```
 
-3. **配置 SSL 证书**
+#### 6. 配置 Redis
 ```bash
-# 使用 Let's Encrypt（推荐）
-sudo certbot --nginx -d notion2jira.chenge.ink
+# 启动 Redis 服务
+sudo systemctl start redis-server
+sudo systemctl enable redis-server
 
-# 或参考 SSL_SETUP.md 文档
+# 配置 Redis 安全（可选）
+sudo nano /etc/redis/redis.conf
+# 添加以下配置：
+# requirepass your_redis_password
+# bind 127.0.0.1
+
+# 重启 Redis
+sudo systemctl restart redis-server
 ```
 
-4. **配置环境变量**
+#### 7. 启动应用
 ```bash
-sudo nano /opt/notion2jira/webhook-server/.env
+# 切换到应用目录
+cd /opt/notion2jira/webhook-server
+
+# 使用 PM2 启动
+sudo -u webhook pm2 start ecosystem.config.js --env production
+sudo -u webhook pm2 save
+
+# 设置开机自启
+sudo pm2 startup systemd -u webhook --hp /home/webhook
 ```
 
-5. **重启服务**
+#### 8. 配置 Nginx 反向代理（推荐）
 ```bash
-sudo -u webhook pm2 restart notion-webhook
+# 创建 Nginx 配置文件
+sudo nano /etc/nginx/sites-available/notion2jira
+
+# 添加以下配置：
+server {
+    listen 80;
+    server_name your-domain.com;
+    
+    location / {
+        proxy_pass http://127.0.0.1:7654;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+
+# 启用站点
+sudo ln -s /etc/nginx/sites-available/notion2jira /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl restart nginx
+```
+
+#### 9. 配置 SSL 证书（推荐）
+```bash
+# 使用 Let's Encrypt
+sudo apt install certbot python3-certbot-nginx
+sudo certbot --nginx -d your-domain.com
+
+# 或手动配置 SSL 证书
+# 将证书文件放置在 /etc/ssl/certs/ 和 /etc/ssl/private/
+```
+
+#### 10. 配置防火墙
+```bash
+# 使用 UFW
+sudo ufw allow 22/tcp    # SSH
+sudo ufw allow 80/tcp    # HTTP
+sudo ufw allow 443/tcp   # HTTPS
+
+# Redis 端口仅允许内网访问（如果需要）
+sudo ufw allow from 10.0.0.0/8 to any port 6379
+sudo ufw allow from 172.16.0.0/12 to any port 6379
+sudo ufw allow from 192.168.0.0/16 to any port 6379
+
+sudo ufw --force enable
+```
+
+#### 11. 验证部署
+```bash
+# 检查服务状态
+sudo systemctl status nginx
+sudo systemctl status redis-server
+sudo -u webhook pm2 status
+
+# 检查端口监听
+sudo netstat -tlnp | grep :7654
+sudo netstat -tlnp | grep :6379
+
+# 测试应用
+curl http://localhost:7654/health
+
+# 查看日志
+sudo -u webhook pm2 logs notion-webhook
+```
+
+### 本地开发部署
+
+对于本地开发环境，可以简化部署流程：
+
+```bash
+# 1. 安装依赖
+npm install
+
+# 2. 配置环境变量
+cp env.example .env
+# 编辑 .env 文件，设置：
+# NODE_ENV=development
+# CORS_ENABLED=true  # 开发环境会自动允许所有来源
+
+# 3. 启动 Redis（如果需要）
+redis-server
+
+# 4. 启动应用
+npm run dev
+# 或
+npm start
 ```
 
 ### Docker 部署
+
+#### 使用 Docker Compose（推荐）
+
+创建 `docker-compose.yml` 文件：
+
+```yaml
+version: '3.8'
+
+services:
+  webhook-server:
+    build: .
+    ports:
+      - "7654:7654"
+    environment:
+      - NODE_ENV=production
+      - PORT=7654
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - redis
+    volumes:
+      - ./logs:/app/logs
+    restart: unless-stopped
+
+  redis:
+    image: redis:6-alpine
+    ports:
+      - "6379:6379"
+    command: redis-server --requirepass your_redis_password
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./ssl:/etc/ssl
+    depends_on:
+      - webhook-server
+    restart: unless-stopped
+
+volumes:
+  redis_data:
+```
+
+创建 `Dockerfile`：
+
 ```dockerfile
 FROM node:16-alpine
+
+# 设置工作目录
 WORKDIR /app
+
+# 复制 package 文件
 COPY package*.json ./
-RUN npm ci --only=production
+
+# 安装依赖
+RUN npm ci --only=production && npm cache clean --force
+
+# 复制应用代码
 COPY . .
+
+# 创建日志目录
+RUN mkdir -p logs
+
+# 创建非 root 用户
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S webhook -u 1001
+
+# 设置权限
+RUN chown -R webhook:nodejs /app
+USER webhook
+
+# 暴露端口
 EXPOSE 7654
+
+# 健康检查
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:7654/health || exit 1
+
+# 启动应用
 CMD ["npm", "start"]
+```
+
+部署命令：
+
+```bash
+# 构建并启动
+docker-compose up -d
+
+# 查看日志
+docker-compose logs -f webhook-server
+
+# 停止服务
+docker-compose down
 ```
 
 ## 🔧 故障排除

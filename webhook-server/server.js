@@ -14,7 +14,7 @@ const webhookRoutes = require('./routes/webhook');
 const adminRoutes = require('./routes/admin');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 7654;
 
 // 创建日志目录
 const fs = require('fs');
@@ -42,26 +42,37 @@ app.use(helmet({
 }));
 
 // CORS配置
+const corsEnabled = process.env.CORS_ENABLED !== 'false'; // 默认启用，设置为 'false' 时禁用
 const allowedOrigins = process.env.ALLOWED_ORIGINS 
   ? process.env.ALLOWED_ORIGINS.split(',')
   : ['https://api.notion.com', 'https://www.notion.so'];
 
-app.use(cors({
-  origin: function (origin, callback) {
-    // 允许没有origin的请求（如移动应用或Postman）
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      logger.warn('CORS阻止的请求', { origin });
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key', 'Notion-Webhook-Signature', 'Notion-Webhook-Timestamp']
-}));
+if (corsEnabled) {
+  app.use(cors({
+    origin: function (origin, callback) {
+      // 开发环境允许所有来源（方便本地调试）
+      if (process.env.NODE_ENV === 'development') {
+        return callback(null, true);
+      }
+      
+      // 允许没有origin的请求（如移动应用或Postman）
+      if (!origin) return callback(null, true);
+      
+      if (allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        logger.warn('CORS阻止的请求', { origin });
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key', 'Notion-Webhook-Signature', 'Notion-Webhook-Timestamp']
+  }));
+  logger.info('CORS已启用', { allowedOrigins, isDevelopment: process.env.NODE_ENV === 'development' });
+} else {
+  logger.info('CORS已禁用');
+}
 
 // 限流配置
 const limiter = rateLimit({
