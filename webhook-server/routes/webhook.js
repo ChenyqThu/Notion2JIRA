@@ -2,7 +2,7 @@ const express = require('express');
 const { body, validationResult } = require('express-validator');
 const logger = require('../config/logger');
 const redisClient = require('../config/redis');
-const { verifyWebhookRequest, captureRawBody } = require('../middleware/auth');
+const { verifyWebhookRequest } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -465,8 +465,11 @@ const webhookHandler = new NotionWebhookHandler();
  * 接收 Notion Webhook 事件
  */
 router.post('/notion', 
-  captureRawBody,
-  express.json(),
+  express.json({
+    verify: (req, res, buf) => {
+      req.rawBody = buf.toString('utf8');
+    }
+  }),
   verifyWebhookRequest,
   [
     body('source').optional().isObject(),
