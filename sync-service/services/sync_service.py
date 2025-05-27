@@ -11,6 +11,8 @@ from datetime import datetime
 from config.settings import Settings
 from config.logger import get_logger
 from services.redis_client import RedisClient
+from services.jira_client import JiraClient
+from services.field_mapper import FieldMapper
 
 
 class SyncService:
@@ -22,6 +24,10 @@ class SyncService:
         self.logger = get_logger("sync_service")
         self.running = False
         self.consumer_task = None
+        
+        # 初始化客户端
+        self.jira_client = None
+        self.field_mapper = None
         
         # 统计信息
         self.stats = {
@@ -37,8 +43,14 @@ class SyncService:
         try:
             self.logger.info("正在初始化同步服务...")
             
-            # 这里可以添加其他初始化逻辑
-            # 比如加载字段映射配置、验证API连接等
+            # 初始化JIRA客户端
+            self.jira_client = JiraClient(self.settings)
+            await self.jira_client.initialize()
+            self.logger.info("JIRA客户端初始化完成")
+            
+            # 初始化字段映射器
+            self.field_mapper = FieldMapper(self.settings)
+            self.logger.info("字段映射器初始化完成")
             
             self.stats["start_time"] = time.time()
             self.logger.info("同步服务初始化完成")
@@ -81,6 +93,10 @@ class SyncService:
                 await self.consumer_task
             except asyncio.CancelledError:
                 pass
+        
+        # 关闭JIRA客户端
+        if self.jira_client:
+            await self.jira_client.close()
         
         self.logger.info("同步服务已停止")
     
@@ -166,99 +182,70 @@ class SyncService:
                 )
                 return
             
-            # 解析Notion页面数据
-            properties = event_data.get("properties", {})
-            raw_properties = event_data.get("raw_properties", {})
+            # 构建Notion页面数据
+            notion_data = {
+                'page_id': page_id,
+                'properties': event_data.get("properties", {}),
+                'raw_properties': event_data.get("raw_properties", {}),
+                'url': f"https://notion.so/{page_id.replace('-', '')}"
+            }
             
-            # 提取关键字段
-            title = self._extract_title(properties)
-            description = self._extract_description(properties)
-            status = self._extract_status(properties)
-            priority = self._extract_priority(properties)
+            # 使用字段映射器转换数据
+            jira_fields = await self.field_mapper.map_notion_to_jira(
+                notion_data, 
+                page_url=notion_data['url']
+            )
+            
+            # 验证必填字段
+            missing_fields = self.field_mapper.validate_required_fields(jira_fields)
+            if missing_fields:
+                raise ValueError(f"缺少必填字段: {', '.join(missing_fields)}")
             
             self.logger.info(
-                "解析Notion页面字段",
+                "字段映射完成，准备创建JIRA Issue",
                 page_id=page_id,
-                title=title,
-                status=status,
-                priority=priority,
-                total_properties=len(properties),
-                sync2jira=event_data.get("sync2jira", False)
+                summary=jira_fields.get('summary'),
+                priority=jira_fields.get('priority', {}).get('id'),
+                has_assignee=bool(jira_fields.get('assignee')),
+                description_length=len(jira_fields.get('description', ''))
             )
             
-            # 记录所有字段用于调试
-            self.logger.debug(
-                "Notion字段详情",
-                page_id=page_id,
-                property_names=list(properties.keys()),
-                raw_property_names=list(raw_properties.keys())
-            )
+            # 在JIRA中创建Issue
+            jira_result = await self.jira_client.create_issue(jira_fields)
+            jira_issue_key = jira_result.get('key')
+            jira_issue_id = jira_result.get('id')
             
-            # TODO: 实现具体的同步逻辑
-            # 1. 从Notion获取页面详细信息
-            # 2. 字段映射转换
-            # 3. 在JIRA中创建Issue
-            # 4. 更新Notion页面状态和JIRA链接
-            # 5. 保存映射关系
+            if not jira_issue_key:
+                raise Exception("JIRA Issue创建失败：未返回Issue Key")
             
-            # 临时模拟处理
-            await asyncio.sleep(0.1)  # 模拟API调用延迟
-            
-            # 模拟创建成功，保存映射关系
-            mock_jira_key = f"SMBNET-{int(time.time() % 10000)}"
-            await self.redis_client.set_sync_mapping(page_id, mock_jira_key)
+            # 保存映射关系
+            mapping_data = {
+                'jira_issue_key': jira_issue_key,
+                'jira_issue_id': jira_issue_id,
+                'jira_browse_url': jira_result.get('browse_url', f"{self.settings.jira.base_url}/browse/{jira_issue_key}"),
+                'created_at': datetime.now().isoformat(),
+                'last_sync': datetime.now().isoformat(),
+                'status': 'synced'
+            }
+            await self.redis_client.set_sync_mapping(page_id, mapping_data)
             
             self.logger.info(
                 "Notion到JIRA创建同步完成",
                 page_id=page_id,
-                jira_issue_key=mock_jira_key,
-                title=title
+                jira_issue_key=jira_issue_key,
+                jira_issue_id=jira_issue_id,
+                summary=jira_fields.get('summary')
             )
+            
+            # TODO: 实现Notion回写功能（任务2.6）
+            # 1. 更新Notion页面状态为"已输入"
+            # 2. 将JIRA链接写入"JIRA CARD"字段
             
         except Exception as e:
             self.logger.error("Notion到JIRA创建同步失败", page_id=page_id, error=str(e))
             raise
     
-    def _extract_title(self, properties: Dict[str, Any]) -> str:
-        """提取标题字段"""
-        # 查找标题字段（可能是中文或英文）
-        title_fields = ["功能 Name", "Name", "title", "标题"]
-        for field in title_fields:
-            if field in properties:
-                prop = properties[field]
-                if prop.get("type") == "title":
-                    return prop.get("value", "")
-        return "未知标题"
-    
-    def _extract_description(self, properties: Dict[str, Any]) -> str:
-        """提取描述字段"""
-        desc_fields = ["功能说明 Desc", "需求整理", "Description", "描述"]
-        for field in desc_fields:
-            if field in properties:
-                prop = properties[field]
-                if prop.get("type") == "rich_text":
-                    return prop.get("value", "")
-        return ""
-    
-    def _extract_status(self, properties: Dict[str, Any]) -> str:
-        """提取状态字段"""
-        status_fields = ["Status", "状态"]
-        for field in status_fields:
-            if field in properties:
-                prop = properties[field]
-                if prop.get("type") in ["status", "select"]:
-                    return prop.get("value", "")
-        return ""
-    
-    def _extract_priority(self, properties: Dict[str, Any]) -> str:
-        """提取优先级字段"""
-        priority_fields = ["优先级 P", "Priority", "优先级"]
-        for field in priority_fields:
-            if field in properties:
-                prop = properties[field]
-                if prop.get("type") == "select":
-                    return prop.get("value", "")
-        return ""
+
     
     async def _handle_notion_to_jira_update(self, message: Dict[str, Any], event_data: Dict[str, Any]):
         """处理Notion到JIRA的更新同步"""

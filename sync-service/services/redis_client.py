@@ -268,26 +268,40 @@ class RedisClient:
     
     # 同步状态管理
     
-    async def set_sync_mapping(self, notion_page_id: str, jira_issue_key: str) -> bool:
+    async def set_sync_mapping(self, notion_page_id: str, mapping_data: Any) -> bool:
         """设置Notion页面和JIRA Issue的映射关系"""
         try:
-            mapping_key = f"sync_mapping:{notion_page_id}"
-            mapping_data = {
-                "jira_issue_key": jira_issue_key,
-                "created_at": time.time(),
-                "last_sync": time.time()
-            }
+            # 兼容旧的字符串格式和新的字典格式
+            if isinstance(mapping_data, str):
+                # 旧格式：直接传入jira_issue_key
+                jira_issue_key = mapping_data
+                mapping_data = {
+                    "jira_issue_key": jira_issue_key,
+                    "created_at": time.time(),
+                    "last_sync": time.time()
+                }
+            elif isinstance(mapping_data, dict):
+                # 新格式：传入完整的映射数据
+                if "created_at" not in mapping_data:
+                    mapping_data["created_at"] = time.time()
+                if "last_sync" not in mapping_data:
+                    mapping_data["last_sync"] = time.time()
+            else:
+                raise ValueError("mapping_data必须是字符串或字典类型")
             
+            mapping_key = f"sync_mapping:{notion_page_id}"
             result = await self.set_cache(mapping_key, mapping_data)
             
             # 同时设置反向映射
-            reverse_key = f"reverse_mapping:{jira_issue_key}"
-            reverse_data = {
-                "notion_page_id": notion_page_id,
-                "created_at": time.time(),
-                "last_sync": time.time()
-            }
-            await self.set_cache(reverse_key, reverse_data)
+            jira_issue_key = mapping_data.get("jira_issue_key")
+            if jira_issue_key:
+                reverse_key = f"reverse_mapping:{jira_issue_key}"
+                reverse_data = {
+                    "notion_page_id": notion_page_id,
+                    "created_at": mapping_data.get("created_at", time.time()),
+                    "last_sync": mapping_data.get("last_sync", time.time())
+                }
+                await self.set_cache(reverse_key, reverse_data)
             
             return result
             
@@ -295,7 +309,7 @@ class RedisClient:
             self.logger.error(
                 "设置同步映射失败",
                 notion_page_id=notion_page_id,
-                jira_issue_key=jira_issue_key,
+                mapping_data=str(mapping_data),
                 error=str(e)
             )
             return False

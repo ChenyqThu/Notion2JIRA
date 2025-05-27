@@ -37,9 +37,9 @@ class JiraConfig:
 
 @dataclass
 class NotionConfig:
-    """Notion配置"""
-    token: str
-    database_id: str
+    """Notion配置（可选，用于反向同步）"""
+    token: Optional[str] = None
+    database_id: Optional[str] = None
     timeout: int = 30
     max_retries: int = 3
 
@@ -81,17 +81,11 @@ class Settings:
     
     def _load_env_file(self):
         """加载.env文件"""
-        # 优先查找当前目录的.env文件
-        current_dir_env = os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env')
-        parent_dir_env = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), '.env')
+        # 统一使用sync-service目录下的.env文件
+        sync_service_dir = os.path.dirname(os.path.dirname(__file__))
+        env_file = os.path.join(sync_service_dir, '.env')
         
-        env_file = None
-        if os.path.exists(current_dir_env):
-            env_file = current_dir_env
-        elif os.path.exists(parent_dir_env):
-            env_file = parent_dir_env
-            
-        if env_file:
+        if os.path.exists(env_file):
             print(f"Loading environment from: {env_file}")
             with open(env_file, 'r', encoding='utf-8') as f:
                 for line in f:
@@ -100,7 +94,9 @@ class Settings:
                         key, value = line.split('=', 1)
                         os.environ[key.strip()] = value.strip()
         else:
-            print("No .env file found, using system environment variables")
+            print(f"Warning: .env file not found at {env_file}")
+            print("Please create .env file in sync-service directory with required configuration")
+            print("Using system environment variables as fallback")
     
     def _load_redis_config(self) -> RedisConfig:
         """加载Redis配置"""
@@ -118,11 +114,11 @@ class Settings:
     def _load_jira_config(self) -> JiraConfig:
         """加载JIRA配置"""
         base_url = os.getenv("JIRA_BASE_URL")
-        username = os.getenv("JIRA_USERNAME")
-        password = os.getenv("JIRA_PASSWORD")
+        username = os.getenv("JIRA_USER_EMAIL")  # 使用.env_example中的字段名
+        password = os.getenv("JIRA_USER_PASSWORD")  # 使用.env_example中的字段名
         
         if not all([base_url, username, password]):
-            raise ValueError("JIRA配置不完整，请检查环境变量: JIRA_BASE_URL, JIRA_USERNAME, JIRA_PASSWORD")
+            raise ValueError("JIRA配置不完整，请检查环境变量: JIRA_BASE_URL, JIRA_USER_EMAIL, JIRA_USER_PASSWORD")
         
         return JiraConfig(
             base_url=base_url,
@@ -137,16 +133,19 @@ class Settings:
         )
     
     def _load_notion_config(self) -> NotionConfig:
-        """加载Notion配置"""
+        """加载Notion配置（可选，用于反向同步）"""
         token = os.getenv("NOTION_TOKEN")
         database_id = os.getenv("NOTION_DATABASE_ID")
         
-        if not all([token, database_id]):
-            raise ValueError("Notion配置不完整，请检查环境变量: NOTION_TOKEN, NOTION_DATABASE_ID")
+        # Notion配置是可选的，主要用于反向同步
+        if token and database_id:
+            print("Notion配置已加载，支持反向同步")
+        else:
+            print("Notion配置未完整，仅支持单向同步（Notion → JIRA）")
         
         return NotionConfig(
-            token=token,
-            database_id=database_id,
+            token=token if token and token != "secret_your_notion_integration_token_here" else None,
+            database_id=database_id if database_id and database_id != "your_notion_database_id_here" else None,
             timeout=int(os.getenv("NOTION_TIMEOUT", "30")),
             max_retries=int(os.getenv("NOTION_MAX_RETRIES", "3"))
         )
