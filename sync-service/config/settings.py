@@ -81,14 +81,26 @@ class Settings:
     
     def _load_env_file(self):
         """加载.env文件"""
-        env_file = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), '.env')
-        if os.path.exists(env_file):
+        # 优先查找当前目录的.env文件
+        current_dir_env = os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env')
+        parent_dir_env = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), '.env')
+        
+        env_file = None
+        if os.path.exists(current_dir_env):
+            env_file = current_dir_env
+        elif os.path.exists(parent_dir_env):
+            env_file = parent_dir_env
+            
+        if env_file:
+            print(f"Loading environment from: {env_file}")
             with open(env_file, 'r', encoding='utf-8') as f:
                 for line in f:
                     line = line.strip()
                     if line and not line.startswith('#') and '=' in line:
                         key, value = line.split('=', 1)
                         os.environ[key.strip()] = value.strip()
+        else:
+            print("No .env file found, using system environment variables")
     
     def _load_redis_config(self) -> RedisConfig:
         """加载Redis配置"""
@@ -167,10 +179,6 @@ class Settings:
         # 验证JIRA配置
         if not self.jira.base_url.startswith(('http://', 'https://')):
             errors.append("JIRA_BASE_URL必须以http://或https://开头")
-        
-        # 验证Notion配置
-        if not self.notion.token.startswith('secret_'):
-            errors.append("NOTION_TOKEN格式不正确，应该以'secret_'开头")
         
         # 验证Redis配置
         if not (1 <= self.redis.port <= 65535):

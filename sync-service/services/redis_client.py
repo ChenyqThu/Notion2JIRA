@@ -9,6 +9,7 @@ import time
 from typing import Any, Dict, List, Optional, Union
 import redis.asyncio as redis
 from redis.asyncio import ConnectionPool
+from datetime import datetime
 
 from config.settings import Settings
 from config.logger import get_logger
@@ -111,9 +112,13 @@ class RedisClient:
                 "id": f"{int(time.time() * 1000000)}"  # 微秒级时间戳作为ID
             }
             
-            # 使用有序集合实现优先级队列
-            score = priority * 1000000 + time.time()  # 优先级 + 时间戳
-            result = await self.client.zadd(queue_name, {json.dumps(message): score})
+            # 使用简单的列表结构，兼容低版本Redis
+            if priority == 0:
+                # 高优先级消息从左侧推入
+                result = await self.client.lpush(queue_name, json.dumps(message))
+            else:
+                # 普通优先级消息从右侧推入
+                result = await self.client.rpush(queue_name, json.dumps(message))
             
             if result:
                 self.logger.debug(
@@ -147,11 +152,11 @@ class RedisClient:
             弹出的数据，如果队列为空则返回None
         """
         try:
-            # 使用BZPOPMIN实现阻塞式弹出（按优先级）
-            result = await self.client.bzpopmin(queue_name, timeout=timeout)
+            # 使用BLPOP实现阻塞式弹出（兼容低版本Redis）
+            result = await self.client.blpop(queue_name, timeout=timeout)
             
             if result:
-                queue, message_json, score = result
+                queue, message_json = result
                 message = json.loads(message_json)
                 
                 self.logger.debug(
@@ -161,7 +166,8 @@ class RedisClient:
                     priority=message.get("priority")
                 )
                 
-                return message["data"]
+                # 返回消息数据，兼容webhook-server格式
+                return message
             else:
                 # 超时，没有消息
                 return None
@@ -177,7 +183,7 @@ class RedisClient:
     async def get_queue_length(self, queue_name: str) -> int:
         """获取队列长度"""
         try:
-            return await self.client.zcard(queue_name)
+            return await self.client.llen(queue_name)
         except Exception as e:
             self.logger.error("获取队列长度失败", queue=queue_name, error=str(e))
             return 0

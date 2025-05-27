@@ -94,22 +94,43 @@ class SyncService:
             self.stats["processed_messages"] += 1
             self.stats["last_activity"] = time.time()
             
-            event_type = message.get("event_type")
+            # 适配新的数据结构 - 现在message就是完整的消息对象
+            data = message.get("data", {})
+            event_data = data.get("event_data", {})
+            
+            # 从正确的位置获取事件类型和页面ID
+            event_type = data.get("type")  # 从data.type获取
+            page_id = event_data.get("page_id")  # 从event_data.page_id获取
+            message_id = message.get("id")
             
             self.logger.info(
                 "处理同步消息",
                 event_type=event_type,
-                page_id=message.get("page_id"),
-                message_id=message.get("id")
+                page_id=page_id,
+                message_id=message_id,
+                database_id=event_data.get("database_id"),
+                last_edited_time=event_data.get("last_edited_time"),
+                message_priority=message.get("priority"),
+                message_timestamp=message.get("timestamp")
+            )
+            
+            # 记录详细的数据结构用于调试
+            self.logger.debug(
+                "消息详细信息",
+                message_keys=list(message.keys()),
+                data_keys=list(data.keys()),
+                event_data_keys=list(event_data.keys()),
+                properties_count=len(event_data.get("properties", {})),
+                raw_properties_count=len(event_data.get("raw_properties", {}))
             )
             
             # 根据事件类型分发处理
             if event_type == "notion_to_jira_create":
-                await self._handle_notion_to_jira_create(message)
+                await self._handle_notion_to_jira_create(message, event_data)
             elif event_type == "notion_to_jira_update":
-                await self._handle_notion_to_jira_update(message)
+                await self._handle_notion_to_jira_update(message, event_data)
             elif event_type == "jira_to_notion_update":
-                await self._handle_jira_to_notion_update(message)
+                await self._handle_jira_to_notion_update(message, event_data)
             else:
                 self.logger.warning("未知的事件类型", event_type=event_type)
                 return
@@ -122,15 +143,15 @@ class SyncService:
                 "处理消息失败",
                 error=str(e),
                 message_id=message.get("id"),
-                event_type=message.get("event_type")
+                event_type=message.get("data", {}).get("type")
             )
             
             # 可以考虑将失败的消息重新入队或记录到失败队列
             await self._handle_sync_failure(message, e)
     
-    async def _handle_notion_to_jira_create(self, message: Dict[str, Any]):
+    async def _handle_notion_to_jira_create(self, message: Dict[str, Any], event_data: Dict[str, Any]):
         """处理Notion到JIRA的创建同步"""
-        page_id = message.get("page_id")
+        page_id = event_data.get("page_id")
         
         self.logger.info("开始Notion到JIRA创建同步", page_id=page_id)
         
@@ -144,6 +165,34 @@ class SyncService:
                     jira_issue_key=existing_mapping.get("jira_issue_key")
                 )
                 return
+            
+            # 解析Notion页面数据
+            properties = event_data.get("properties", {})
+            raw_properties = event_data.get("raw_properties", {})
+            
+            # 提取关键字段
+            title = self._extract_title(properties)
+            description = self._extract_description(properties)
+            status = self._extract_status(properties)
+            priority = self._extract_priority(properties)
+            
+            self.logger.info(
+                "解析Notion页面字段",
+                page_id=page_id,
+                title=title,
+                status=status,
+                priority=priority,
+                total_properties=len(properties),
+                sync2jira=event_data.get("sync2jira", False)
+            )
+            
+            # 记录所有字段用于调试
+            self.logger.debug(
+                "Notion字段详情",
+                page_id=page_id,
+                property_names=list(properties.keys()),
+                raw_property_names=list(raw_properties.keys())
+            )
             
             # TODO: 实现具体的同步逻辑
             # 1. 从Notion获取页面详细信息
@@ -162,16 +211,58 @@ class SyncService:
             self.logger.info(
                 "Notion到JIRA创建同步完成",
                 page_id=page_id,
-                jira_issue_key=mock_jira_key
+                jira_issue_key=mock_jira_key,
+                title=title
             )
             
         except Exception as e:
             self.logger.error("Notion到JIRA创建同步失败", page_id=page_id, error=str(e))
             raise
     
-    async def _handle_notion_to_jira_update(self, message: Dict[str, Any]):
+    def _extract_title(self, properties: Dict[str, Any]) -> str:
+        """提取标题字段"""
+        # 查找标题字段（可能是中文或英文）
+        title_fields = ["功能 Name", "Name", "title", "标题"]
+        for field in title_fields:
+            if field in properties:
+                prop = properties[field]
+                if prop.get("type") == "title":
+                    return prop.get("value", "")
+        return "未知标题"
+    
+    def _extract_description(self, properties: Dict[str, Any]) -> str:
+        """提取描述字段"""
+        desc_fields = ["功能说明 Desc", "需求整理", "Description", "描述"]
+        for field in desc_fields:
+            if field in properties:
+                prop = properties[field]
+                if prop.get("type") == "rich_text":
+                    return prop.get("value", "")
+        return ""
+    
+    def _extract_status(self, properties: Dict[str, Any]) -> str:
+        """提取状态字段"""
+        status_fields = ["Status", "状态"]
+        for field in status_fields:
+            if field in properties:
+                prop = properties[field]
+                if prop.get("type") in ["status", "select"]:
+                    return prop.get("value", "")
+        return ""
+    
+    def _extract_priority(self, properties: Dict[str, Any]) -> str:
+        """提取优先级字段"""
+        priority_fields = ["优先级 P", "Priority", "优先级"]
+        for field in priority_fields:
+            if field in properties:
+                prop = properties[field]
+                if prop.get("type") == "select":
+                    return prop.get("value", "")
+        return ""
+    
+    async def _handle_notion_to_jira_update(self, message: Dict[str, Any], event_data: Dict[str, Any]):
         """处理Notion到JIRA的更新同步"""
-        page_id = message.get("page_id")
+        page_id = event_data.get("page_id")
         
         self.logger.info("开始Notion到JIRA更新同步", page_id=page_id)
         
@@ -180,7 +271,7 @@ class SyncService:
             mapping = await self.redis_client.get_sync_mapping(page_id)
             if not mapping:
                 self.logger.warning("未找到页面的JIRA映射关系，转为创建同步", page_id=page_id)
-                await self._handle_notion_to_jira_create(message)
+                await self._handle_notion_to_jira_create(message, event_data)
                 return
             
             jira_issue_key = mapping.get("jira_issue_key")
@@ -207,9 +298,9 @@ class SyncService:
             self.logger.error("Notion到JIRA更新同步失败", page_id=page_id, error=str(e))
             raise
     
-    async def _handle_jira_to_notion_update(self, message: Dict[str, Any]):
+    async def _handle_jira_to_notion_update(self, message: Dict[str, Any], event_data: Dict[str, Any]):
         """处理JIRA到Notion的更新同步"""
-        jira_issue_key = message.get("jira_issue_key")
+        jira_issue_key = event_data.get("jira_issue_key")
         
         self.logger.info("开始JIRA到Notion更新同步", jira_issue_key=jira_issue_key)
         

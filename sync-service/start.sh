@@ -99,10 +99,50 @@ check_env() {
         "NOTION_DATABASE_ID"
     )
     
+    # 可选但重要的环境变量
+    OPTIONAL_VARS=(
+        "REDIS_HOST"
+        "REDIS_PORT"
+        "REDIS_PASSWORD"
+        "REDIS_DB"
+        "SYNC_QUEUE_NAME"
+        "LOG_LEVEL"
+    )
+    
+    # 检查必要变量
     for var in "${REQUIRED_VARS[@]}"; do
         if [ -z "${!var}" ]; then
             log_error "缺少必要的环境变量: $var"
             exit 1
+        fi
+    done
+    
+    # 检查可选变量并给出提示
+    for var in "${OPTIONAL_VARS[@]}"; do
+        if [ -z "${!var}" ]; then
+            case $var in
+                "REDIS_PASSWORD")
+                    log_debug "Redis密码未设置，将使用无密码连接"
+                    ;;
+                "REDIS_HOST")
+                    log_debug "Redis主机未设置，将使用默认值: localhost"
+                    ;;
+                "REDIS_PORT")
+                    log_debug "Redis端口未设置，将使用默认值: 6379"
+                    ;;
+                *)
+                    log_debug "可选环境变量 $var 未设置，将使用默认值"
+                    ;;
+            esac
+        else
+            case $var in
+                "REDIS_PASSWORD")
+                    log_debug "Redis密码已设置"
+                    ;;
+                *)
+                    log_debug "$var = ${!var}"
+                    ;;
+            esac
         fi
     done
     
@@ -115,17 +155,36 @@ check_redis() {
     
     REDIS_HOST="${REDIS_HOST:-localhost}"
     REDIS_PORT="${REDIS_PORT:-6379}"
+    REDIS_PASSWORD="${REDIS_PASSWORD:-}"
     
     if command -v redis-cli &> /dev/null; then
-        if redis-cli -h "$REDIS_HOST" -p "$REDIS_PORT" ping > /dev/null 2>&1; then
-            log_info "Redis连接正常"
+        # 构建redis-cli命令
+        REDIS_CMD="redis-cli -h $REDIS_HOST -p $REDIS_PORT"
+        
+        # 如果有密码，添加密码参数
+        if [ -n "$REDIS_PASSWORD" ]; then
+            REDIS_CMD="$REDIS_CMD -a $REDIS_PASSWORD"
+            log_debug "使用密码连接Redis"
+        else
+            log_debug "无密码连接Redis"
+        fi
+        
+        # 测试连接
+        if $REDIS_CMD ping > /dev/null 2>&1; then
+            log_info "Redis连接正常 ($REDIS_HOST:$REDIS_PORT)"
         else
             log_error "Redis连接失败 ($REDIS_HOST:$REDIS_PORT)"
-            log_info "请确保Redis服务正在运行"
+            if [ -n "$REDIS_PASSWORD" ]; then
+                log_error "请检查Redis密码是否正确"
+            else
+                log_error "请检查Redis是否需要密码验证"
+            fi
+            log_info "请确保Redis服务正在运行且配置正确"
             exit 1
         fi
     else
         log_warn "redis-cli未安装，跳过Redis连接检查"
+        log_info "建议安装redis-cli以验证Redis连接"
     fi
 }
 
