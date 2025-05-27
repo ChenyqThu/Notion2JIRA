@@ -22,17 +22,147 @@ class NotionWebhookHandler {
   }
 
   /**
+   * 解析 Notion Webhook 数据
+   */
+  parseNotionWebhookData(webhookData) {
+    const { source, data } = webhookData;
+    
+    // 从 source 推断事件类型，如果没有则默认为 page.updated
+    let eventType = 'page.updated';
+    if (source && source.type === 'automation') {
+      // 可以根据需要进一步细化事件类型判断逻辑
+      eventType = 'page.updated';
+    }
+
+    // 提取页面基本信息
+    const pageId = data.id;
+    const databaseId = data.parent?.database_id;
+    const lastEditedTime = data.last_edited_time;
+    const createdTime = data.created_time;
+    const archived = data.archived;
+    const inTrash = data.in_trash;
+
+    // 解析属性
+    const properties = this.parseNotionProperties(data.properties);
+
+    // 检查是否需要同步到 JIRA
+    const sync2jira = this.checkSync2JiraFlag(data.properties);
+
+    return {
+      event_type: eventType,
+      page_id: pageId,
+      database_id: databaseId,
+      last_edited_time: lastEditedTime,
+      created_time: createdTime,
+      archived,
+      in_trash: inTrash,
+      properties,
+      sync2jira,
+      raw_data: data,
+      source_info: source
+    };
+  }
+
+  /**
+   * 解析 Notion 属性
+   */
+  parseNotionProperties(notionProperties) {
+    const parsed = {};
+    
+    for (const [key, value] of Object.entries(notionProperties)) {
+      try {
+        switch (value.type) {
+          case 'title':
+            parsed[key] = value.title?.[0]?.plain_text || '';
+            break;
+          case 'rich_text':
+            parsed[key] = value.rich_text?.[0]?.plain_text || '';
+            break;
+          case 'select':
+            parsed[key] = value.select?.name || null;
+            break;
+          case 'multi_select':
+            parsed[key] = value.multi_select?.map(item => item.name) || [];
+            break;
+          case 'status':
+            parsed[key] = value.status?.name || null;
+            break;
+          case 'checkbox':
+            parsed[key] = value.checkbox || false;
+            break;
+          case 'url':
+            parsed[key] = value.url || null;
+            break;
+          case 'people':
+            parsed[key] = value.people?.map(person => ({
+              id: person.id,
+              name: person.name,
+              email: person.person?.email
+            })) || [];
+            break;
+          case 'formula':
+            parsed[key] = value.formula?.string || value.formula?.number || null;
+            break;
+          case 'created_time':
+          case 'last_edited_time':
+            parsed[key] = value[value.type];
+            break;
+          case 'relation':
+            parsed[key] = value.relation || [];
+            break;
+          case 'rollup':
+            parsed[key] = value.rollup;
+            break;
+          case 'button':
+            // Button 字段通常不包含具体值，但其存在表示可以触发操作
+            parsed[key] = value.button || {};
+            break;
+          default:
+            parsed[key] = value;
+        }
+      } catch (error) {
+        logger.warn(`解析属性 ${key} 失败:`, error);
+        parsed[key] = value;
+      }
+    }
+    
+    return parsed;
+  }
+
+  /**
+   * 检查是否需要同步到 JIRA
+   * 注意：同步是通过 Notion database 的 button property 点击触发的
+   * 如果收到 webhook，说明用户已经点击了同步按钮，因此默认需要同步
+   */
+  checkSync2JiraFlag(notionProperties) {
+    // 由于 webhook 是通过点击 button property 触发的
+    // 收到 webhook 就意味着用户想要同步到 JIRA
+    // 但我们仍然可以检查一些条件来确认
+    
+    // 检查是否有 sync2jira 相关的 checkbox 字段
+    const sync2jiraField = notionProperties.sync2jira;
+    if (sync2jiraField?.checkbox === false) {
+      return false; // 明确设置为不同步
+    }
+
+    // 检查是否有同步按钮字段（button 类型在 webhook 中可能不会显示具体值）
+    // 默认情况下，收到 webhook 就认为需要同步
+    return true;
+  }
+
+  /**
    * 处理页面创建事件
    */
   async handlePageCreated(event) {
     logger.info('处理页面创建事件', {
       pageId: event.page_id,
-      databaseId: event.database_id
+      databaseId: event.database_id,
+      title: event.properties['功能 Name'] || event.properties.title
     });
 
     // 检查是否需要同步到JIRA
-    const properties = event.properties || {};
-    if (properties.sync2jira === true) {
+    // 由于 webhook 是通过点击同步按钮触发的，默认都需要同步
+    if (event.sync2jira === true) {
       await this.queueSyncEvent('notion_to_jira_create', event);
     }
 
@@ -45,13 +175,14 @@ class NotionWebhookHandler {
   async handlePageUpdated(event) {
     logger.info('处理页面更新事件', {
       pageId: event.page_id,
-      databaseId: event.database_id
+      databaseId: event.database_id,
+      title: event.properties['功能 Name'] || event.properties.title,
+      sync2jira: event.sync2jira
     });
-
-    const properties = event.properties || {};
     
     // 检查是否是同步相关的更新
-    if (properties.sync2jira === true) {
+    // 由于 webhook 是通过点击同步按钮触发的，默认都需要同步
+    if (event.sync2jira === true) {
       // 检查是否已存在JIRA关联
       const existingMapping = await this.checkExistingMapping(event.page_id);
       
@@ -140,15 +271,11 @@ class NotionWebhookHandler {
    * 验证事件数据格式
    */
   validateEventData(event) {
-    const required = ['event_type', 'page_id'];
+    const required = ['page_id'];
     const missing = required.filter(field => !event[field]);
     
     if (missing.length > 0) {
       throw new Error(`缺少必填字段: ${missing.join(', ')}`);
-    }
-
-    if (!this.supportedEvents.includes(event.event_type)) {
-      throw new Error(`不支持的事件类型: ${event.event_type}`);
     }
 
     return true;
@@ -166,10 +293,11 @@ router.post('/notion',
   express.json(),
   verifyWebhookRequest,
   [
-    body('event_type').notEmpty().withMessage('event_type 是必填项'),
-    body('page_id').notEmpty().withMessage('page_id 是必填项'),
-    body('database_id').optional().isString(),
-    body('properties').optional().isObject()
+    body('source').optional().isObject(),
+    body('data').notEmpty().withMessage('data 是必填项'),
+    body('data.id').notEmpty().withMessage('data.id 是必填项'),
+    body('data.object').equals('page').withMessage('只支持页面对象'),
+    body('data.properties').optional().isObject()
   ],
   async (req, res) => {
     try {
@@ -186,13 +314,16 @@ router.post('/notion',
         });
       }
 
-      const event = req.body;
+      // 解析 Notion Webhook 数据
+      const event = webhookHandler.parseNotionWebhookData(req.body);
       
       // 记录接收到的事件
       logger.info('接收到Notion Webhook事件', {
         eventType: event.event_type,
         pageId: event.page_id,
         databaseId: event.database_id,
+        title: event.properties['功能 Name'] || event.properties.title,
+        sync2jira: event.sync2jira,
         timestamp: new Date().toISOString(),
         ip: req.ip
       });

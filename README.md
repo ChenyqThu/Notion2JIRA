@@ -1,63 +1,105 @@
-# Notion2JIRA 连接工具
+# Notion2JIRA 同步系统
 
-这个工具用于将 Notion 数据迁移到 JIRA，同时提供了与 JIRA 服务器的连接测试和基本操作功能。
+## 项目简介
 
-## 特性
+Notion2JIRA 是一个自动化同步系统，实现 Notion Database 与 JIRA 项目之间的数据同步。该系统专为 EBG 商用产品团队设计，解决需求管理和开发管理系统之间的数据孤岛问题。
 
-- 连接 JIRA 服务器并验证认证
-- 创建 JIRA Issue
-- 读取 JIRA Issue 信息
-- 搜索 JIRA Issues
-- 更新 JIRA Issue
-- （待实现）添加评论和附件
+## 核心功能
 
-## 环境设置
+- **双向同步**: Notion ↔ JIRA 自动双向同步
+- **字段映射**: 智能的字段映射和数据转换
+- **状态回写**: 同步完成后自动更新Notion状态和JIRA链接
+- **增量检测**: 基于时间戳的增量同步机制
+- **重复检测**: 防止重复创建 JIRA Issue
+- **错误处理**: 完善的错误处理和重试机制
 
-1. 安装依赖：
-   ```
-   pip install requests python-dotenv
-   ```
+## 项目状态
 
-2. 配置环境变量：
-   - 复制 `.env_example` 文件并重命名为 `.env`
-   - 编辑 `.env` 文件，填入您的实际配置信息：
-     ```
-     JIRA_BASE_URL=http://your-jira-server.com
-     JIRA_USER_EMAIL=your.email@company.com
-     JIRA_USER_PASSWORD=your_password_here
-     ```
+- ⏳ **第0阶段**: 项目调研与准备（进行中 70%）
+- 📋 **第1阶段**: 基础设施搭建（待开始）
+- 📋 **第2阶段**: 核心同步功能开发（待开始）
+- 📋 **第3阶段**: 反向同步功能开发（待开始）
+- 📋 **第4阶段**: 测试与部署（待开始）
 
-3. 环境变量说明：
+## 核心文档
 
-   | 变量 | 说明 | 默认值 |
-   |------|------|--------|
-   | JIRA_BASE_URL | JIRA服务器的基础URL | http://rdjira.tp-link.com |
-   | JIRA_USER_EMAIL | JIRA账号邮箱 | (空) |
-   | JIRA_USER_PASSWORD | JIRA账号密码 | (空) |
-   | VERIFY_SSL | 是否验证SSL证书 | False |
-   | TRY_LEGACY_TLS_ADAPTER | 是否尝试使用旧版TLS适配器 | False |
-   | USE_HTTP_1 | 是否使用HTTP/1.1协议 | True |
-   | TEST_PROJECT_KEY | 测试用项目Key | SMBNET |
-   | TEST_ISSUE_TYPE_NAME | 测试用Issue类型 | Story |
+### 📋 [PRD.md](./PRD.md) - 产品需求文档
+- 项目背景与目标
+- 功能需求清单
+- 字段映射规范
+- 验收标准
 
-## 使用方法
+### 🏗️ [Architecture.md](./Architecture.md) - 架构设计文档
+- 系统架构设计
+- 核心模块设计
+- 部署架构
+- 安全架构
+- 性能优化
 
-直接运行脚本进行JIRA连接测试：
+### 📝 [tasks.md](./tasks.md) - 任务分解文档
+- 详细任务分解
+- 分阶段实施计划
+- 进度跟踪
+- 风险管理
+
+## 快速开始
+
+### 当前已完成的工作
+```bash
+# 服务器环境准备
+# - CentOS 7 云服务器
+# - 域名 https://notion2jira.tp-link.com 
+# - SSL证书和Nginx配置
+
+# JIRA API测试和字段映射分析
+python field_mapping_analyzer.py  # 字段映射分析
+python test_rest_api.py          # JIRA API完整测试
+
+# Notion webhook接口测试
+# - 已完成webhook数据格式分析
+# - 已了解接口调用方式
+```
+
+### 环境配置
+```bash
+# 复制环境变量模板
+cp .env_example .env
+
+# 编辑配置文件
+vim .env
+```
+
+### 依赖安装
+```bash
+pip install -r requirements.txt
+```
+
+## 技术栈
+
+- **公网代理**: Node.js + Express + Redis
+- **内网服务**: Python + FastAPI + Redis
+- **部署**: Docker + Nginx + PM2
+- **监控**: 自定义监控面板
+
+## 项目结构
 
 ```
-python test.py
+Notion2JIRA/
+├── PRD.md                          # 产品需求文档
+├── Architecture.md                 # 架构设计文档
+├── tasks.md                        # 任务分解文档
+├── webhook-server/                 # 公网代理服务
+├── field_mapping_analyzer.py       # 字段映射分析工具
+├── test_rest_api.py               # JIRA API测试脚本
+└── requirements.txt               # Python依赖
 ```
 
-脚本将执行以下操作：
-1. 测试与JIRA服务器的连接和认证
-2. 创建一个测试Issue
-3. 读取创建的Issue信息
-4. 尝试更新Issue
-5. 测试搜索功能
-6. 获取字段和Issue类型信息
+## 联系方式
 
-## 安全注意事项
+- **项目负责人**: 产品团队
+- **技术负责人**: 开发团队
+- **问题反馈**: 通过 JIRA 或团队群组
 
-- 所有敏感信息（如用户名和密码）都应存储在 `.env` 文件中
-- `.env` 文件已被添加到 `.gitignore` 中，确保不会被提交到版本控制系统
-- 生产环境中应将 `VERIFY_SSL` 设置为 `True` 
+## 许可证
+
+内部项目，仅供 EBG 商用产品团队使用。 

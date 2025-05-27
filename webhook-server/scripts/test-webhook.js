@@ -33,13 +33,76 @@ async function testWebhookReceive() {
   console.log('🔍 测试 Webhook 接收...');
   
   const testEvent = {
-    event_type: 'page.updated',
-    page_id: 'test-page-' + Date.now(),
-    database_id: 'test-database-id',
-    properties: {
-      title: 'Test Page from Script',
-      sync2jira: true,
-      priority: 'Medium'
+    source: {
+      type: 'automation',
+      automation_id: 'test-automation-' + Date.now(),
+      action_id: 'test-action-id',
+      event_id: 'test-event-id',
+      user_id: 'test-user-id',
+      attempt: 1
+    },
+    data: {
+      object: 'page',
+      id: 'test-page-' + Date.now(),
+      created_time: new Date().toISOString(),
+      last_edited_time: new Date().toISOString(),
+      parent: {
+        type: 'database_id',
+        database_id: 'test-database-id'
+      },
+      archived: false,
+      in_trash: false,
+      properties: {
+        '功能 Name': {
+          id: 'title',
+          type: 'title',
+          title: [
+            {
+              type: 'text',
+              text: {
+                content: 'Test Page from Script'
+              },
+              plain_text: 'Test Page from Script'
+            }
+          ]
+        },
+        'Status': {
+          id: 'status_id',
+          type: 'status',
+          status: {
+            id: 'status_option_id',
+            name: '待评估 UR',
+            color: 'default'
+          }
+        },
+        '优先级 P': {
+          id: 'priority_id',
+          type: 'select',
+          select: {
+            id: 'priority_option_id',
+            name: '中 Medium',
+            color: 'yellow'
+          }
+        },
+        'Formula': {
+          id: 'formula_id',
+          type: 'formula',
+          formula: {
+            type: 'string',
+            string: 'sync2jira'
+          }
+        },
+        '同步到JIRA': {
+          id: 'button_id',
+          type: 'button',
+          button: {}
+        },
+        'JIRA Card': {
+          id: 'jira_card_id',
+          type: 'url',
+          url: null
+        }
+      }
     }
   };
 

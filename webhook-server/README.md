@@ -80,6 +80,51 @@ sudo ./deploy.sh
 | `RATE_LIMIT_MAX_REQUESTS` | 否 | 100 | 限流最大请求数 |
 | `LOG_LEVEL` | 否 | info | 日志级别 |
 
+## 📊 Notion 数据字段映射
+
+### 主要属性字段
+
+根据实际收到的 Notion Webhook 数据，系统支持以下字段：
+
+| Notion 字段名 | 字段类型 | 说明 | 示例值 |
+|---------------|----------|------|--------|
+| `功能 Name` | title | 功能名称（主标题） | "roaming等功能联动wifi navi" |
+| `Status` | status | 状态 | "待评估 UR" |
+| `优先级 P` | select | 优先级 | "低 Low" |
+| `类型 Type` | multi_select | 类型标签 | ["APP"] |
+| `Formula` | formula | 计算字段 | "sync2jira" (非同步标志) |
+| `JIRA Card` | url | JIRA 卡片链接 | null 或 URL |
+| `需求来源 Source` | select | 需求来源 | "[反馈] - 客户拜访" |
+| `功能类别 Feature Type` | select | 功能类别 | "UI体验优化 UI Optimization" |
+| `规划版本 Release Version` | multi_select | 规划版本 | ["Omada APP 4.22"] |
+| `涉及产品线` | multi_select | 产品线 | ["Controller", "APP"] |
+| `需求录入` | people | 录入人员 | 用户对象数组 |
+| `功能说明 Desc` | rich_text | 中文描述 | 富文本内容 |
+| `Description` | rich_text | 英文描述 | 富文本内容 |
+| `AI Desc` | rich_text | AI 生成描述 | 富文本内容 |
+
+### 同步触发条件
+
+页面会在以下情况下触发同步到 JIRA：
+
+1. **用户点击 Button Property**：这是主要的同步触发方式
+   - Notion database 中配置了 button property
+   - 用户点击该按钮时会自动发送 webhook
+2. **页面未被归档或删除**：`archived: false` 且 `in_trash: false`
+3. **可选的控制字段**：可以通过 checkbox 字段来控制是否允许同步
+
+### 数据解析逻辑
+
+系统会自动解析 Notion 的复杂数据结构：
+
+- **title/rich_text**: 提取 `plain_text` 内容
+- **select**: 提取选项的 `name` 值
+- **multi_select**: 提取所有选项的 `name` 数组
+- **status**: 提取状态的 `name` 值
+- **people**: 提取用户信息（ID、姓名、邮箱）
+- **formula**: 提取计算结果（字符串或数字）
+- **url**: 直接使用 URL 值
+
 ## 📡 API 接口
 
 ### Webhook 接口
@@ -93,13 +138,71 @@ sudo ./deploy.sh
 **请求体：**
 ```json
 {
-  "event_type": "page.updated",
-  "page_id": "page-uuid",
-  "database_id": "database-uuid",
-  "properties": {
-    "title": "页面标题",
-    "sync2jira": true,
-    "priority": "High"
+  "source": {
+    "type": "automation",
+    "automation_id": "1ff74ddb-b9d2-8054-a6d9-004d3461e70b",
+    "action_id": "1ff74ddb-b9d2-800c-a4cc-005a2cd58f76",
+    "event_id": "05c5ce90-09e3-4ddd-b321-9bd6e45a6e53",
+    "user_id": "e2840e64-4f99-4edf-817c-bd6f13112556",
+    "attempt": 1
+  },
+  "data": {
+    "object": "page",
+    "id": "d1cdcd9d-c6b0-44ca-9439-318d5a92fac7",
+    "created_time": "2024-09-11T03:13:00.000Z",
+    "last_edited_time": "2025-05-26T06:18:00.000Z",
+    "parent": {
+      "type": "database_id",
+      "database_id": "3f8426c6-7f44-4bf8-baf5-9eacd7008eef"
+    },
+    "archived": false,
+    "in_trash": false,
+    "properties": {
+      "功能 Name": {
+        "id": "title",
+        "type": "title",
+        "title": [
+          {
+            "type": "text",
+            "text": {
+              "content": "roaming等功能联动wifi navi"
+            },
+            "plain_text": "roaming等功能联动wifi navi"
+          }
+        ]
+      },
+      "Status": {
+        "id": "AM%3AA",
+        "type": "status",
+        "status": {
+          "id": "6227d97b-73b8-4619-b78f-096552c097a8",
+          "name": "待评估 UR",
+          "color": "default"
+        }
+      },
+      "优先级 P": {
+        "id": "Gt%3AZ",
+        "type": "select",
+        "select": {
+          "id": "TPR:",
+          "name": "低 Low",
+          "color": "gray"
+        }
+      },
+      "Formula": {
+        "id": "vYhP",
+        "type": "formula",
+        "formula": {
+          "type": "string",
+          "string": "sync2jira"
+        }
+      },
+      "JIRA Card": {
+        "id": "iSzx",
+        "type": "url",
+        "url": null
+      }
+    }
   }
 }
 ```
@@ -113,7 +216,7 @@ sudo ./deploy.sh
     "processed": true,
     "action": "page_updated"
   },
-  "timestamp": "2024-01-15T10:30:00.000Z"
+  "timestamp": "2025-05-26T14:27:55.994Z"
 }
 ```
 
@@ -166,11 +269,13 @@ sudo ./deploy.sh
 **请求体：**
 ```json
 {
-  "pageId": "test-page-123",
+  "pageId": "d1cdcd9d-c6b0-44ca-9439-318d5a92fac7",
   "eventType": "page.updated",
   "properties": {
-    "title": "Test Page",
-    "sync2jira": true
+    "功能 Name": "测试页面",
+    "Status": "待评估 UR",
+    "优先级 P": "低 Low",
+    "Formula": "sync2jira"
   }
 }
 ```
@@ -265,7 +370,30 @@ curl https://notion2jira.chenge.ink/health
 # 测试 Webhook
 curl -X POST https://notion2jira.chenge.ink/webhook/notion \
   -H "Content-Type: application/json" \
-  -d '{"event_type":"page.updated","page_id":"test"}'
+  -d '{
+    "source": {
+      "type": "automation",
+      "automation_id": "test-automation",
+      "user_id": "test-user"
+    },
+    "data": {
+      "object": "page",
+      "id": "test-page-123",
+      "parent": {
+        "type": "database_id",
+        "database_id": "test-database"
+      },
+      "properties": {
+        "Formula": {
+          "type": "formula",
+          "formula": {
+            "type": "string",
+            "string": "sync2jira"
+          }
+        }
+      }
+    }
+  }'
 
 # 测试管理接口
 curl -H "X-API-Key: your-admin-key" \
@@ -327,15 +455,6 @@ EXPOSE 7654
 CMD ["npm", "start"]
 ```
 
-### Nginx 配置
-
-已包含完整的 Nginx 配置文件 `nginx.conf`，支持：
-- HTTPS 重定向
-- SSL 安全配置
-- 反向代理
-- 安全头部
-- 静态文件缓存
-
 ## 🔧 故障排除
 
 ### 常见问题
@@ -382,7 +501,6 @@ sudo journalctl -u nginx -f
 - Redis 队列集成
 - 管理接口实现
 - 安全特性完善
-- 移除签名验证（Notion 不支持）
 
 ## 🤝 贡献指南
 
