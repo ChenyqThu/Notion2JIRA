@@ -6,15 +6,14 @@ const logger = require('../config/logger');
  * 保存原始请求体用于日志记录
  */
 function captureRawBody(req, res, next) {
-  let data = '';
-  req.setEncoding('utf8');
+  const chunks = [];
   
   req.on('data', (chunk) => {
-    data += chunk;
+    chunks.push(chunk);
   });
   
   req.on('end', () => {
-    req.rawBody = data;
+    req.rawBody = Buffer.concat(chunks).toString('utf8');
     next();
   });
 }
