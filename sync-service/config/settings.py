@@ -40,6 +40,7 @@ class NotionConfig:
     """Notion配置（可选，用于反向同步）"""
     token: Optional[str] = None
     database_id: Optional[str] = None
+    version_database_id: Optional[str] = None  # 版本库Database ID
     timeout: int = 30
     max_retries: int = 3
 
@@ -136,6 +137,7 @@ class Settings:
         """加载Notion配置（可选，用于反向同步）"""
         token = os.getenv("NOTION_TOKEN")
         database_id = os.getenv("NOTION_DATABASE_ID")
+        version_database_id = os.getenv("NOTION_VERSION_DATABASE_ID")
         
         # Notion配置是可选的，主要用于反向同步
         if token and database_id:
@@ -143,9 +145,13 @@ class Settings:
         else:
             print("Notion配置未完整，仅支持单向同步（Notion → JIRA）")
         
+        if version_database_id:
+            print("Notion版本库配置已加载，支持关联项目版本映射")
+        
         return NotionConfig(
             token=token if token and token != "secret_your_notion_integration_token_here" else None,
             database_id=database_id if database_id and database_id != "your_notion_database_id_here" else None,
+            version_database_id=version_database_id if version_database_id and version_database_id != "your_notion_version_database_id_here" else None,
             timeout=int(os.getenv("NOTION_TIMEOUT", "30")),
             max_retries=int(os.getenv("NOTION_MAX_RETRIES", "3"))
         )

@@ -269,4 +269,33 @@ class JiraClient:
                     
         except Exception as e:
             self.logger.error("JIRA连接测试异常", error=str(e))
-            return False 
+            return False
+    
+    async def get_project_versions(self, project_key: str = None) -> List[Dict[str, Any]]:
+        """获取项目版本列表"""
+        try:
+            project = project_key or self.jira_config.project_key
+            url = f"{self.jira_config.base_url}/rest/api/2/project/{project}/versions"
+            
+            async with self.session.get(url) as response:
+                if response.status == 200:
+                    versions = await response.json()
+                    self.logger.info(
+                        "项目版本获取成功",
+                        project_key=project,
+                        version_count=len(versions)
+                    )
+                    return versions
+                else:
+                    error_text = await response.text()
+                    self.logger.error(
+                        "项目版本获取失败",
+                        project_key=project,
+                        status=response.status,
+                        error=error_text
+                    )
+                    return []
+                    
+        except Exception as e:
+            self.logger.error("项目版本获取异常", error=str(e), project_key=project_key)
+            return [] 

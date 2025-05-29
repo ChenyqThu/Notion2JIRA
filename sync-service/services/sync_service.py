@@ -5,7 +5,8 @@
 
 import asyncio
 import time
-from typing import Dict, Any, Optional
+import re
+from typing import Dict, Any, Optional, Tuple
 from datetime import datetime
 
 from config.settings import Settings
@@ -13,6 +14,8 @@ from config.logger import get_logger
 from services.redis_client import RedisClient
 from services.jira_client import JiraClient
 from services.field_mapper import FieldMapper
+from services.notion_client import NotionClient
+from services.version_mapper import VersionMapper
 
 
 class SyncService:
@@ -48,8 +51,21 @@ class SyncService:
             await self.jira_client.initialize()
             self.logger.info("JIRA客户端初始化完成")
             
-            # 初始化字段映射器
-            self.field_mapper = FieldMapper(self.settings)
+            # 初始化版本映射器
+            self.version_mapper = VersionMapper(self.settings)
+            self.logger.info("版本映射器初始化完成")
+            
+            # 初始化Notion客户端（如果配置了token）
+            if self.settings.notion.token:
+                self.notion_client = NotionClient(self.settings)
+                await self.notion_client.initialize()
+                self.logger.info("Notion客户端初始化完成")
+            else:
+                self.notion_client = None
+                self.logger.warning("未配置Notion token，跳过Notion客户端初始化")
+            
+            # 初始化字段映射器（传入NotionClient）
+            self.field_mapper = FieldMapper(self.settings, self.notion_client)
             self.logger.info("字段映射器初始化完成")
             
             self.stats["start_time"] = time.time()
@@ -98,11 +114,69 @@ class SyncService:
         if self.jira_client:
             await self.jira_client.close()
         
+        # 关闭Notion客户端
+        if self.notion_client:
+            await self.notion_client.close()
+        
         self.logger.info("同步服务已停止")
     
     def get_status(self) -> bool:
         """获取服务状态"""
         return self.running
+    
+    def _parse_jira_url(self, jira_url: str) -> Optional[Tuple[str, str]]:
+        """解析JIRA URL，提取项目键和Issue Key
+        
+        Args:
+            jira_url: JIRA链接，如 "http://rdjira.tp-link.com/browse/SMBNET-123"
+            
+        Returns:
+            Tuple[project_key, issue_key] 或 None
+        """
+        if not jira_url:
+            return None
+            
+        # 匹配JIRA URL模式
+        pattern = r'http://rdjira\.tp-link\.com/browse/([A-Z]+)-(\d+)'
+        match = re.match(pattern, jira_url)
+        
+        if match:
+            project_key = match.group(1)  # SMBNET 或 SMBEAP
+            issue_number = match.group(2)  # 123
+            issue_key = f"{project_key}-{issue_number}"
+            return project_key, issue_key
+        
+        return None
+    
+    async def _get_notion_jira_card(self, page_id: str) -> Optional[str]:
+        """获取Notion页面中的JIRA Card字段值
+        
+        Args:
+            page_id: Notion页面ID
+            
+        Returns:
+            JIRA Card URL或None
+        """
+        if not self.notion_client:
+            return None
+            
+        try:
+            page_data = await self.notion_client.get_page(page_id)
+            if not page_data:
+                return None
+            
+            properties = page_data.get('properties', {})
+            jira_card_field = properties.get('JIRA Card', {})
+            
+            # 检查URL字段
+            if 'url' in jira_card_field and jira_card_field['url']:
+                return jira_card_field['url']
+            
+            return None
+            
+        except Exception as e:
+            self.logger.error("获取Notion页面JIRA Card字段失败", page_id=page_id, error=str(e))
+            return None
     
     async def _process_message(self, message: Dict[str, Any]):
         """处理单个消息"""
@@ -131,20 +205,22 @@ class SyncService:
             )
             
             # 记录详细的数据结构用于调试
+            properties = event_data.get("properties", {})
             self.logger.debug(
                 "消息详细信息",
                 message_keys=list(message.keys()),
                 data_keys=list(data.keys()),
                 event_data_keys=list(event_data.keys()),
-                properties_count=len(event_data.get("properties", {})),
+                properties_count=len(properties),
+                properties_keys=list(properties.keys()),
                 raw_properties_count=len(event_data.get("raw_properties", {}))
             )
             
             # 根据事件类型分发处理
             if event_type == "notion_to_jira_create":
-                await self._handle_notion_to_jira_create(message, event_data)
+                await self._handle_notion_to_jira_sync(message, event_data)
             elif event_type == "notion_to_jira_update":
-                await self._handle_notion_to_jira_update(message, event_data)
+                await self._handle_notion_to_jira_sync(message, event_data)
             elif event_type == "jira_to_notion_update":
                 await self._handle_jira_to_notion_update(message, event_data)
             else:
@@ -165,29 +241,62 @@ class SyncService:
             # 可以考虑将失败的消息重新入队或记录到失败队列
             await self._handle_sync_failure(message, e)
     
-    async def _handle_notion_to_jira_create(self, message: Dict[str, Any], event_data: Dict[str, Any]):
-        """处理Notion到JIRA的创建同步"""
+    async def _handle_notion_to_jira_sync(self, message: Dict[str, Any], event_data: Dict[str, Any]):
+        """处理Notion到JIRA的同步（创建或更新）"""
         page_id = event_data.get("page_id")
         
-        self.logger.info("开始Notion到JIRA创建同步", page_id=page_id)
+        self.logger.info("开始Notion到JIRA同步", page_id=page_id)
         
         try:
-            # 检查是否已经存在映射关系
-            existing_mapping = await self.redis_client.get_sync_mapping(page_id)
-            if existing_mapping:
-                self.logger.warning(
-                    "页面已存在JIRA映射，跳过创建",
-                    page_id=page_id,
-                    jira_issue_key=existing_mapping.get("jira_issue_key")
-                )
-                return
+            # 1. 检查Notion页面中的JIRA Card字段
+            existing_jira_url = await self._get_notion_jira_card(page_id)
             
+            if existing_jira_url:
+                # 解析现有的JIRA链接
+                jira_info = self._parse_jira_url(existing_jira_url)
+                if jira_info:
+                    project_key, issue_key = jira_info
+                    self.logger.info(
+                        "检测到现有JIRA Card，执行更新操作",
+                        page_id=page_id,
+                        existing_jira_url=existing_jira_url,
+                        project_key=project_key,
+                        issue_key=issue_key
+                    )
+                    await self._update_existing_jira_issue(message, event_data, project_key, issue_key)
+                else:
+                    self.logger.warning(
+                        "JIRA Card URL格式无效，执行创建操作",
+                        page_id=page_id,
+                        invalid_url=existing_jira_url
+                    )
+                    await self._create_new_jira_issue(message, event_data)
+            else:
+                # 没有JIRA Card，执行创建操作
+                self.logger.info("未检测到JIRA Card，执行创建操作", page_id=page_id)
+                await self._create_new_jira_issue(message, event_data)
+            
+        except Exception as e:
+            self.logger.error("Notion到JIRA同步失败", page_id=page_id, error=str(e))
+            raise
+    
+    async def _create_new_jira_issue(self, message: Dict[str, Any], event_data: Dict[str, Any]):
+        """创建新的JIRA Issue"""
+        page_id = event_data.get("page_id")
+        
+        self.logger.info("开始创建新的JIRA Issue", page_id=page_id)
+        
+        try:
             # 构建Notion页面数据
+            raw_data = event_data.get("raw_data", {})
+            notion_url = raw_data.get('url') or f"https://notion.so/{page_id.replace('-', '')}"
+            
             notion_data = {
                 'page_id': page_id,
                 'properties': event_data.get("properties", {}),
                 'raw_properties': event_data.get("raw_properties", {}),
-                'url': f"https://notion.so/{page_id.replace('-', '')}"
+                'raw_data': raw_data,
+                'url': notion_url
             }
             
             # 使用字段映射器转换数据
@@ -229,61 +338,149 @@ class SyncService:
             }
             await self.redis_client.set_sync_mapping(page_id, mapping_data)
             
+            # 回写JIRA信息到Notion
+            await self._write_back_to_notion(page_id, jira_result)
+            
             self.logger.info(
-                "Notion到JIRA创建同步完成",
+                "JIRA Issue创建完成",
                 page_id=page_id,
                 jira_issue_key=jira_issue_key,
                 jira_issue_id=jira_issue_id,
                 summary=jira_fields.get('summary')
             )
             
-            # TODO: 实现Notion回写功能（任务2.6）
-            # 1. 更新Notion页面状态为"已输入"
-            # 2. 将JIRA链接写入"JIRA CARD"字段
-            
         except Exception as e:
-            self.logger.error("Notion到JIRA创建同步失败", page_id=page_id, error=str(e))
+            self.logger.error("创建JIRA Issue失败", page_id=page_id, error=str(e))
             raise
     
-
-    
-    async def _handle_notion_to_jira_update(self, message: Dict[str, Any], event_data: Dict[str, Any]):
-        """处理Notion到JIRA的更新同步"""
+    async def _update_existing_jira_issue(self, message: Dict[str, Any], event_data: Dict[str, Any], 
+                                        project_key: str, issue_key: str):
+        """更新现有的JIRA Issue"""
         page_id = event_data.get("page_id")
         
-        self.logger.info("开始Notion到JIRA更新同步", page_id=page_id)
+        self.logger.info(
+            "开始更新现有JIRA Issue",
+            page_id=page_id,
+            project_key=project_key,
+            issue_key=issue_key
+        )
         
         try:
-            # 获取映射关系
-            mapping = await self.redis_client.get_sync_mapping(page_id)
-            if not mapping:
-                self.logger.warning("未找到页面的JIRA映射关系，转为创建同步", page_id=page_id)
-                await self._handle_notion_to_jira_create(message, event_data)
+            # 检查项目空间，如果是SMBEAP需要特殊处理
+            if project_key == "SMBEAP":
+                self.logger.warning(
+                    "检测到SMBEAP项目，当前版本暂不支持更新SMBEAP空间的Issue",
+                    page_id=page_id,
+                    issue_key=issue_key
+                )
+                # TODO: 实现SMBEAP项目的更新逻辑
+                # 可能需要不同的配置或客户端
                 return
             
-            jira_issue_key = mapping.get("jira_issue_key")
+            # 构建Notion页面数据
+            raw_data = event_data.get("raw_data", {})
+            notion_url = raw_data.get('url') or f"https://notion.so/{page_id.replace('-', '')}"
             
-            # TODO: 实现具体的更新同步逻辑
-            # 1. 从Notion获取页面最新信息
-            # 2. 字段映射转换
-            # 3. 更新JIRA Issue
-            # 4. 更新同步时间
+            notion_data = {
+                'page_id': page_id,
+                'properties': event_data.get("properties", {}),
+                'raw_properties': event_data.get("raw_properties", {}),
+                'raw_data': raw_data,
+                'url': notion_url
+            }
             
-            # 临时模拟处理
-            await asyncio.sleep(0.1)  # 模拟API调用延迟
-            
-            # 更新同步时间
-            await self.redis_client.update_last_sync_time(page_id)
-            
-            self.logger.info(
-                "Notion到JIRA更新同步完成",
-                page_id=page_id,
-                jira_issue_key=jira_issue_key
+            # 使用字段映射器转换数据
+            jira_fields = await self.field_mapper.map_notion_to_jira(
+                notion_data, 
+                page_url=notion_data['url']
             )
             
+            # 移除创建时才需要的字段
+            update_fields = {k: v for k, v in jira_fields.items() 
+                           if k not in ['project', 'issuetype']}
+            
+            self.logger.info(
+                "字段映射完成，准备更新JIRA Issue",
+                page_id=page_id,
+                issue_key=issue_key,
+                summary=update_fields.get('summary'),
+                priority=update_fields.get('priority', {}).get('id'),
+                has_assignee=bool(update_fields.get('assignee')),
+                description_length=len(update_fields.get('description', ''))
+            )
+            
+            # 更新JIRA Issue
+            success = await self.jira_client.update_issue(issue_key, update_fields)
+            
+            if success:
+                # 更新映射关系的同步时间
+                existing_mapping = await self.redis_client.get_sync_mapping(page_id)
+                if existing_mapping:
+                    existing_mapping['last_sync'] = datetime.now().isoformat()
+                    await self.redis_client.set_sync_mapping(page_id, existing_mapping)
+                
+                # 回写Notion状态（更新操作也需要回写）
+                if self.notion_client:
+                    try:
+                        # 更新页面状态为"已输入 JIRA"
+                        await self.notion_client.update_status(page_id, "TODO")
+                        self.logger.info(
+                            "更新操作Notion状态回写完成",
+                            page_id=page_id,
+                            issue_key=issue_key
+                        )
+                    except Exception as e:
+                        self.logger.error(
+                            "更新操作Notion状态回写失败",
+                            page_id=page_id,
+                            issue_key=issue_key,
+                            error=str(e)
+                        )
+                        # 回写失败不影响主流程
+                
+                self.logger.info(
+                    "JIRA Issue更新完成",
+                    page_id=page_id,
+                    issue_key=issue_key,
+                    summary=update_fields.get('summary')
+                )
+            else:
+                raise Exception(f"JIRA Issue更新失败: {issue_key}")
+            
         except Exception as e:
-            self.logger.error("Notion到JIRA更新同步失败", page_id=page_id, error=str(e))
+            self.logger.error("更新JIRA Issue失败", page_id=page_id, issue_key=issue_key, error=str(e))
             raise
+    
+    async def _write_back_to_notion(self, page_id: str, jira_result: Dict[str, Any]):
+        """回写JIRA信息到Notion"""
+        if not self.notion_client:
+            self.logger.warning("未配置Notion客户端，跳过回写操作")
+            return
+        
+        try:
+            # 1. 更新JIRA Card URL字段
+            jira_browse_url = jira_result.get('browse_url')
+            if jira_browse_url:
+                await self.notion_client.update_jira_card_url(page_id, jira_browse_url)
+            
+            # 2. 更新页面状态为"已输入 JIRA"
+            await self.notion_client.update_status(page_id, "TODO")
+            
+            self.logger.info(
+                "Notion回写完成",
+                page_id=page_id,
+                jira_url=jira_browse_url
+            )
+        except Exception as e:
+            self.logger.error(
+                "Notion回写失败",
+                page_id=page_id,
+                error=str(e)
+            )
+            # 回写失败不影响主流程，只记录错误
+    
+
+
     
     async def _handle_jira_to_notion_update(self, message: Dict[str, Any], event_data: Dict[str, Any]):
         """处理JIRA到Notion的更新同步"""

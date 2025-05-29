@@ -1,0 +1,19 @@
+{
+  "mappings": {
+    "1a715375-830d-80ca-8c96-fb4758a39f0c": {
+      "name": "Network 6.1",
+      "description": "网络6.1版本",
+      "created_at": "2025-05-28T09:20:44.642216",
+      "updated_at": "2025-12-26T10:30:00"
+    },
+    "1a015375-830d-81eb-93f0-efc363db46da": {
+      "name": "Controller 6.0",
+      "description": "控制器6.0基础版本",
+      "created_at": "2025-12-26T10:00:00",
+      "updated_at": "2025-12-26T10:00:00"
+    }
+  },
+  "last_updated": "2025-05-26T09:20:44.642234",
+  "version": "1.0.0",
+  "description": "Notion项目库ID到名称的映射关系"
+}
