@@ -93,6 +93,13 @@ class FieldMapper:
             if versions:
                 jira_fields['fixVersions'] = versions
             
+            # 提取relation信息（用于后续创建远程链接）
+            relations = self._extract_relations(notion_data)
+            if relations:
+                # 将关系信息添加到特殊字段中，供同步服务使用
+                jira_fields['_notion_relations'] = relations
+                self.logger.info(f"字段映射中包含 {len(relations)} 个关联链接，将在JIRA操作后处理")
+            
             # 映射状态（如果需要的话，JIRA创建时通常不需要设置状态）
             status = self._extract_status(notion_data)
             if status and status in self.status_mapping:
@@ -285,6 +292,20 @@ class FieldMapper:
                         relation_array = field_data['relation']
                         if relation_array and len(relation_array) > 0:
                             return relation_array  # 返回整个关联数组
+                    
+                    # formula类型
+                    elif 'formula' in field_data:
+                        formula_data = field_data['formula']
+                        if formula_data:
+                            # 检查formula的类型（string, number, boolean, date等）
+                            if 'string' in formula_data:
+                                return formula_data['string']
+                            elif 'number' in formula_data:
+                                return formula_data['number']
+                            elif 'boolean' in formula_data:
+                                return formula_data['boolean']
+                            elif 'date' in formula_data:
+                                return formula_data['date']
                 
                 # 处理字符串类型
                 elif isinstance(field_data, str):
@@ -306,9 +327,53 @@ class FieldMapper:
         return None
     
     async def _extract_assignee(self, notion_data: Dict[str, Any]) -> Optional[Dict[str, str]]:
-        """提取分配人员字段 - 统一设置为鲁定阳"""
-        # 统一设置经办人为鲁定阳，使用用户名而不是邮箱
-        return {'name': 'ludingyang@tp-link.com.hk'}
+        """提取分配人员字段 - 根据产品线字段决定分配人员"""
+        properties = notion_data.get('properties', {})
+        
+        # 产品线到经办人的映射关系
+        product_line_assignee_mapping = {
+            "Controller": "ludingyang@tp-link.com.hk",
+            "Gateway": "zhujiayin@tp-link.com.hk", 
+            "Managed Switch": "huangguangrun@tp-link.com.hk",
+            "Unmanaged Switch": "huangguangrun@tp-link.com.hk",
+            "EAP": "ouhuanrui@tp-link.com.hk",
+            "OLT": "fancunlian@tp-link.com.hk",
+            "APP": "xingxiaosong@tp-link.com.hk"
+        }
+        
+        # 尝试多种可能的产品线字段名
+        product_line_fields = ['涉及产品线', 'product_line', 'Product Line', 'Product']
+        
+        product_line_value = self._extract_field_value(properties, product_line_fields)
+        
+        # 处理不同类型的产品线字段值
+        product_line = None
+        if product_line_value:
+            if isinstance(product_line_value, str):
+                # 单选或文本类型
+                product_line = product_line_value.strip()
+            elif isinstance(product_line_value, list) and len(product_line_value) > 0:
+                # multi-select类型，取第一个值
+                if isinstance(product_line_value[0], str):
+                    product_line = product_line_value[0].strip()
+                elif isinstance(product_line_value[0], dict) and 'name' in product_line_value[0]:
+                    product_line = product_line_value[0]['name'].strip()
+        
+        if product_line:
+            # 查找匹配的产品线
+            assignee_email = product_line_assignee_mapping.get(product_line)
+            if assignee_email:
+                self.logger.info(f"根据产品线 '{product_line}' (类型: {type(product_line_value).__name__}) 分配经办人: {assignee_email}")
+                return {'name': assignee_email}
+            else:
+                self.logger.warning(f"未找到产品线 '{product_line}' 对应的经办人，使用默认经办人")
+        else:
+            self.logger.warning(f"未找到产品线字段或产品线为空，原始值: {product_line_value}，使用默认经办人")
+        
+        # 未命中的默认指定为鲁定阳
+        default_assignee = "ludingyang@tp-link.com.hk"
+        self.logger.info(f"使用默认经办人: {default_assignee}")
+        return {'name': default_assignee}
     
     async def _extract_version(self, notion_data: Dict[str, Any]) -> Optional[List[Dict[str, str]]]:
         """提取版本字段"""
@@ -437,6 +502,67 @@ class FieldMapper:
         
         return None
     
+    def _extract_relations(self, notion_data: Dict[str, Any]) -> Optional[List[str]]:
+        """提取relation字段内容"""
+        properties = notion_data.get('properties', {})
+        
+        # 记录所有可用的字段用于调试
+        available_fields = list(properties.keys())
+        self.logger.info(f"_extract_relations: 可用的属性字段总数: {len(available_fields)}")
+        self.logger.debug(f"_extract_relations: 可用的属性字段: {available_fields}")
+        
+        # 尝试多种可能的relation字段名
+        relation_fields = ['Relation', 'relation', '关联', '关系', '关联链接', 'Related Links']
+        
+        # 先检查是否存在目标字段
+        found_fields = []
+        for field in relation_fields:
+            if field in properties:
+                found_fields.append(field)
+                field_data = properties[field]
+                self.logger.info(f"_extract_relations: 找到字段 '{field}', 类型: {type(field_data)}, 数据: {str(field_data)[:200]}...")
+        
+        if not found_fields:
+            self.logger.warning(f"_extract_relations: 未找到任何关联字段，尝试的字段名: {relation_fields}")
+            # 列出所有可能的关联字段用于调试
+            possible_relation_fields = [f for f in available_fields if 'relation' in f.lower() or 'link' in f.lower()]
+            if possible_relation_fields:
+                self.logger.info(f"_extract_relations: 发现可能的关联字段: {possible_relation_fields}")
+            return None
+        
+        relation_value = self._extract_field_value(properties, relation_fields)
+        self.logger.info(f"_extract_relations: 提取到的值类型: {type(relation_value)}, 值: {relation_value}")
+        
+        if relation_value:
+            # 如果是字符串类型（formula结果）
+            if isinstance(relation_value, str) and relation_value.strip():
+                # 解析逗号分隔的链接
+                links = [link.strip() for link in relation_value.split(',') if link.strip()]
+                if links:
+                    self.logger.info(f"从字符串中提取到 {len(links)} 个关联链接: {links}")
+                    return links
+            
+            # 如果是列表类型（直接的relation字段）
+            elif isinstance(relation_value, list) and len(relation_value) > 0:
+                # 这种情况下，relation_value是page对象列表
+                links = []
+                for item in relation_value:
+                    if isinstance(item, dict) and 'id' in item:
+                        # 构造Notion页面链接
+                        page_id = item['id'].replace('-', '')
+                        notion_url = f"https://www.notion.so/{page_id}"
+                        links.append(notion_url)
+                
+                if links:
+                    self.logger.info(f"从relation对象中提取到 {len(links)} 个关联链接: {links}")
+                    return links
+            else:
+                self.logger.warning(f"_extract_relations: 不支持的关联值类型: {type(relation_value)}, 值: {relation_value}")
+        else:
+            self.logger.warning("_extract_relations: 未提取到关联值")
+        
+        return None
+    
     def validate_required_fields(self, jira_fields: Dict[str, Any]) -> List[str]:
         """验证必填字段"""
         required_fields = ['project', 'issuetype', 'summary']
@@ -446,4 +572,48 @@ class FieldMapper:
             if field not in jira_fields or not jira_fields[field]:
                 missing_fields.append(field)
         
-        return missing_fields 
+        return missing_fields
+    
+    def build_remote_issue_links(self, relation_links: List[str], issue_summary: str) -> List[Dict[str, Any]]:
+        """构建JIRA远程链接对象"""
+        if not relation_links:
+            return []
+        
+        remote_links = []
+        
+        for i, link_url in enumerate(relation_links):
+            # 解析链接标题（简化处理）
+            link_title = f"关联页面 {i+1}"
+            if "notion.so" in link_url:
+                link_title = f"Notion页面 {i+1}"
+            
+            remote_link = {
+                "globalId": f"notion-relation-{hash(link_url)}",
+                "application": {
+                    "type": "com.notion.pages",
+                    "name": "Notion"
+                },
+                "relationship": "relates to",
+                "object": {
+                    "url": link_url,
+                    "title": link_title,
+                    "summary": f"来自{issue_summary}的关联页面",
+                    "icon": {
+                        "url16x16": "https://www.notion.so/images/favicon.ico",
+                        "title": "Notion Page"
+                    },
+                    "status": {
+                        "resolved": False,
+                        "icon": {
+                            "url16x16": "https://www.notion.so/images/favicon.ico",
+                            "title": "Active",
+                            "link": link_url
+                        }
+                    }
+                }
+            }
+            
+            remote_links.append(remote_link)
+        
+        self.logger.info(f"构建了 {len(remote_links)} 个远程链接对象")
+        return remote_links 

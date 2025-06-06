@@ -1,18 +1,247 @@
 {
   "versions": {
-    "20015375-830d-8099-8dd1-cfcdb72f0c00": {
-      "name": "Portal 5.4",
-      "updated_at": "2025-05-29T15:58:50.057037",
+    "20815375-830d-809c-b578-c4b2c558584e": {
+      "name": "Omada APP 4.25",
+      "updated_at": "2025-06-06T16:22:25.235229",
+      "properties": {
+        "需求池": {
+          "id": "%3EBjs",
+          "type": "relation",
+          "relation": [],
+          "has_more": false
+        },
+        "负责人": {
+          "id": "%3Ebu%3A",
+          "type": "people",
+          "people": [
+            {
+              "object": "user",
+              "id": "153d872b-594c-8167-973b-000262833ada",
+              "name": "edward.rui",
+              "avatar_url": null,
+              "type": "person",
+              "person": {
+                "email": "edward.rui@tp-link.com"
+              }
+            }
+          ]
+        },
+        "需求数": {
+          "id": "%40%60kf",
+          "type": "rollup",
+          "rollup": {
+            "type": "number",
+            "number": 0,
+            "function": "count"
+          }
+        },
+        "实际完成时间": {
+          "id": "BPR%3F",
+          "type": "date",
+          "date": null
+        },
+        "目标发布": {
+          "id": "Iul%60",
+          "type": "formula",
+          "formula": {
+            "type": "string",
+            "string": "6月26日"
+          }
+        },
+        "需求未完成度": {
+          "id": "LD%5Bn",
+          "type": "rollup",
+          "rollup": {
+            "type": "number",
+            "number": null,
+            "function": "percent_per_group"
+          }
+        },
+        "实际表现": {
+          "id": "NKPT",
+          "type": "formula",
+          "formula": {
+            "type": "string",
+            "string": "[进度] 🔄 开发中 , 计划时间6月26日"
+          }
+        },
+        "最新计划时间": {
+          "id": "TXRB",
+          "type": "date",
+          "date": {
+            "start": "2025-06-30",
+            "end": null,
+            "time_zone": null
+          }
+        },
+        "项目概况": {
+          "id": "Ub%7BH",
+          "type": "formula",
+          "formula": {
+            "type": "string",
+            "string": "[概况] 优先级: , 总需求: 0, 需求输入进度: 100%, 总工作量评估: 0"
+          }
+        },
+        "专项": {
+          "id": "WXLL",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "类别": {
+          "id": "%5BaqJ",
+          "type": "select",
+          "select": {
+            "id": "6294f568-46d4-40da-a893-a2b7f60bdfdc",
+            "name": "APP",
+            "color": "pink"
+          }
+        },
+        "工作量评估": {
+          "id": "%5CZKm",
+          "type": "rollup",
+          "rollup": {
+            "type": "array",
+            "array": [],
+            "function": "show_original"
+          }
+        },
+        "GTM": {
+          "id": "_Q%3ER",
+          "type": "select",
+          "select": null
+        },
+        "目标季度": {
+          "id": "%7DSuK",
+          "type": "formula",
+          "formula": {
+            "type": "string",
+            "string": "25 Q2"
+          }
+        },
+        "项目": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Omada APP 4.25",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Omada APP 4.25",
+              "href": null
+            }
+          ]
+        },
+        "干系人": {
+          "id": "notion%3A%2F%2Fprojects%2Fpeople_property",
+          "type": "people",
+          "people": []
+        },
+        "状态": {
+          "id": "notion%3A%2F%2Fprojects%2Fstatus_property",
+          "type": "status",
+          "status": {
+            "id": "in-progress",
+            "name": "开发中",
+            "color": "yellow"
+          }
+        },
+        "完成度": {
+          "id": "notion%3A%2F%2Fprojects%2Fcompletion_rollup",
+          "type": "rollup",
+          "rollup": {
+            "type": "number",
+            "number": null,
+            "function": "percent_per_group"
+          }
+        },
+        "优先级": {
+          "id": "notion%3A%2F%2Fprojects%2Fpriority_property",
+          "type": "select",
+          "select": null
+        },
+        "简介": {
+          "id": "notion%3A%2F%2Fprojects%2Fdescription_property",
+          "type": "rich_text",
+          "rich_text": []
+        },
+        "原目标时间": {
+          "id": "notion%3A%2F%2Fprojects%2Fproject_dates_property",
+          "type": "date",
+          "date": {
+            "start": "2025-06-26",
+            "end": null,
+            "time_zone": null
+          }
+        },
+        "概要": {
+          "id": "notion%3A%2F%2Fprojects%2Fproject_summary_feature",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Omada APP 4.25开发中，优化包括LAN设备发现、首页Launch优化及市场反馈，支持Site记忆和快捷切换，改进用户友好性和功能配置。计划时间为2025年6月30日。",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Omada APP 4.25开发中，优化包括LAN设备发现、首页Launch优化及市场反馈，支持Site记忆和快捷切换，改进用户友好性和功能配置。计划时间为2025年6月30日。",
+              "href": null
+            }
+          ]
+        },
+        "任务清单": {
+          "id": "notion%3A%2F%2Fprojects%2Fproject_to_task_relation",
+          "type": "relation",
+          "relation": [],
+          "has_more": false
+        },
+        "Is Blocking": {
+          "id": "notion%3A%2F%2Fprojects%2Fproject_blocking_relation",
+          "type": "relation",
+          "relation": [],
+          "has_more": false
+        },
+        "Blocked By": {
+          "id": "notion%3A%2F%2Fprojects%2Fproject_blocked_by_relation",
+          "type": "relation",
+          "relation": [],
+          "has_more": false
+        }
+      }
+    },
+    "20315375-830d-8022-b3a4-fc4911b8d5b0": {
+      "name": "Portal 5.6",
+      "updated_at": "2025-06-06T16:22:25.235246",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
           "type": "relation",
           "relation": [
             {
-              "id": "1ae15375-830d-8003-8261-e0c9dbf0484f"
+              "id": "1ae15375-830d-806b-a3fd-c2c349437447"
             },
             {
-              "id": "1ae15375-830d-806c-aa00-cd9aa87e7b1e"
+              "id": "1ae15375-830d-8069-b3fd-eaa1b51432d5"
+            },
+            {
+              "id": "20315375-830d-803c-9fa3-f1656dce13a5"
             }
           ],
           "has_more": false
@@ -38,7 +267,273 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 2,
+            "number": 3,
+            "function": "count"
+          }
+        },
+        "实际完成时间": {
+          "id": "BPR%3F",
+          "type": "date",
+          "date": null
+        },
+        "目标发布": {
+          "id": "Iul%60",
+          "type": "formula",
+          "formula": {
+            "type": "string",
+            "string": "12月31日"
+          }
+        },
+        "需求未完成度": {
+          "id": "LD%5Bn",
+          "type": "rollup",
+          "rollup": {
+            "type": "number",
+            "number": 1,
+            "function": "percent_per_group"
+          }
+        },
+        "实际表现": {
+          "id": "NKPT",
+          "type": "formula",
+          "formula": {
+            "type": "string",
+            "string": "[进度] 🔄 开发中 , 计划时间12月31日"
+          }
+        },
+        "最新计划时间": {
+          "id": "TXRB",
+          "type": "date",
+          "date": null
+        },
+        "项目概况": {
+          "id": "Ub%7BH",
+          "type": "formula",
+          "formula": {
+            "type": "string",
+            "string": "[概况] 优先级: , 总需求: 3, 需求输入进度: 0%, 总工作量评估: 0"
+          }
+        },
+        "专项": {
+          "id": "WXLL",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "类别": {
+          "id": "%5BaqJ",
+          "type": "select",
+          "select": {
+            "id": "e5ab1a3b-ec95-48c0-b643-1d2f9b2a1441",
+            "name": "Portal",
+            "color": "purple"
+          }
+        },
+        "工作量评估": {
+          "id": "%5CZKm",
+          "type": "rollup",
+          "rollup": {
+            "type": "array",
+            "array": [
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              }
+            ],
+            "function": "show_original"
+          }
+        },
+        "GTM": {
+          "id": "_Q%3ER",
+          "type": "select",
+          "select": null
+        },
+        "目标季度": {
+          "id": "%7DSuK",
+          "type": "formula",
+          "formula": {
+            "type": "string",
+            "string": "25 Q4"
+          }
+        },
+        "项目": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Portal 5.6",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Portal 5.6",
+              "href": null
+            }
+          ]
+        },
+        "干系人": {
+          "id": "notion%3A%2F%2Fprojects%2Fpeople_property",
+          "type": "people",
+          "people": []
+        },
+        "状态": {
+          "id": "notion%3A%2F%2Fprojects%2Fstatus_property",
+          "type": "status",
+          "status": {
+            "id": "U`{f",
+            "name": "规划",
+            "color": "default"
+          }
+        },
+        "完成度": {
+          "id": "notion%3A%2F%2Fprojects%2Fcompletion_rollup",
+          "type": "rollup",
+          "rollup": {
+            "type": "number",
+            "number": null,
+            "function": "percent_per_group"
+          }
+        },
+        "优先级": {
+          "id": "notion%3A%2F%2Fprojects%2Fpriority_property",
+          "type": "select",
+          "select": null
+        },
+        "简介": {
+          "id": "notion%3A%2F%2Fprojects%2Fdescription_property",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "支持6.3统一平台版本，全新的功能 License 管理，Site Launch&监控优化，集成 AI 产品助手",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "支持6.3统一平台版本，全新的功能 License 管理，Site Launch&监控优化，集成 AI 产品助手",
+              "href": null
+            }
+          ]
+        },
+        "原目标时间": {
+          "id": "notion%3A%2F%2Fprojects%2Fproject_dates_property",
+          "type": "date",
+          "date": {
+            "start": "2025-12-31",
+            "end": null,
+            "time_zone": null
+          }
+        },
+        "概要": {
+          "id": "notion%3A%2F%2Fprojects%2Fproject_summary_feature",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "支持6.3统一平台版本的新功能包括License管理、Site Launch和监控优化，项目负责人是Bill Wang，原目标时间为2025年12月31日。",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "支持6.3统一平台版本的新功能包括License管理、Site Launch和监控优化，项目负责人是Bill Wang，原目标时间为2025年12月31日。",
+              "href": null
+            }
+          ]
+        },
+        "任务清单": {
+          "id": "notion%3A%2F%2Fprojects%2Fproject_to_task_relation",
+          "type": "relation",
+          "relation": [],
+          "has_more": false
+        },
+        "Is Blocking": {
+          "id": "notion%3A%2F%2Fprojects%2Fproject_blocking_relation",
+          "type": "relation",
+          "relation": [],
+          "has_more": false
+        },
+        "Blocked By": {
+          "id": "notion%3A%2F%2Fprojects%2Fproject_blocked_by_relation",
+          "type": "relation",
+          "relation": [],
+          "has_more": false
+        }
+      }
+    },
+    "20015375-830d-8099-8dd1-cfcdb72f0c00": {
+      "name": "Portal 5.4",
+      "updated_at": "2025-06-06T16:22:25.235250",
+      "properties": {
+        "需求池": {
+          "id": "%3EBjs",
+          "type": "relation",
+          "relation": [
+            {
+              "id": "1ae15375-830d-806c-aa00-cd9aa87e7b1e"
+            },
+            {
+              "id": "1fb15375-830d-8091-bac3-c5ec02d1f720"
+            },
+            {
+              "id": "1fb15375-830d-804d-afe8-fb6e5d7191d8"
+            },
+            {
+              "id": "1fb15375-830d-8038-91fb-d62d2f3633bb"
+            }
+          ],
+          "has_more": false
+        },
+        "负责人": {
+          "id": "%3Ebu%3A",
+          "type": "people",
+          "people": [
+            {
+              "object": "user",
+              "id": "153d872b-594c-81af-9352-000236ba1ee3",
+              "name": "Bill Wang",
+              "avatar_url": null,
+              "type": "person",
+              "person": {
+                "email": "bill.wang@tp-link.com"
+              }
+            }
+          ]
+        },
+        "需求数": {
+          "id": "%40%60kf",
+          "type": "rollup",
+          "rollup": {
+            "type": "number",
+            "number": 4,
             "function": "count"
           }
         },
@@ -86,7 +581,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[概况] 优先级: , 总需求: 2, 需求输入进度: 100%, 总工作量评估: 0"
+            "string": "[概况] 优先级: , 总需求: 4, 需求输入进度: 100%, 总工作量评估: 0"
           }
         },
         "专项": {
@@ -109,6 +604,14 @@
           "rollup": {
             "type": "array",
             "array": [
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
               {
                 "type": "select",
                 "select": null
@@ -188,7 +691,25 @@
         "简介": {
           "id": "notion%3A%2F%2Fprojects%2Fdescription_property",
           "type": "rich_text",
-          "rich_text": []
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "对应Omada 6.2版本",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "对应Omada 6.2版本",
+              "href": null
+            }
+          ]
         },
         "原目标时间": {
           "id": "notion%3A%2F%2Fprojects%2Fproject_dates_property",
@@ -206,7 +727,7 @@
             {
               "type": "text",
               "text": {
-                "content": "项目状态为规划，负责人是Bill Wang，原目标时间和最新计划时间均为2025年8月31日。项目包含需求池、PRD和待办事项。",
+                "content": "项目状态为规划，负责人是Bill Wang，目标时间为2025年8月31日，涉及Omada 6.2版本，包含需求池和项目任务。",
                 "link": null
               },
               "annotations": {
@@ -217,7 +738,7 @@
                 "code": false,
                 "color": "default"
               },
-              "plain_text": "项目状态为规划，负责人是Bill Wang，原目标时间和最新计划时间均为2025年8月31日。项目包含需求池、PRD和待办事项。",
+              "plain_text": "项目状态为规划，负责人是Bill Wang，目标时间为2025年8月31日，涉及Omada 6.2版本，包含需求池和项目任务。",
               "href": null
             }
           ]
@@ -244,12 +765,25 @@
     },
     "1fb15375-830d-801f-9c21-fe08f131dfbe": {
       "name": "Cloud Portal 5.2",
-      "updated_at": "2025-05-29T15:58:50.057062",
+      "updated_at": "2025-06-06T16:22:25.235257",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
           "type": "relation",
-          "relation": [],
+          "relation": [
+            {
+              "id": "20315375-830d-80ea-b746-fe99c341ab9a"
+            },
+            {
+              "id": "20315375-830d-80c3-965e-f9627ee7a336"
+            },
+            {
+              "id": "20315375-830d-8020-bf3b-d009059165fa"
+            },
+            {
+              "id": "20315375-830d-8033-98ff-de56965937e1"
+            }
+          ],
           "has_more": false
         },
         "负责人": {
@@ -273,7 +807,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 0,
+            "number": 4,
             "function": "count"
           }
         },
@@ -295,7 +829,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": null,
+            "number": 0,
             "function": "percent_per_group"
           }
         },
@@ -304,7 +838,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[进度] ⌛️ 需求输入中 , 计划时间6月30日"
+            "string": "[进度] 🔄 开发中 , 计划时间6月30日"
           }
         },
         "最新计划时间": {
@@ -317,7 +851,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[概况] 优先级: , 总需求: 0, 需求输入进度: 100%, 总工作量评估: 0"
+            "string": "[概况] 优先级: , 总需求: 4, 需求输入进度: 100%, 总工作量评估: 0"
           }
         },
         "专项": {
@@ -339,7 +873,24 @@
           "type": "rollup",
           "rollup": {
             "type": "array",
-            "array": [],
+            "array": [
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              }
+            ],
             "function": "show_original"
           }
         },
@@ -388,9 +939,9 @@
           "id": "notion%3A%2F%2Fprojects%2Fstatus_property",
           "type": "status",
           "status": {
-            "id": "planned",
-            "name": "需求输入中",
-            "color": "blue"
+            "id": "in-progress",
+            "name": "开发中",
+            "color": "yellow"
           }
         },
         "完成度": {
@@ -446,7 +997,7 @@
             {
               "type": "text",
               "text": {
-                "content": "Omada Cloud Portal v5.2将支持OC批量升级优化和7年License，新增Omada Network & Guard License同时购买功能，适配英国Glide客户需求。项目任务和PRD待更新。",
+                "content": "Omada Cloud Portal v5.2开发中，新增7年License支持和OC批量升级优化，满足不同市场需求，包括荷兰、英国和美国的反馈。项目任务和需求池待定。",
                 "link": null
               },
               "annotations": {
@@ -457,7 +1008,7 @@
                 "code": false,
                 "color": "default"
               },
-              "plain_text": "Omada Cloud Portal v5.2将支持OC批量升级优化和7年License，新增Omada Network & Guard License同时购买功能，适配英国Glide客户需求。项目任务和PRD待更新。",
+              "plain_text": "Omada Cloud Portal v5.2开发中，新增7年License支持和OC批量升级优化，满足不同市场需求，包括荷兰、英国和美国的反馈。项目任务和需求池待定。",
               "href": null
             }
           ]
@@ -484,7 +1035,7 @@
     },
     "1fb15375-830d-806d-8ec1-c3f22711c381": {
       "name": "Cloud Portal 5.1",
-      "updated_at": "2025-05-29T15:58:50.057071",
+      "updated_at": "2025-06-06T16:22:25.235262",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -492,6 +1043,24 @@
           "relation": [
             {
               "id": "19a15375-830d-81dd-979c-efa5dc6e9b77"
+            },
+            {
+              "id": "20315375-830d-80ad-931b-fec25f05c9dd"
+            },
+            {
+              "id": "20315375-830d-8080-b0f9-c17a4f723718"
+            },
+            {
+              "id": "20315375-830d-808d-ae1e-feb4eb88da4f"
+            },
+            {
+              "id": "20315375-830d-80f3-b025-fa3de7769996"
+            },
+            {
+              "id": "20315375-830d-80ce-b97a-fef9f3e98296"
+            },
+            {
+              "id": "20315375-830d-8074-a68f-cd5afa7f14d4"
             }
           ],
           "has_more": false
@@ -517,7 +1086,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 1,
+            "number": 7,
             "function": "count"
           }
         },
@@ -561,7 +1130,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[概况] 优先级: , 总需求: 1, 需求输入进度: 100%, 总工作量评估: 0"
+            "string": "[概况] 优先级: , 总需求: 7, 需求输入进度: 100%, 总工作量评估: 0"
           }
         },
         "专项": {
@@ -584,6 +1153,30 @@
           "rollup": {
             "type": "array",
             "array": [
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
               {
                 "type": "select",
                 "select": null
@@ -677,7 +1270,7 @@
             {
               "type": "text",
               "text": {
-                "content": "该项目旨在增强Omada Guard的网络安全功能，包括设备离线时间显示、邮件通知客户和代理商、以及支持跨区校验的离线添加。还将适配Omada Guard APP V1.1版本和基础云账号业务拆分。",
+                "content": "该项目旨在增强Omada Guard的网络安全功能，包括设备离线时间显示、邮件通知客户和代理商、以及支持跨区校验等。项目负责人为Bill Wang，预计于2025年6月11日完成开发。",
                 "link": null
               },
               "annotations": {
@@ -688,7 +1281,7 @@
                 "code": false,
                 "color": "default"
               },
-              "plain_text": "该项目旨在增强Omada Guard的网络安全功能，包括设备离线时间显示、邮件通知客户和代理商、以及支持跨区校验的离线添加。还将适配Omada Guard APP V1.1版本和基础云账号业务拆分。",
+              "plain_text": "该项目旨在增强Omada Guard的网络安全功能，包括设备离线时间显示、邮件通知客户和代理商、以及支持跨区校验等。项目负责人为Bill Wang，预计于2025年6月11日完成开发。",
               "href": null
             }
           ]
@@ -714,8 +1307,8 @@
       }
     },
     "1fa15375-830d-804e-9efd-ce8d96fc4fbd": {
-      "name": "AIO GW 1.0",
-      "updated_at": "2025-05-29T15:58:50.057076",
+      "name": "AIO 1.0 - Gateway",
+      "updated_at": "2025-06-06T16:22:25.235266",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -838,7 +1431,7 @@
             {
               "type": "text",
               "text": {
-                "content": "AIO GW 1.0",
+                "content": "AIO 1.0 - Gateway",
                 "link": null
               },
               "annotations": {
@@ -849,7 +1442,7 @@
                 "code": false,
                 "color": "default"
               },
-              "plain_text": "AIO GW 1.0",
+              "plain_text": "AIO 1.0 - Gateway",
               "href": null
             }
           ]
@@ -944,7 +1537,25 @@
         "概要": {
           "id": "notion%3A%2F%2Fprojects%2Fproject_summary_feature",
           "type": "rich_text",
-          "rich_text": []
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "项目状态为需求输入中，优先级高，负责人为Xavier，涉及多位干系人，原目标时间为2025年12月31日。项目包含多个任务清单和优化配置，包括VPN、QoS、IPS/IDS等功能。",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "项目状态为需求输入中，优先级高，负责人为Xavier，涉及多位干系人，原目标时间为2025年12月31日。项目包含多个任务清单和优化配置，包括VPN、QoS、IPS/IDS等功能。",
+              "href": null
+            }
+          ]
         },
         "任务清单": {
           "id": "notion%3A%2F%2Fprojects%2Fproject_to_task_relation",
@@ -968,7 +1579,7 @@
     },
     "1b915375-830d-809b-83b7-d4a19ee188f7": {
       "name": "Portable Gateway 需求",
-      "updated_at": "2025-05-29T15:58:50.057082",
+      "updated_at": "2025-06-06T16:22:25.235272",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -1172,7 +1783,7 @@
     },
     "1b515375-830d-80dd-88db-db3840c176d6": {
       "name": "OC300/400 升级支持 Central 网安一体",
-      "updated_at": "2025-05-29T15:58:50.057087",
+      "updated_at": "2025-06-06T16:22:25.235281",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -1413,7 +2024,7 @@
     },
     "1b015375-830d-80ab-ae5f-f40f6dc6b79c": {
       "name": "Gateway 适配 6.4",
-      "updated_at": "2025-05-29T15:58:50.057092",
+      "updated_at": "2025-06-06T16:22:25.235284",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -1625,7 +2236,7 @@
     },
     "1b015375-830d-80b0-b5e6-e5b31ff59394": {
       "name": "Gateway 适配 6.3",
-      "updated_at": "2025-05-29T15:58:50.057103",
+      "updated_at": "2025-06-06T16:22:25.235287",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -1633,6 +2244,9 @@
           "relation": [
             {
               "id": "1bd15375-830d-80df-b3c8-d99a5b3e3e9f"
+            },
+            {
+              "id": "20015375-830d-8051-9b72-d3fcec2b7ef4"
             }
           ],
           "has_more": false
@@ -1658,7 +2272,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 1,
+            "number": 2,
             "function": "count"
           }
         },
@@ -1702,7 +2316,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[概况] 优先级: 高, 总需求: 1, 需求输入进度: 0%, 总工作量评估: 0"
+            "string": "[概况] 优先级: 高, 总需求: 2, 需求输入进度: 0%, 总工作量评估: 3"
           }
         },
         "专项": {
@@ -1728,6 +2342,14 @@
               {
                 "type": "select",
                 "select": null
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "3",
+                  "name": "⭐️⭐️⭐️",
+                  "color": "purple"
+                }
               }
             ],
             "function": "show_original"
@@ -1822,7 +2444,7 @@
             {
               "type": "text",
               "text": {
-                "content": "项目包括完善UC场景功能、增强POS机场景、优化网络部署体验、下放Pro完整功能以及支持多channel配置，优先级高，计划于2025年9月30日完成。",
+                "content": "项目包括完善UC场景功能、增强POS机场景、优化网络部署体验、下放Pro完整功能，并支持多channel配置。优先级高，负责人Zenk，原目标时间为2025年9月30日。",
                 "link": null
               },
               "annotations": {
@@ -1833,7 +2455,7 @@
                 "code": false,
                 "color": "default"
               },
-              "plain_text": "项目包括完善UC场景功能、增强POS机场景、优化网络部署体验、下放Pro完整功能以及支持多channel配置，优先级高，计划于2025年9月30日完成。",
+              "plain_text": "项目包括完善UC场景功能、增强POS机场景、优化网络部署体验、下放Pro完整功能，并支持多channel配置。优先级高，负责人Zenk，原目标时间为2025年9月30日。",
               "href": null
             }
           ]
@@ -1860,7 +2482,7 @@
     },
     "1b015375-830d-808d-b555-fe011238a2ca": {
       "name": "Gateway 适配 6.2",
-      "updated_at": "2025-05-29T15:58:50.057108",
+      "updated_at": "2025-06-06T16:22:25.235290",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -2068,7 +2690,7 @@
     },
     "1ab15375-830d-8047-b187-f45d1572325c": {
       "name": "Navi APP 1.5",
-      "updated_at": "2025-05-29T15:58:50.057113",
+      "updated_at": "2025-06-06T16:22:25.235293",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -2147,7 +2769,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[进度] ⚠️ 轻微延期14天 , 计划时间5月15日"
+            "string": "[进度] ❗️ 严重延期22天 , 计划时间5月15日"
           }
         },
         "最新计划时间": {
@@ -2334,7 +2956,7 @@
     },
     "1a815375-830d-8013-b163-feeae20a8695": {
       "name": "Design Center 2.0",
-      "updated_at": "2025-05-29T15:58:50.057119",
+      "updated_at": "2025-06-06T16:22:25.235295",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -2569,7 +3191,7 @@
     },
     "1a815375-830d-80bc-879a-d17a4d6bb9a9": {
       "name": "Design Center 1.3",
-      "updated_at": "2025-05-29T15:58:50.057124",
+      "updated_at": "2025-06-06T16:22:25.235298",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -2888,7 +3510,7 @@
     },
     "1a815375-830d-80e3-a8a9-e3c97af058f7": {
       "name": "Design Center 1.2",
-      "updated_at": "2025-05-29T15:58:50.057129",
+      "updated_at": "2025-06-06T16:22:25.235300",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -3165,7 +3787,7 @@
     },
     "1a815375-830d-80a0-86e1-e2d710781f1f": {
       "name": "Design Center 1.1",
-      "updated_at": "2025-05-29T15:58:50.057133",
+      "updated_at": "2025-06-06T16:22:25.235303",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -3259,7 +3881,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[进度] ❗️ 严重延期29天 , 计划时间4月30日"
+            "string": "[进度] ❗️ 严重延期37天 , 计划时间4月30日"
           }
         },
         "最新计划时间": {
@@ -3492,7 +4114,7 @@
     },
     "1a715375-830d-80eb-b2cd-c166a6c1d782": {
       "name": "Design Center 1.0",
-      "updated_at": "2025-05-29T15:58:50.057137",
+      "updated_at": "2025-06-06T16:22:25.235305",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -3833,7 +4455,7 @@
     },
     "1a715375-830d-809a-aada-f963a7b832f3": {
       "name": "Navi APP 2.0",
-      "updated_at": "2025-05-29T15:58:50.057142",
+      "updated_at": "2025-06-06T16:22:25.235308",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -4093,7 +4715,7 @@
     },
     "1a715375-830d-803c-9e45-e4a8f82e1975": {
       "name": "Navi APP 1.4",
-      "updated_at": "2025-05-29T15:58:50.057146",
+      "updated_at": "2025-06-06T16:22:25.235310",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -4353,7 +4975,7 @@
     },
     "1a715375-830d-80c9-a5a4-ce7bead9bbc8": {
       "name": "Omada APP 5.4",
-      "updated_at": "2025-05-29T15:58:50.057151",
+      "updated_at": "2025-06-06T16:22:25.235313",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -4579,7 +5201,7 @@
     },
     "1a715375-830d-8062-8267-f21f4f65be04": {
       "name": "Omada APP 5.3",
-      "updated_at": "2025-05-29T15:58:50.057156",
+      "updated_at": "2025-06-06T16:22:25.235317",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -4805,7 +5427,7 @@
     },
     "1a715375-830d-80a1-a5ac-d6ec9a52820b": {
       "name": "Omada APP 5.2",
-      "updated_at": "2025-05-29T15:58:50.057161",
+      "updated_at": "2025-06-06T16:22:25.235319",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -5124,7 +5746,7 @@
     },
     "1a715375-830d-8056-a29d-f51d23443abd": {
       "name": "Omada APP 5.1",
-      "updated_at": "2025-05-29T15:58:50.057166",
+      "updated_at": "2025-06-06T16:22:25.235324",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -5227,7 +5849,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 0.8235294117647058,
+            "number": 0.7647058823529411,
             "function": "percent_per_group"
           }
         },
@@ -5249,7 +5871,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[概况] 优先级: 高, 总需求: 17, 需求输入进度: 18%, 总工作量评估: 0"
+            "string": "[概况] 优先级: 高, 总需求: 17, 需求输入进度: 24%, 总工作量评估: 0"
           }
         },
         "专项": {
@@ -5470,8 +6092,8 @@
       }
     },
     "1a715375-830d-8043-a7dc-dab7c0025eb3": {
-      "name": "适配AIO GW的 APP版本",
-      "updated_at": "2025-05-29T15:58:50.057171",
+      "name": "AIO 1.0 - Omada APP",
+      "updated_at": "2025-06-06T16:22:25.235326",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -5590,7 +6212,7 @@
             {
               "type": "text",
               "text": {
-                "content": "适配AIO GW的 APP版本",
+                "content": "AIO 1.0 - Omada APP",
                 "link": null
               },
               "annotations": {
@@ -5601,7 +6223,7 @@
                 "code": false,
                 "color": "default"
               },
-              "plain_text": "适配AIO GW的 APP版本",
+              "plain_text": "AIO 1.0 - Omada APP",
               "href": null
             }
           ]
@@ -5677,7 +6299,7 @@
             {
               "type": "text",
               "text": {
-                "content": "该项目旨在适配一体机的蓝牙Onboarding快速开局，优先级高，负责人为edward.rui，原目标时间为2025年12月30日。相关项目包括互锁和同步发布。",
+                "content": "该项目旨在适配一体机的蓝牙快速开局，优先级高，负责人为edward.rui，原目标时间为2025年12月30日。相关项目包括互锁和同步发布。",
                 "link": null
               },
               "annotations": {
@@ -5688,7 +6310,7 @@
                 "code": false,
                 "color": "default"
               },
-              "plain_text": "该项目旨在适配一体机的蓝牙Onboarding快速开局，优先级高，负责人为edward.rui，原目标时间为2025年12月30日。相关项目包括互锁和同步发布。",
+              "plain_text": "该项目旨在适配一体机的蓝牙快速开局，优先级高，负责人为edward.rui，原目标时间为2025年12月30日。相关项目包括互锁和同步发布。",
               "href": null
             }
           ]
@@ -5715,7 +6337,7 @@
     },
     "1a715375-830d-80f8-bafb-c6463739a082": {
       "name": "Omada APP 5.0",
-      "updated_at": "2025-05-29T15:58:50.057176",
+      "updated_at": "2025-06-06T16:22:25.235329",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -5759,6 +6381,9 @@
             },
             {
               "id": "19a15375-830d-819a-9665-f09e5d8b01cb"
+            },
+            {
+              "id": "20915375-830d-800b-9c12-ffd8803b9bdd"
             }
           ],
           "has_more": false
@@ -5784,7 +6409,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 13,
+            "number": 14,
             "function": "count"
           }
         },
@@ -5806,7 +6431,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 0.7692307692307693,
+            "number": 0.07142857142857142,
             "function": "percent_per_group"
           }
         },
@@ -5815,20 +6440,24 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[进度] 🔄 开发中 , 计划时间5月31日"
+            "string": "[进度] ⚠️ 轻微延期6天 , 计划时间5月31日"
           }
         },
         "最新计划时间": {
           "id": "TXRB",
           "type": "date",
-          "date": null
+          "date": {
+            "start": "2025-07-30",
+            "end": null,
+            "time_zone": null
+          }
         },
         "项目概况": {
           "id": "Ub%7BH",
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[概况] 优先级: 高, 总需求: 13, 需求输入进度: 23%, 总工作量评估: 4"
+            "string": "[概况] 优先级: 高, 总需求: 14, 需求输入进度: 93%, 总工作量评估: 4"
           }
         },
         "专项": {
@@ -5870,6 +6499,10 @@
                   "name": "⭐️⭐️⭐️⭐️",
                   "color": "pink"
                 }
+              },
+              {
+                "type": "select",
+                "select": null
               },
               {
                 "type": "select",
@@ -6018,7 +6651,25 @@
         "概要": {
           "id": "notion%3A%2F%2Fprojects%2Fproject_summary_feature",
           "type": "rich_text",
-          "rich_text": []
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Omada APP 5.0 正在开发中，重点优化交互体验和监控运维功能，包括UI升级、设备信息面板和网络质量显示，计划于2025年7月30日完成。",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Omada APP 5.0 正在开发中，重点优化交互体验和监控运维功能，包括UI升级、设备信息面板和网络质量显示，计划于2025年7月30日完成。",
+              "href": null
+            }
+          ]
         },
         "任务清单": {
           "id": "notion%3A%2F%2Fprojects%2Fproject_to_task_relation",
@@ -6042,7 +6693,7 @@
     },
     "1a715375-830d-800c-bca3-f5b3945ee008": {
       "name": "Omada APP 4.24",
-      "updated_at": "2025-05-29T15:58:50.057180",
+      "updated_at": "2025-06-06T16:22:25.235332",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -6088,14 +6739,18 @@
         "实际完成时间": {
           "id": "BPR%3F",
           "type": "date",
-          "date": null
+          "date": {
+            "start": "2025-06-04",
+            "end": null,
+            "time_zone": null
+          }
         },
         "目标发布": {
           "id": "Iul%60",
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "4月30日"
+            "string": "5月30日"
           }
         },
         "需求未完成度": {
@@ -6112,7 +6767,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[进度] ❗️ 严重延期29天 , 计划时间4月30日"
+            "string": "[进度] ✅ 延期5天发布, 发布时间6月4日 , 计划时间5月30日"
           }
         },
         "最新计划时间": {
@@ -6209,9 +6864,9 @@
           "id": "notion%3A%2F%2Fprojects%2Fstatus_property",
           "type": "status",
           "status": {
-            "id": "in-progress",
-            "name": "开发中",
-            "color": "yellow"
+            "id": "done",
+            "name": "已发布",
+            "color": "green"
           }
         },
         "完成度": {
@@ -6259,7 +6914,7 @@
           "id": "notion%3A%2F%2Fprojects%2Fproject_dates_property",
           "type": "date",
           "date": {
-            "start": "2025-04-30",
+            "start": "2025-05-30",
             "end": null,
             "time_zone": null
           }
@@ -6267,7 +6922,25 @@
         "概要": {
           "id": "notion%3A%2F%2Fprojects%2Fproject_summary_feature",
           "type": "rich_text",
-          "rich_text": []
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "APP 4.24版本已发布，优化了设备添加方式和首页视图，支持通过扫描Device key二维码添加设备，并调整了管理模式切换入口。实际完成时间为2025年6月4日。",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "APP 4.24版本已发布，优化了设备添加方式和首页视图，支持通过扫描Device key二维码添加设备，并调整了管理模式切换入口。实际完成时间为2025年6月4日。",
+              "href": null
+            }
+          ]
         },
         "任务清单": {
           "id": "notion%3A%2F%2Fprojects%2Fproject_to_task_relation",
@@ -6291,7 +6964,7 @@
     },
     "1a715375-830d-8057-af45-c1e945b57c45": {
       "name": "Omada APP 4.23",
-      "updated_at": "2025-05-29T15:58:50.057185",
+      "updated_at": "2025-06-06T16:22:25.235334",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -6520,8 +7193,8 @@
       }
     },
     "1a715375-830d-808d-a21a-cafab9b44852": {
-      "name": "AIO GW Controller",
-      "updated_at": "2025-05-29T15:58:50.057191",
+      "name": "AIO 1.0 - Network",
+      "updated_at": "2025-06-06T16:22:25.235336",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -6626,7 +7299,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 29,
+            "number": 87,
             "function": "count"
           }
         },
@@ -6648,7 +7321,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 0.2413793103448276,
+            "number": 0.7011494252873564,
             "function": "percent_per_group"
           }
         },
@@ -6670,7 +7343,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[概况] 优先级: 中, 总需求: 29, 需求输入进度: 76%, 总工作量评估: 0"
+            "string": "[概况] 优先级: 高, 总需求: 87, 需求输入进度: 30%, 总工作量评估: 0"
           }
         },
         "专项": {
@@ -6808,6 +7481,238 @@
               {
                 "type": "select",
                 "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
               }
             ],
             "function": "show_original"
@@ -6833,7 +7738,7 @@
             {
               "type": "text",
               "text": {
-                "content": "AIO GW Controller",
+                "content": "AIO 1.0 - Network",
                 "link": null
               },
               "annotations": {
@@ -6844,7 +7749,7 @@
                 "code": false,
                 "color": "default"
               },
-              "plain_text": "AIO GW Controller",
+              "plain_text": "AIO 1.0 - Network",
               "href": null
             }
           ]
@@ -6887,9 +7792,9 @@
           "id": "notion%3A%2F%2Fprojects%2Fpriority_property",
           "type": "select",
           "select": {
-            "id": "priority_medium",
-            "name": "中",
-            "color": "yellow"
+            "id": "priority_high",
+            "name": "高",
+            "color": "red"
           }
         },
         "简介": {
@@ -6931,7 +7836,7 @@
             {
               "type": "text",
               "text": {
-                "content": "该项目旨在开发适配一体机的Controller，重点是功能裁剪和调整Omada Surveillance服务，同时确保出差人员能够快速通过VPN接入网络，未来实现即插即用的使用体验。",
+                "content": "专为一体机开发的Controller版本，重点是功能裁剪，移除MSP模式和Site Global界面，仅支持单Site，需调整Omada Surveillance服务和VPN配置以确保出差人员的网络接入安全。项目任务和需求清单待定。",
                 "link": null
               },
               "annotations": {
@@ -6942,7 +7847,7 @@
                 "code": false,
                 "color": "default"
               },
-              "plain_text": "该项目旨在开发适配一体机的Controller，重点是功能裁剪和调整Omada Surveillance服务，同时确保出差人员能够快速通过VPN接入网络，未来实现即插即用的使用体验。",
+              "plain_text": "专为一体机开发的Controller版本，重点是功能裁剪，移除MSP模式和Site Global界面，仅支持单Site，需调整Omada Surveillance服务和VPN配置以确保出差人员的网络接入安全。项目任务和需求清单待定。",
               "href": null
             }
           ]
@@ -6968,27 +7873,24 @@
       }
     },
     "1a715375-830d-80c8-9f70-fb0859c376e9": {
-      "name": "适配AIO GW的Portal",
-      "updated_at": "2025-05-29T15:58:50.057196",
+      "name": "AIO 1.0 - Portal",
+      "updated_at": "2025-06-06T16:22:25.235339",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
           "type": "relation",
           "relation": [
             {
-              "id": "1fb15375-830d-8097-bb21-f285c8f1654d"
+              "id": "20315375-830d-8073-b8bc-e972fba2207b"
             },
             {
-              "id": "1fb15375-830d-804d-afe8-fb6e5d7191d8"
+              "id": "20315375-830d-800b-b9cb-ca6b18af5e37"
             },
             {
-              "id": "1fb15375-830d-8091-bac3-c5ec02d1f720"
+              "id": "20315375-830d-801a-9e7e-eedd481b318a"
             },
             {
-              "id": "1fb15375-830d-8038-91fb-d62d2f3633bb"
-            },
-            {
-              "id": "20015375-830d-8051-9b72-d3fcec2b7ef4"
+              "id": "20315375-830d-807d-b3f1-f9fb6537d023"
             }
           ],
           "has_more": false
@@ -7014,7 +7916,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 5,
+            "number": 4,
             "function": "count"
           }
         },
@@ -7040,7 +7942,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 0.2,
+            "number": 1,
             "function": "percent_per_group"
           }
         },
@@ -7049,7 +7951,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[进度] ⌛️ 需求输入中 , 计划时间12月31日"
+            "string": "[进度] 🔄 开发中 , 计划时间12月31日"
           }
         },
         "最新计划时间": {
@@ -7062,7 +7964,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[概况] 优先级: 中, 总需求: 5, 需求输入进度: 80%, 总工作量评估: 3"
+            "string": "[概况] 优先级: 中, 总需求: 4, 需求输入进度: 0%, 总工作量评估: 0"
           }
         },
         "专项": {
@@ -7100,14 +8002,6 @@
               {
                 "type": "select",
                 "select": null
-              },
-              {
-                "type": "select",
-                "select": {
-                  "id": "3",
-                  "name": "⭐️⭐️⭐️",
-                  "color": "purple"
-                }
               }
             ],
             "function": "show_original"
@@ -7133,7 +8027,7 @@
             {
               "type": "text",
               "text": {
-                "content": "适配AIO GW的Portal",
+                "content": "AIO 1.0 - Portal",
                 "link": null
               },
               "annotations": {
@@ -7144,7 +8038,7 @@
                 "code": false,
                 "color": "default"
               },
-              "plain_text": "适配AIO GW的Portal",
+              "plain_text": "AIO 1.0 - Portal",
               "href": null
             }
           ]
@@ -7169,9 +8063,9 @@
           "id": "notion%3A%2F%2Fprojects%2Fstatus_property",
           "type": "status",
           "status": {
-            "id": "planned",
-            "name": "需求输入中",
-            "color": "blue"
+            "id": "U`{f",
+            "name": "规划",
+            "color": "default"
           }
         },
         "完成度": {
@@ -7231,7 +8125,7 @@
             {
               "type": "text",
               "text": {
-                "content": "针对OC和一体机管理模式的SD-WAN服务，项目包括多地点管理优化、账户管理权限配置等，预计完成时间为2026年1月1日，优先级中。",
+                "content": "针对OC和一体机管理的SD-WAN服务，项目包括多本地控制器管理、全球多站点监控优化及账户管理权限配置，目标完成时间为2026年1月。",
                 "link": null
               },
               "annotations": {
@@ -7242,7 +8136,7 @@
                 "code": false,
                 "color": "default"
               },
-              "plain_text": "针对OC和一体机管理模式的SD-WAN服务，项目包括多地点管理优化、账户管理权限配置等，预计完成时间为2026年1月1日，优先级中。",
+              "plain_text": "针对OC和一体机管理的SD-WAN服务，项目包括多本地控制器管理、全球多站点监控优化及账户管理权限配置，目标完成时间为2026年1月。",
               "href": null
             }
           ]
@@ -7269,18 +8163,12 @@
     },
     "1a715375-830d-8083-bf3d-d5edc490c6f8": {
       "name": "Portal 5.3",
-      "updated_at": "2025-05-29T15:58:50.057201",
+      "updated_at": "2025-06-06T16:22:25.235341",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
           "type": "relation",
           "relation": [
-            {
-              "id": "1ae15375-830d-806b-a3fd-c2c349437447"
-            },
-            {
-              "id": "1ae15375-830d-8069-b3fd-eaa1b51432d5"
-            },
             {
               "id": "1ae15375-830d-8060-b498-ef60942250ff"
             },
@@ -7311,7 +8199,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 4,
+            "number": 2,
             "function": "count"
           }
         },
@@ -7337,7 +8225,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 0.5,
+            "number": 0,
             "function": "percent_per_group"
           }
         },
@@ -7346,7 +8234,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[进度] ⌛️ 需求输入中 , 计划时间7月31日"
+            "string": "[进度] 🔄 开发中 , 计划时间7月31日"
           }
         },
         "最新计划时间": {
@@ -7359,7 +8247,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[概况] 优先级: 中, 总需求: 4, 需求输入进度: 50%, 总工作量评估: 0"
+            "string": "[概况] 优先级: 中, 总需求: 2, 需求输入进度: 100%, 总工作量评估: 0"
           }
         },
         "专项": {
@@ -7382,14 +8270,6 @@
           "rollup": {
             "type": "array",
             "array": [
-              {
-                "type": "select",
-                "select": null
-              },
-              {
-                "type": "select",
-                "select": null
-              },
               {
                 "type": "select",
                 "select": null
@@ -7462,9 +8342,9 @@
           "id": "notion%3A%2F%2Fprojects%2Fstatus_property",
           "type": "status",
           "status": {
-            "id": "planned",
-            "name": "需求输入中",
-            "color": "blue"
+            "id": "U`{f",
+            "name": "规划",
+            "color": "default"
           }
         },
         "完成度": {
@@ -7492,7 +8372,7 @@
             {
               "type": "text",
               "text": {
-                "content": "支持统一平台版本，全新的功能 License 管理，Site Launch&监控优化，集成 AI 产品助手",
+                "content": "对应Omada 6.1版本",
                 "link": null
               },
               "annotations": {
@@ -7503,7 +8383,7 @@
                 "code": false,
                 "color": "default"
               },
-              "plain_text": "支持统一平台版本，全新的功能 License 管理，Site Launch&监控优化，集成 AI 产品助手",
+              "plain_text": "对应Omada 6.1版本",
               "href": null
             }
           ]
@@ -7524,7 +8404,7 @@
             {
               "type": "text",
               "text": {
-                "content": "支持统一平台版本，推出全新功能的License管理，优化Site Launch及监控，集成AI产品助手，项目状态为需求输入中，预计完成时间延长至2025年7月31日。",
+                "content": "该项目支持统一平台版本，新增License管理功能，优化Site Launch流程，集成AI产品售前助手，旨在提升MSP日常管理效率。预计完成时间为2025年7月31日。",
                 "link": null
               },
               "annotations": {
@@ -7535,7 +8415,7 @@
                 "code": false,
                 "color": "default"
               },
-              "plain_text": "支持统一平台版本，推出全新功能的License管理，优化Site Launch及监控，集成AI产品助手，项目状态为需求输入中，预计完成时间延长至2025年7月31日。",
+              "plain_text": "该项目支持统一平台版本，新增License管理功能，优化Site Launch流程，集成AI产品售前助手，旨在提升MSP日常管理效率。预计完成时间为2025年7月31日。",
               "href": null
             }
           ]
@@ -7562,7 +8442,7 @@
     },
     "1a715375-830d-8055-8c3e-ca7f76b326c1": {
       "name": "Portal 5.0",
-      "updated_at": "2025-05-29T15:58:50.057205",
+      "updated_at": "2025-06-06T16:22:25.235344",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -7826,7 +8706,7 @@
     },
     "1a715375-830d-80c9-996f-c84f0c9cbe2c": {
       "name": "Portal 4.2",
-      "updated_at": "2025-05-29T15:58:50.057210",
+      "updated_at": "2025-06-06T16:22:25.235347",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -8065,7 +8945,7 @@
     },
     "1a715375-830d-80b4-b55d-c0153bcc99b6": {
       "name": "Network 6.3",
-      "updated_at": "2025-05-29T15:58:50.057215",
+      "updated_at": "2025-06-06T16:22:25.235350",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -8170,7 +9050,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 50,
+            "number": 92,
             "function": "count"
           }
         },
@@ -8192,7 +9072,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 0.12,
+            "number": 0.1956521739130435,
             "function": "percent_per_group"
           }
         },
@@ -8207,14 +9087,18 @@
         "最新计划时间": {
           "id": "TXRB",
           "type": "date",
-          "date": null
+          "date": {
+            "start": "2026-03-31",
+            "end": null,
+            "time_zone": null
+          }
         },
         "项目概况": {
           "id": "Ub%7BH",
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[概况] 优先级: 高, 总需求: 50, 需求输入进度: 88%, 总工作量评估: 0"
+            "string": "[概况] 优先级: 中, 总需求: 92, 需求输入进度: 80%, 总工作量评估: 0"
           }
         },
         "专项": {
@@ -8237,6 +9121,174 @@
           "rollup": {
             "type": "array",
             "array": [
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
               {
                 "type": "select",
                 "select": null
@@ -8559,9 +9611,9 @@
           "id": "notion%3A%2F%2Fprojects%2Fpriority_property",
           "type": "select",
           "select": {
-            "id": "priority_high",
-            "name": "高",
-            "color": "red"
+            "id": "priority_medium",
+            "name": "中",
+            "color": "yellow"
           }
         },
         "简介": {
@@ -8571,7 +9623,7 @@
             {
               "type": "text",
               "text": {
-                "content": "统一平台版本，合入 Pro 功能，支持功能 License",
+                "content": "统一平台版本，合入 Pro 功能，支持功能 License。[让步 AIO GW，优先级调低]",
                 "link": null
               },
               "annotations": {
@@ -8582,7 +9634,7 @@
                 "code": false,
                 "color": "default"
               },
-              "plain_text": "统一平台版本，合入 Pro 功能，支持功能 License",
+              "plain_text": "统一平台版本，合入 Pro 功能，支持功能 License。[让步 AIO GW，优先级调低]",
               "href": null
             }
           ]
@@ -8603,7 +9655,7 @@
             {
               "type": "text",
               "text": {
-                "content": "项目旨在统一平台版本，合并Essential、Standard和Pro功能，通过功能License提供无缝升降级服务，重点关注旧平台兼容性和Pro客户License过渡。负责人是Bill Wang，优先级高，原目标时间为2025年10月31日。",
+                "content": "项目目标是统一平台版本，合并Pro功能并支持功能License，确保旧平台兼容，特别是Pro客户的过渡。计划时间从2025年10月31日延后至2026年3月31日。重点关注GTM和项目任务。",
                 "link": null
               },
               "annotations": {
@@ -8614,7 +9666,7 @@
                 "code": false,
                 "color": "default"
               },
-              "plain_text": "项目旨在统一平台版本，合并Essential、Standard和Pro功能，通过功能License提供无缝升降级服务，重点关注旧平台兼容性和Pro客户License过渡。负责人是Bill Wang，优先级高，原目标时间为2025年10月31日。",
+              "plain_text": "项目目标是统一平台版本，合并Pro功能并支持功能License，确保旧平台兼容，特别是Pro客户的过渡。计划时间从2025年10月31日延后至2026年3月31日。重点关注GTM和项目任务。",
               "href": null
             }
           ]
@@ -8641,7 +9693,7 @@
     },
     "1a715375-830d-80ae-a692-f3dc640be686": {
       "name": "⚠️ Network 6.2",
-      "updated_at": "2025-05-29T15:58:50.057220",
+      "updated_at": "2025-06-06T16:22:25.235352",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -8746,7 +9798,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 43,
+            "number": 52,
             "function": "count"
           }
         },
@@ -8768,7 +9820,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 0.2558139534883721,
+            "number": 0.3269230769230769,
             "function": "percent_per_group"
           }
         },
@@ -8790,7 +9842,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[概况] 优先级: 高, 总需求: 43, 需求输入进度: 74%, 总工作量评估: 0"
+            "string": "[概况] 优先级: 高, 总需求: 52, 需求输入进度: 67%, 总工作量评估: 28"
           }
         },
         "专项": {
@@ -8984,6 +10036,74 @@
               {
                 "type": "select",
                 "select": null
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "5",
+                  "name": "⭐️⭐️⭐️⭐️",
+                  "color": "pink"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "5",
+                  "name": "⭐️⭐️⭐️⭐️",
+                  "color": "pink"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "2",
+                  "name": "⭐️⭐️",
+                  "color": "blue"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "3",
+                  "name": "⭐️⭐️⭐️",
+                  "color": "purple"
+                }
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "3",
+                  "name": "⭐️⭐️⭐️",
+                  "color": "purple"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "5",
+                  "name": "⭐️⭐️⭐️⭐️",
+                  "color": "pink"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "5",
+                  "name": "⭐️⭐️⭐️⭐️",
+                  "color": "pink"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "5",
+                  "name": "⭐️⭐️⭐️⭐️",
+                  "color": "pink"
+                }
               }
             ],
             "function": "show_original"
@@ -9085,7 +10205,7 @@
             {
               "type": "text",
               "text": {
-                "content": "运维优化（设备解耦+多通道配置），Gateway配置优化，NAT Traversal (6.0 Delay）",
+                "content": "运维优化（设备解耦+多通道配置），Gateway配置优化，GW 支持 NAT Traversal (6.0 Delay）",
                 "link": null
               },
               "annotations": {
@@ -9096,7 +10216,7 @@
                 "code": false,
                 "color": "default"
               },
-              "plain_text": "运维优化（设备解耦+多通道配置），Gateway配置优化，NAT Traversal (6.0 Delay）",
+              "plain_text": "运维优化（设备解耦+多通道配置），Gateway配置优化，GW 支持 NAT Traversal (6.0 Delay）",
               "href": null
             }
           ]
@@ -9117,7 +10237,7 @@
             {
               "type": "text",
               "text": {
-                "content": "运维优化项目包括设备解耦、多通道配置和Gateway配置优化，目标是增强故障排除功能，支持NAT Traversal，预计在2025年8月前完成。优先级高，负责人为Echo。",
+                "content": "运维优化项目包括设备解耦、多通道配置和Gateway配置优化，支持NAT Traversal以增强故障排查功能，目标时间为2025年8月31日。负责人为Echo，优先级高。",
                 "link": null
               },
               "annotations": {
@@ -9128,7 +10248,7 @@
                 "code": false,
                 "color": "default"
               },
-              "plain_text": "运维优化项目包括设备解耦、多通道配置和Gateway配置优化，目标是增强故障排除功能，支持NAT Traversal，预计在2025年8月前完成。优先级高，负责人为Echo。",
+              "plain_text": "运维优化项目包括设备解耦、多通道配置和Gateway配置优化，支持NAT Traversal以增强故障排查功能，目标时间为2025年8月31日。负责人为Echo，优先级高。",
               "href": null
             }
           ]
@@ -9155,7 +10275,7 @@
     },
     "1a715375-830d-80ca-8c96-fb4758a39f0c": {
       "name": "Network 6.1",
-      "updated_at": "2025-05-29T15:58:50.057225",
+      "updated_at": "2025-06-06T16:22:25.235355",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -9219,9 +10339,6 @@
               "id": "1b515375-830d-8067-bceb-c1ba056488d4"
             },
             {
-              "id": "1b515375-830d-80d8-811e-c858f10c430b"
-            },
-            {
               "id": "1b515375-830d-8043-8366-ffd831364219"
             },
             {
@@ -9235,6 +10352,9 @@
             },
             {
               "id": "1b515375-830d-8085-99bc-c3c5784970c3"
+            },
+            {
+              "id": "1b515375-830d-80a3-bbb6-e1344028fb30"
             }
           ],
           "has_more": true
@@ -9260,7 +10380,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 118,
+            "number": 111,
             "function": "count"
           }
         },
@@ -9282,7 +10402,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 0.1271186440677966,
+            "number": 0.0990990990990991,
             "function": "percent_per_group"
           }
         },
@@ -9304,7 +10424,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[概况] 优先级: 高, 总需求: 118, 需求输入进度: 87%, 总工作量评估: 353"
+            "string": "[概况] 优先级: 高, 总需求: 111, 需求输入进度: 90%, 总工作量评估: 325"
           }
         },
         "专项": {
@@ -9470,14 +10590,6 @@
               {
                 "type": "select",
                 "select": {
-                  "id": "5",
-                  "name": "⭐️⭐️⭐️⭐️",
-                  "color": "pink"
-                }
-              },
-              {
-                "type": "select",
-                "select": {
                   "id": "3",
                   "name": "⭐️⭐️⭐️",
                   "color": "purple"
@@ -9526,14 +10638,6 @@
               {
                 "type": "select",
                 "select": {
-                  "id": "5",
-                  "name": "⭐️⭐️⭐️⭐️",
-                  "color": "pink"
-                }
-              },
-              {
-                "type": "select",
-                "select": {
                   "id": "2",
                   "name": "⭐️⭐️",
                   "color": "blue"
@@ -9554,26 +10658,6 @@
                   "name": "⭐️⭐️",
                   "color": "blue"
                 }
-              },
-              {
-                "type": "select",
-                "select": {
-                  "id": "5",
-                  "name": "⭐️⭐️⭐️⭐️",
-                  "color": "pink"
-                }
-              },
-              {
-                "type": "select",
-                "select": {
-                  "id": "2",
-                  "name": "⭐️⭐️",
-                  "color": "blue"
-                }
-              },
-              {
-                "type": "select",
-                "select": null
               },
               {
                 "type": "select",
@@ -9782,14 +10866,6 @@
               {
                 "type": "select",
                 "select": {
-                  "id": "3",
-                  "name": "⭐️⭐️⭐️",
-                  "color": "purple"
-                }
-              },
-              {
-                "type": "select",
-                "select": {
                   "id": "5",
                   "name": "⭐️⭐️⭐️⭐️",
                   "color": "pink"
@@ -9806,14 +10882,6 @@
               {
                 "type": "select",
                 "select": {
-                  "id": "5",
-                  "name": "⭐️⭐️⭐️⭐️",
-                  "color": "pink"
-                }
-              },
-              {
-                "type": "select",
-                "select": {
                   "id": "3",
                   "name": "⭐️⭐️⭐️",
                   "color": "purple"
@@ -9905,14 +10973,6 @@
                   "id": "5",
                   "name": "⭐️⭐️⭐️⭐️",
                   "color": "pink"
-                }
-              },
-              {
-                "type": "select",
-                "select": {
-                  "id": "3",
-                  "name": "⭐️⭐️⭐️",
-                  "color": "purple"
                 }
               },
               {
@@ -10222,18 +11282,18 @@
               {
                 "type": "select",
                 "select": {
-                  "id": "5",
-                  "name": "⭐️⭐️⭐️⭐️",
-                  "color": "pink"
-                }
-              },
-              {
-                "type": "select",
-                "select": {
                   "id": "2",
                   "name": "⭐️⭐️",
                   "color": "blue"
                 }
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
               }
             ],
             "function": "show_original"
@@ -10357,7 +11417,7 @@
             {
               "type": "text",
               "text": {
-                "content": "项目6.1专注于AP/Switch功能迭代和ePOS场景优化，包括终端识别和上下线优化，需解决Central和Network Global的冲突，并统一Omada Network与Omada Sight的表现。原目标时间为2025年7月31日，优先级高。",
+                "content": "该项目涉及AP/Switch功能的迭代优化和ePOS场景增强，包括POS终端识别和客户端上下线优化，同时需要解决Central Global与Network Global的冲突和Omada Sight的架构调整问题。",
                 "link": null
               },
               "annotations": {
@@ -10368,7 +11428,7 @@
                 "code": false,
                 "color": "default"
               },
-              "plain_text": "项目6.1专注于AP/Switch功能迭代和ePOS场景优化，包括终端识别和上下线优化，需解决Central和Network Global的冲突，并统一Omada Network与Omada Sight的表现。原目标时间为2025年7月31日，优先级高。",
+              "plain_text": "该项目涉及AP/Switch功能的迭代优化和ePOS场景增强，包括POS终端识别和客户端上下线优化，同时需要解决Central Global与Network Global的冲突和Omada Sight的架构调整问题。",
               "href": null
             }
           ]
@@ -10394,8 +11454,8 @@
       }
     },
     "1a715375-830d-8093-b9bc-ed8ce1a75e08": {
-      "name": "Controller 6.0",
-      "updated_at": "2025-05-29T15:58:50.057231",
+      "name": "Network 6.0",
+      "updated_at": "2025-06-06T16:22:25.235358",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -10500,7 +11560,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 112,
+            "number": 113,
             "function": "count"
           }
         },
@@ -10531,7 +11591,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[进度] 🔄 开发中 , 计划时间5月31日"
+            "string": "[进度] ⚠️ 轻微延期6天 , 计划时间5月31日"
           }
         },
         "最新计划时间": {
@@ -10548,7 +11608,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[概况] 优先级: 高, 总需求: 112, 需求输入进度: 100%, 总工作量评估: 3"
+            "string": "[概况] 优先级: 高, 总需求: 113, 需求输入进度: 100%, 总工作量评估: 3"
           }
         },
         "专项": {
@@ -11022,6 +12082,10 @@
               {
                 "type": "select",
                 "select": null
+              },
+              {
+                "type": "select",
+                "select": null
               }
             ],
             "function": "show_original"
@@ -11051,7 +12115,7 @@
             {
               "type": "text",
               "text": {
-                "content": "Controller 6.0",
+                "content": "Network 6.0",
                 "link": null
               },
               "annotations": {
@@ -11062,7 +12126,7 @@
                 "code": false,
                 "color": "default"
               },
-              "plain_text": "Controller 6.0",
+              "plain_text": "Network 6.0",
               "href": null
             }
           ]
@@ -11138,7 +12202,7 @@
             {
               "type": "text",
               "text": {
-                "content": "Controller 6.0项目旨在优化监控运维界面，提升日常运维体验，重点关注UC场景的QoS优化，原目标时间为2025年5月31日，最新计划时间为2025年7月10日，优先级为高。",
+                "content": "Controller 6.0项目旨在优化监控运维界面，提升日常监控体验，包含UC场景QoS优化，预计于2025年7月完成。负责人为Lucien Chen，优先级高。",
                 "link": null
               },
               "annotations": {
@@ -11149,7 +12213,7 @@
                 "code": false,
                 "color": "default"
               },
-              "plain_text": "Controller 6.0项目旨在优化监控运维界面，提升日常运维体验，重点关注UC场景的QoS优化，原目标时间为2025年5月31日，最新计划时间为2025年7月10日，优先级为高。",
+              "plain_text": "Controller 6.0项目旨在优化监控运维界面，提升日常监控体验，包含UC场景QoS优化，预计于2025年7月完成。负责人为Lucien Chen，优先级高。",
               "href": null
             }
           ]
@@ -11176,7 +12240,7 @@
     },
     "1a715375-830d-804e-857d-caf0cc351541": {
       "name": "Controller 5.15.24",
-      "updated_at": "2025-05-29T15:58:50.057236",
+      "updated_at": "2025-06-06T16:22:25.235360",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -11312,7 +12376,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[进度] ❗️ 严重延期29天 , 计划时间4月30日"
+            "string": "[进度] ❗️ 严重延期37天 , 计划时间4月30日"
           }
         },
         "最新计划时间": {
@@ -11721,7 +12785,7 @@
     },
     "1a715375-830d-80cd-8ee2-cba42fd1e491": {
       "name": "Central 1.0",
-      "updated_at": "2025-05-29T15:58:50.057241",
+      "updated_at": "2025-06-06T16:22:25.235362",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -11846,7 +12910,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 0,
+            "number": 0.043478260869565216,
             "function": "percent_per_group"
           }
         },
@@ -11868,7 +12932,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[概况] 优先级: 高, 总需求: 23, 需求输入进度: 100%, 总工作量评估: 0"
+            "string": "[概况] 优先级: 高, 总需求: 23, 需求输入进度: 96%, 总工作量评估: 0"
           }
         },
         "专项": {
@@ -12118,7 +13182,7 @@
     },
     "1a715375-830d-80d4-90fd-f91541ac2b04": {
       "name": "Controller 5.15.20",
-      "updated_at": "2025-05-29T15:58:50.057246",
+      "updated_at": "2025-06-06T16:22:25.235364",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -12223,7 +13287,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 50,
+            "number": 72,
             "function": "count"
           }
         },
@@ -12249,7 +13313,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 0,
+            "number": 0.027777777777777776,
             "function": "percent_per_group"
           }
         },
@@ -12271,7 +13335,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[概况] 优先级: 中, 总需求: 50, 需求输入进度: 100%, 总工作量评估: 1"
+            "string": "[概况] 优先级: 中, 总需求: 72, 需求输入进度: 97%, 总工作量评估: 1"
           }
         },
         "专项": {
@@ -12497,6 +13561,94 @@
               {
                 "type": "select",
                 "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
               }
             ],
             "function": "show_original"
@@ -12609,7 +13761,7 @@
             {
               "type": "text",
               "text": {
-                "content": "项目包括MSP部署优化，主要功能有批量站点配置模板、SD-WAN多站点VPN连接、内容过滤和本地控制器集群模式。优先级为中，实际完成时间为2025年3月27日。",
+                "content": "MSP部署优化版本已发布，主要功能包括批量站点配置模板、多站点SD-WAN VPN连接、内容过滤和本地控制器集群模式。原目标时间为2025年2月28日，实际完成时间为2025年3月27日。",
                 "link": null
               },
               "annotations": {
@@ -12620,7 +13772,7 @@
                 "code": false,
                 "color": "default"
               },
-              "plain_text": "项目包括MSP部署优化，主要功能有批量站点配置模板、SD-WAN多站点VPN连接、内容过滤和本地控制器集群模式。优先级为中，实际完成时间为2025年3月27日。",
+              "plain_text": "MSP部署优化版本已发布，主要功能包括批量站点配置模板、多站点SD-WAN VPN连接、内容过滤和本地控制器集群模式。原目标时间为2025年2月28日，实际完成时间为2025年3月27日。",
               "href": null
             }
           ]
@@ -12650,6 +13802,6 @@
       }
     }
   },
-  "last_update": "2025-05-29T15:58:50.057250",
+  "last_update": "2025-06-06T16:22:25.235697",
   "cache_ttl_hours": 1.0
 }

@@ -139,12 +139,12 @@ class MonitorService:
                     "value": cpu_percent
                 })
             
-            # 内存使用率告警
+            # 内存使用率告警 - 阈值提升到90%
             memory_percent = metrics["system"]["memory_percent"]
-            if memory_percent > 80:
+            if memory_percent > 90:
                 alerts.append({
                     "type": "high_memory",
-                    "level": "warning" if memory_percent < 90 else "critical",
+                    "level": "warning" if memory_percent < 95 else "critical",
                     "message": f"内存使用率过高: {memory_percent}%",
                     "value": memory_percent
                 })
@@ -288,7 +288,7 @@ class MonitorService:
                     health_status = "degraded" if health_status == "healthy" else health_status
                     issues.append(f"CPU使用率过高: {cpu_percent}%")
                 
-                if memory_percent > 90:
+                if memory_percent > 95:
                     health_status = "degraded" if health_status == "healthy" else health_status
                     issues.append(f"内存使用率过高: {memory_percent}%")
                 

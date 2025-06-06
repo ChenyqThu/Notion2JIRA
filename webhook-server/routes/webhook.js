@@ -239,6 +239,30 @@ class NotionWebhookHandler {
               raw: value.verification
             };
             break;
+          case 'formula':
+            // Formula 字段处理 - 根据实际返回的数据类型解析
+            let formulaValue = null;
+            if (value.formula) {
+              // Formula 可能返回不同类型的值
+              if (value.formula.string !== undefined) {
+                formulaValue = value.formula.string;
+              } else if (value.formula.number !== undefined) {
+                formulaValue = value.formula.number;
+              } else if (value.formula.boolean !== undefined) {
+                formulaValue = value.formula.boolean;
+              } else if (value.formula.date) {
+                formulaValue = value.formula.date.start;
+              } else {
+                // 其他类型或null值
+                formulaValue = value.formula;
+              }
+            }
+            parsed[key] = {
+              type: 'formula',
+              value: formulaValue,
+              raw: value.formula
+            };
+            break;
           default:
             // 对于未知类型，保存完整的原始数据
             parsed[key] = {

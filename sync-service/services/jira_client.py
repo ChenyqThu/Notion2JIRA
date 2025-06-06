@@ -298,4 +298,76 @@ class JiraClient:
                     
         except Exception as e:
             self.logger.error("项目版本获取异常", error=str(e), project_key=project_key)
-            return [] 
+            return []
+    
+    async def create_remote_issue_link(self, issue_key: str, remote_link: Dict[str, Any]) -> bool:
+        """为JIRA Issue创建单个远程链接"""
+        try:
+            if not remote_link:
+                self.logger.debug("没有远程链接需要创建", issue_key=issue_key)
+                return True
+                
+            self.logger.info(
+                "开始创建远程链接",
+                issue_key=issue_key,
+                link_title=remote_link.get('object', {}).get('title', 'Unknown')
+            )
+            
+            url = f"{self.jira_config.base_url}/rest/api/2/issue/{issue_key}/remotelink"
+            
+            async with self.session.post(url, json=remote_link) as response:
+                if response.status in [200, 201]:
+                    result = await response.json()
+                    self.logger.info(
+                        "远程链接创建成功",
+                        issue_key=issue_key,
+                        link_id=result.get('id'),
+                        link_title=remote_link.get('object', {}).get('title', 'Unknown')
+                    )
+                    return True
+                else:
+                    error_text = await response.text()
+                    self.logger.error(
+                        "远程链接创建失败",
+                        issue_key=issue_key,
+                        status=response.status,
+                        error=error_text,
+                        link_title=remote_link.get('object', {}).get('title', 'Unknown')
+                    )
+                    return False
+            
+        except Exception as e:
+            self.logger.error("创建远程链接异常", error=str(e), issue_key=issue_key)
+            return False
+    
+    async def create_remote_issue_links(self, issue_key: str, remote_links: List[Dict[str, Any]]) -> bool:
+        """为JIRA Issue创建多个远程链接"""
+        try:
+            if not remote_links:
+                self.logger.debug("没有远程链接需要创建", issue_key=issue_key)
+                return True
+                
+            self.logger.info(
+                "开始创建远程链接",
+                issue_key=issue_key,
+                link_count=len(remote_links)
+            )
+            
+            success_count = 0
+            for remote_link in remote_links:
+                success = await self.create_remote_issue_link(issue_key, remote_link)
+                if success:
+                    success_count += 1
+            
+            self.logger.info(
+                "远程链接创建完成",
+                issue_key=issue_key,
+                success_count=success_count,
+                total_count=len(remote_links)
+            )
+            
+            return success_count > 0
+            
+        except Exception as e:
+            self.logger.error("创建远程链接异常", error=str(e), issue_key=issue_key)
+            return False 
