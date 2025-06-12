@@ -1,8 +1,230 @@
 {
   "versions": {
+    "20f15375-830d-80a1-8023-ec6e1eb97d7b": {
+      "name": "EAP Test",
+      "updated_at": "2025-06-11T16:42:03.703520",
+      "properties": {
+        "需求池": {
+          "id": "%3EBjs",
+          "type": "relation",
+          "relation": [],
+          "has_more": false
+        },
+        "负责人": {
+          "id": "%3Ebu%3A",
+          "type": "people",
+          "people": [
+            {
+              "object": "user",
+              "id": "3f4b90ff-b3eb-4e34-b080-0b45a23f4fa2",
+              "name": "Lucien Chen",
+              "avatar_url": "https://s3-us-west-2.amazonaws.com/public.notion-static.com/c332a5ce-812c-4bf2-9601-2bbe711e076c/avatar1-sq.jpg",
+              "type": "person",
+              "person": {
+                "email": "lucien.chen@tp-link.com"
+              }
+            }
+          ]
+        },
+        "需求数": {
+          "id": "%40%60kf",
+          "type": "rollup",
+          "rollup": {
+            "type": "number",
+            "number": 0,
+            "function": "count"
+          }
+        },
+        "实际完成时间": {
+          "id": "BPR%3F",
+          "type": "date",
+          "date": null
+        },
+        "目标发布": {
+          "id": "Iul%60",
+          "type": "formula",
+          "formula": {
+            "type": "string",
+            "string": "6月11日"
+          }
+        },
+        "需求未完成度": {
+          "id": "LD%5Bn",
+          "type": "rollup",
+          "rollup": {
+            "type": "number",
+            "number": null,
+            "function": "percent_per_group"
+          }
+        },
+        "实际表现": {
+          "id": "NKPT",
+          "type": "formula",
+          "formula": {
+            "type": "string",
+            "string": "[进度] 🔄 开发中 , 计划时间6月11日"
+          }
+        },
+        "最新计划时间": {
+          "id": "TXRB",
+          "type": "date",
+          "date": null
+        },
+        "项目概况": {
+          "id": "Ub%7BH",
+          "type": "formula",
+          "formula": {
+            "type": "string",
+            "string": "[概况] 优先级: , 总需求: 0, 需求输入进度: 100%, 总工作量评估: 0"
+          }
+        },
+        "专项": {
+          "id": "WXLL",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "类别": {
+          "id": "%5BaqJ",
+          "type": "select",
+          "select": {
+            "id": "66eae687-36bd-4a86-b960-5f2c4ec69986",
+            "name": "EAP",
+            "color": "gray"
+          }
+        },
+        "工作量评估": {
+          "id": "%5CZKm",
+          "type": "rollup",
+          "rollup": {
+            "type": "array",
+            "array": [],
+            "function": "show_original"
+          }
+        },
+        "GTM": {
+          "id": "_Q%3ER",
+          "type": "select",
+          "select": null
+        },
+        "目标季度": {
+          "id": "%7DSuK",
+          "type": "formula",
+          "formula": {
+            "type": "string",
+            "string": "25 Q2"
+          }
+        },
+        "项目": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "EAP Test",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "EAP Test",
+              "href": null
+            }
+          ]
+        },
+        "干系人": {
+          "id": "notion%3A%2F%2Fprojects%2Fpeople_property",
+          "type": "people",
+          "people": []
+        },
+        "状态": {
+          "id": "notion%3A%2F%2Fprojects%2Fstatus_property",
+          "type": "status",
+          "status": {
+            "id": "U`{f",
+            "name": "规划",
+            "color": "default"
+          }
+        },
+        "完成度": {
+          "id": "notion%3A%2F%2Fprojects%2Fcompletion_rollup",
+          "type": "rollup",
+          "rollup": {
+            "type": "number",
+            "number": null,
+            "function": "percent_per_group"
+          }
+        },
+        "优先级": {
+          "id": "notion%3A%2F%2Fprojects%2Fpriority_property",
+          "type": "select",
+          "select": null
+        },
+        "简介": {
+          "id": "notion%3A%2F%2Fprojects%2Fdescription_property",
+          "type": "rich_text",
+          "rich_text": []
+        },
+        "原目标时间": {
+          "id": "notion%3A%2F%2Fprojects%2Fproject_dates_property",
+          "type": "date",
+          "date": {
+            "start": "2025-06-11",
+            "end": null,
+            "time_zone": null
+          }
+        },
+        "概要": {
+          "id": "notion%3A%2F%2Fprojects%2Fproject_summary_feature",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "项目状态为规划，负责人是Lucien Chen，原目标时间为2025年6月11日，包含PRD和待办事项链接。",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "项目状态为规划，负责人是Lucien Chen，原目标时间为2025年6月11日，包含PRD和待办事项链接。",
+              "href": null
+            }
+          ]
+        },
+        "任务清单": {
+          "id": "notion%3A%2F%2Fprojects%2Fproject_to_task_relation",
+          "type": "relation",
+          "relation": [],
+          "has_more": false
+        },
+        "Is Blocking": {
+          "id": "notion%3A%2F%2Fprojects%2Fproject_blocking_relation",
+          "type": "relation",
+          "relation": [],
+          "has_more": false
+        },
+        "Blocked By": {
+          "id": "notion%3A%2F%2Fprojects%2Fproject_blocked_by_relation",
+          "type": "relation",
+          "relation": [],
+          "has_more": false
+        }
+      }
+    },
     "20815375-830d-809c-b578-c4b2c558584e": {
       "name": "Omada APP 4.25",
-      "updated_at": "2025-06-06T16:22:25.235229",
+      "updated_at": "2025-06-11T16:42:03.703536",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -228,7 +450,7 @@
     },
     "20315375-830d-8022-b3a4-fc4911b8d5b0": {
       "name": "Portal 5.6",
-      "updated_at": "2025-06-06T16:22:25.235246",
+      "updated_at": "2025-06-11T16:42:03.703541",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -242,6 +464,12 @@
             },
             {
               "id": "20315375-830d-803c-9fa3-f1656dce13a5"
+            },
+            {
+              "id": "20d15375-830d-81ed-8983-dc2dc0a2583a"
+            },
+            {
+              "id": "20d15375-830d-815f-8ae5-fe8fe883232f"
             }
           ],
           "has_more": false
@@ -267,7 +495,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 3,
+            "number": 5,
             "function": "count"
           }
         },
@@ -311,7 +539,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[概况] 优先级: , 总需求: 3, 需求输入进度: 0%, 总工作量评估: 0"
+            "string": "[概况] 优先级: , 总需求: 5, 需求输入进度: 0%, 总工作量评估: 0"
           }
         },
         "专项": {
@@ -334,6 +562,14 @@
           "rollup": {
             "type": "array",
             "array": [
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
               {
                 "type": "select",
                 "select": null
@@ -491,7 +727,7 @@
     },
     "20015375-830d-8099-8dd1-cfcdb72f0c00": {
       "name": "Portal 5.4",
-      "updated_at": "2025-06-06T16:22:25.235250",
+      "updated_at": "2025-06-11T16:42:03.703546",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -508,6 +744,12 @@
             },
             {
               "id": "1fb15375-830d-8038-91fb-d62d2f3633bb"
+            },
+            {
+              "id": "20d15375-830d-816c-8cc7-dad9e6bfc63f"
+            },
+            {
+              "id": "20d15375-830d-813e-9cc8-c5409da1702a"
             }
           ],
           "has_more": false
@@ -533,7 +775,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 4,
+            "number": 6,
             "function": "count"
           }
         },
@@ -581,7 +823,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[概况] 优先级: , 总需求: 4, 需求输入进度: 100%, 总工作量评估: 0"
+            "string": "[概况] 优先级: , 总需求: 6, 需求输入进度: 100%, 总工作量评估: 0"
           }
         },
         "专项": {
@@ -604,6 +846,14 @@
           "rollup": {
             "type": "array",
             "array": [
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
               {
                 "type": "select",
                 "select": null
@@ -727,7 +977,7 @@
             {
               "type": "text",
               "text": {
-                "content": "项目状态为规划，负责人是Bill Wang，目标时间为2025年8月31日，涉及Omada 6.2版本，包含需求池和项目任务。",
+                "content": "项目状态为规划，负责人是Bill Wang，目标时间为2025年8月31日，涉及Omada 6.2版本，包含项目任务和需求池。",
                 "link": null
               },
               "annotations": {
@@ -738,7 +988,7 @@
                 "code": false,
                 "color": "default"
               },
-              "plain_text": "项目状态为规划，负责人是Bill Wang，目标时间为2025年8月31日，涉及Omada 6.2版本，包含需求池和项目任务。",
+              "plain_text": "项目状态为规划，负责人是Bill Wang，目标时间为2025年8月31日，涉及Omada 6.2版本，包含项目任务和需求池。",
               "href": null
             }
           ]
@@ -765,7 +1015,7 @@
     },
     "1fb15375-830d-801f-9c21-fe08f131dfbe": {
       "name": "Cloud Portal 5.2",
-      "updated_at": "2025-06-06T16:22:25.235257",
+      "updated_at": "2025-06-11T16:42:03.703551",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -1035,7 +1285,7 @@
     },
     "1fb15375-830d-806d-8ec1-c3f22711c381": {
       "name": "Cloud Portal 5.1",
-      "updated_at": "2025-06-06T16:22:25.235262",
+      "updated_at": "2025-06-11T16:42:03.703555",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -1308,7 +1558,7 @@
     },
     "1fa15375-830d-804e-9efd-ce8d96fc4fbd": {
       "name": "AIO 1.0 - Gateway",
-      "updated_at": "2025-06-06T16:22:25.235266",
+      "updated_at": "2025-06-11T16:42:03.703579",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -1541,7 +1791,7 @@
             {
               "type": "text",
               "text": {
-                "content": "项目状态为需求输入中，优先级高，负责人为Xavier，涉及多位干系人，原目标时间为2025年12月31日。项目包含多个任务清单和优化配置，包括VPN、QoS、IPS/IDS等功能。",
+                "content": "项目状态为需求输入中，优先级高，负责人是Xavier，原目标时间为2025年12月31日。项目包括多个任务，如IPS/IDS配置优化、VPN和QoS等功能的改进。",
                 "link": null
               },
               "annotations": {
@@ -1552,7 +1802,7 @@
                 "code": false,
                 "color": "default"
               },
-              "plain_text": "项目状态为需求输入中，优先级高，负责人为Xavier，涉及多位干系人，原目标时间为2025年12月31日。项目包含多个任务清单和优化配置，包括VPN、QoS、IPS/IDS等功能。",
+              "plain_text": "项目状态为需求输入中，优先级高，负责人是Xavier，原目标时间为2025年12月31日。项目包括多个任务，如IPS/IDS配置优化、VPN和QoS等功能的改进。",
               "href": null
             }
           ]
@@ -1579,7 +1829,7 @@
     },
     "1b915375-830d-809b-83b7-d4a19ee188f7": {
       "name": "Portable Gateway 需求",
-      "updated_at": "2025-06-06T16:22:25.235272",
+      "updated_at": "2025-06-11T16:42:03.703588",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -1783,7 +2033,7 @@
     },
     "1b515375-830d-80dd-88db-db3840c176d6": {
       "name": "OC300/400 升级支持 Central 网安一体",
-      "updated_at": "2025-06-06T16:22:25.235281",
+      "updated_at": "2025-06-11T16:42:03.703592",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -2024,7 +2274,7 @@
     },
     "1b015375-830d-80ab-ae5f-f40f6dc6b79c": {
       "name": "Gateway 适配 6.4",
-      "updated_at": "2025-06-06T16:22:25.235284",
+      "updated_at": "2025-06-11T16:42:03.703597",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -2236,7 +2486,7 @@
     },
     "1b015375-830d-80b0-b5e6-e5b31ff59394": {
       "name": "Gateway 适配 6.3",
-      "updated_at": "2025-06-06T16:22:25.235287",
+      "updated_at": "2025-06-11T16:42:03.703601",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -2244,9 +2494,6 @@
           "relation": [
             {
               "id": "1bd15375-830d-80df-b3c8-d99a5b3e3e9f"
-            },
-            {
-              "id": "20015375-830d-8051-9b72-d3fcec2b7ef4"
             }
           ],
           "has_more": false
@@ -2272,7 +2519,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 2,
+            "number": 1,
             "function": "count"
           }
         },
@@ -2316,7 +2563,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[概况] 优先级: 高, 总需求: 2, 需求输入进度: 0%, 总工作量评估: 3"
+            "string": "[概况] 优先级: 高, 总需求: 1, 需求输入进度: 0%, 总工作量评估: 0"
           }
         },
         "专项": {
@@ -2342,14 +2589,6 @@
               {
                 "type": "select",
                 "select": null
-              },
-              {
-                "type": "select",
-                "select": {
-                  "id": "3",
-                  "name": "⭐️⭐️⭐️",
-                  "color": "purple"
-                }
               }
             ],
             "function": "show_original"
@@ -2482,7 +2721,7 @@
     },
     "1b015375-830d-808d-b555-fe011238a2ca": {
       "name": "Gateway 适配 6.2",
-      "updated_at": "2025-06-06T16:22:25.235290",
+      "updated_at": "2025-06-11T16:42:03.703606",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -2690,7 +2929,7 @@
     },
     "1ab15375-830d-8047-b187-f45d1572325c": {
       "name": "Navi APP 1.5",
-      "updated_at": "2025-06-06T16:22:25.235293",
+      "updated_at": "2025-06-11T16:42:03.703610",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -2769,7 +3008,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[进度] ❗️ 严重延期22天 , 计划时间5月15日"
+            "string": "[进度] ❗️ 严重延期27天 , 计划时间5月15日"
           }
         },
         "最新计划时间": {
@@ -2956,7 +3195,7 @@
     },
     "1a815375-830d-8013-b163-feeae20a8695": {
       "name": "Design Center 2.0",
-      "updated_at": "2025-06-06T16:22:25.235295",
+      "updated_at": "2025-06-11T16:42:03.703615",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -3191,7 +3430,7 @@
     },
     "1a815375-830d-80bc-879a-d17a4d6bb9a9": {
       "name": "Design Center 1.3",
-      "updated_at": "2025-06-06T16:22:25.235298",
+      "updated_at": "2025-06-11T16:42:03.703618",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -3510,7 +3749,7 @@
     },
     "1a815375-830d-80e3-a8a9-e3c97af058f7": {
       "name": "Design Center 1.2",
-      "updated_at": "2025-06-06T16:22:25.235300",
+      "updated_at": "2025-06-11T16:42:03.703622",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -3787,7 +4026,7 @@
     },
     "1a815375-830d-80a0-86e1-e2d710781f1f": {
       "name": "Design Center 1.1",
-      "updated_at": "2025-06-06T16:22:25.235303",
+      "updated_at": "2025-06-11T16:42:03.703626",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -3881,7 +4120,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[进度] ❗️ 严重延期37天 , 计划时间4月30日"
+            "string": "[进度] ❗️ 严重延期42天 , 计划时间4月30日"
           }
         },
         "最新计划时间": {
@@ -4114,7 +4353,7 @@
     },
     "1a715375-830d-80eb-b2cd-c166a6c1d782": {
       "name": "Design Center 1.0",
-      "updated_at": "2025-06-06T16:22:25.235305",
+      "updated_at": "2025-06-11T16:42:03.703630",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -4455,7 +4694,7 @@
     },
     "1a715375-830d-809a-aada-f963a7b832f3": {
       "name": "Navi APP 2.0",
-      "updated_at": "2025-06-06T16:22:25.235308",
+      "updated_at": "2025-06-11T16:42:03.703634",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -4472,6 +4711,9 @@
             },
             {
               "id": "19a15375-830d-8127-a72d-d6314794be23"
+            },
+            {
+              "id": "20d15375-830d-8174-9619-e0d869ae8b02"
             }
           ],
           "has_more": false
@@ -4497,7 +4739,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 4,
+            "number": 5,
             "function": "count"
           }
         },
@@ -4541,7 +4783,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[概况] 优先级: 中, 总需求: 4, 需求输入进度: 0%, 总工作量评估: 0"
+            "string": "[概况] 优先级: 中, 总需求: 5, 需求输入进度: 0%, 总工作量评估: 0"
           }
         },
         "专项": {
@@ -4564,6 +4806,10 @@
           "rollup": {
             "type": "array",
             "array": [
+              {
+                "type": "select",
+                "select": null
+              },
               {
                 "type": "select",
                 "select": null
@@ -4691,7 +4937,25 @@
         "概要": {
           "id": "notion%3A%2F%2Fprojects%2Fproject_summary_feature",
           "type": "rich_text",
-          "rich_text": []
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Navi APP 2.0正在开发中，旨在对接Design Center，支持网络规划仿真，增强功能包括产品选型和热力图仿真，目标是形成移动端整体解决方案。",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Navi APP 2.0正在开发中，旨在对接Design Center，支持网络规划仿真，增强功能包括产品选型和热力图仿真，目标是形成移动端整体解决方案。",
+              "href": null
+            }
+          ]
         },
         "任务清单": {
           "id": "notion%3A%2F%2Fprojects%2Fproject_to_task_relation",
@@ -4715,7 +4979,7 @@
     },
     "1a715375-830d-803c-9e45-e4a8f82e1975": {
       "name": "Navi APP 1.4",
-      "updated_at": "2025-06-06T16:22:25.235310",
+      "updated_at": "2025-06-11T16:42:03.703637",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -4975,7 +5239,7 @@
     },
     "1a715375-830d-80c9-a5a4-ce7bead9bbc8": {
       "name": "Omada APP 5.4",
-      "updated_at": "2025-06-06T16:22:25.235313",
+      "updated_at": "2025-06-11T16:42:03.703641",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -5201,7 +5465,7 @@
     },
     "1a715375-830d-8062-8267-f21f4f65be04": {
       "name": "Omada APP 5.3",
-      "updated_at": "2025-06-06T16:22:25.235317",
+      "updated_at": "2025-06-11T16:42:03.703645",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -5427,7 +5691,7 @@
     },
     "1a715375-830d-80a1-a5ac-d6ec9a52820b": {
       "name": "Omada APP 5.2",
-      "updated_at": "2025-06-06T16:22:25.235319",
+      "updated_at": "2025-06-11T16:42:03.703650",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -5471,6 +5735,27 @@
             },
             {
               "id": "19a15375-830d-81b2-8cfc-ef50b7cda8a9"
+            },
+            {
+              "id": "20d15375-830d-8107-9f37-d82eadb0e52e"
+            },
+            {
+              "id": "20d15375-830d-8159-b877-c2e4e03ca04c"
+            },
+            {
+              "id": "20d15375-830d-81e6-bbbd-ee361b0fff42"
+            },
+            {
+              "id": "20d15375-830d-81e8-86c4-f2187c6dbc20"
+            },
+            {
+              "id": "20d15375-830d-8174-93ae-e58145301ff5"
+            },
+            {
+              "id": "20d15375-830d-816c-9594-fd74c4515f4a"
+            },
+            {
+              "id": "20d15375-830d-818c-b60f-fc1fcc1d52d2"
             }
           ],
           "has_more": false
@@ -5496,7 +5781,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 13,
+            "number": 20,
             "function": "count"
           }
         },
@@ -5518,7 +5803,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 0.9230769230769231,
+            "number": 0.9,
             "function": "percent_per_group"
           }
         },
@@ -5540,7 +5825,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[概况] 优先级: 高, 总需求: 13, 需求输入进度: 8%, 总工作量评估: 0"
+            "string": "[概况] 优先级: 高, 总需求: 20, 需求输入进度: 10%, 总工作量评估: 0"
           }
         },
         "专项": {
@@ -5563,6 +5848,34 @@
           "rollup": {
             "type": "array",
             "array": [
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
               {
                 "type": "select",
                 "select": null
@@ -5722,7 +6035,25 @@
         "概要": {
           "id": "notion%3A%2F%2Fprojects%2Fproject_summary_feature",
           "type": "rich_text",
-          "rich_text": []
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Omada APP V5.2将适配Controller 6.2，重构设备配置模式，增强功能，优化配置流程，支持无线PPSK和enterprise加密，适配wifi 7网桥，并减少SDN管理层级加载时间30%。",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Omada APP V5.2将适配Controller 6.2，重构设备配置模式，增强功能，优化配置流程，支持无线PPSK和enterprise加密，适配wifi 7网桥，并减少SDN管理层级加载时间30%。",
+              "href": null
+            }
+          ]
         },
         "任务清单": {
           "id": "notion%3A%2F%2Fprojects%2Fproject_to_task_relation",
@@ -5746,7 +6077,7 @@
     },
     "1a715375-830d-8056-a29d-f51d23443abd": {
       "name": "Omada APP 5.1",
-      "updated_at": "2025-06-06T16:22:25.235324",
+      "updated_at": "2025-06-11T16:42:03.703653",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -5802,9 +6133,33 @@
             },
             {
               "id": "19a15375-830d-8115-a671-db934e983bdc"
+            },
+            {
+              "id": "20d15375-830d-8157-8f89-e31c39db9277"
+            },
+            {
+              "id": "20d15375-830d-8186-b342-c64381f7031d"
+            },
+            {
+              "id": "20d15375-830d-81ef-b014-ceaf78897bae"
+            },
+            {
+              "id": "20d15375-830d-816e-8d1c-f5f322168149"
+            },
+            {
+              "id": "20d15375-830d-810c-b054-de1820b542c7"
+            },
+            {
+              "id": "20d15375-830d-8189-b887-edeed8080e70"
+            },
+            {
+              "id": "20d15375-830d-8177-b586-c304d6e30961"
+            },
+            {
+              "id": "20d15375-830d-8192-8b8f-fa23481a60eb"
             }
           ],
-          "has_more": false
+          "has_more": true
         },
         "负责人": {
           "id": "%3Ebu%3A",
@@ -5827,7 +6182,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 17,
+            "number": 27,
             "function": "count"
           }
         },
@@ -5849,7 +6204,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 0.7647058823529411,
+            "number": 0.7407407407407407,
             "function": "percent_per_group"
           }
         },
@@ -5871,7 +6226,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[概况] 优先级: 高, 总需求: 17, 需求输入进度: 24%, 总工作量评估: 0"
+            "string": "[概况] 优先级: 高, 总需求: 27, 需求输入进度: 26%, 总工作量评估: 0"
           }
         },
         "专项": {
@@ -5894,6 +6249,46 @@
           "rollup": {
             "type": "array",
             "array": [
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
               {
                 "type": "select",
                 "select": null
@@ -6069,7 +6464,25 @@
         "概要": {
           "id": "notion%3A%2F%2Fprojects%2Fproject_summary_feature",
           "type": "rich_text",
-          "rich_text": []
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Omada APP V5.1正在开发中，主要目标是适配Controller 6.1，优化配置交互，支持NAT穿透，增强设备功能，修复安全合规问题，并增加多项新功能，如一键VPN和WAN口Speedtest。",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Omada APP V5.1正在开发中，主要目标是适配Controller 6.1，优化配置交互，支持NAT穿透，增强设备功能，修复安全合规问题，并增加多项新功能，如一键VPN和WAN口Speedtest。",
+              "href": null
+            }
+          ]
         },
         "任务清单": {
           "id": "notion%3A%2F%2Fprojects%2Fproject_to_task_relation",
@@ -6093,7 +6506,7 @@
     },
     "1a715375-830d-8043-a7dc-dab7c0025eb3": {
       "name": "AIO 1.0 - Omada APP",
-      "updated_at": "2025-06-06T16:22:25.235326",
+      "updated_at": "2025-06-11T16:42:03.703657",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -6337,7 +6750,7 @@
     },
     "1a715375-830d-80f8-bafb-c6463739a082": {
       "name": "Omada APP 5.0",
-      "updated_at": "2025-06-06T16:22:25.235329",
+      "updated_at": "2025-06-11T16:42:03.703661",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -6384,6 +6797,24 @@
             },
             {
               "id": "20915375-830d-800b-9c12-ffd8803b9bdd"
+            },
+            {
+              "id": "20d15375-830d-81c0-bb4d-d6ae823bdc41"
+            },
+            {
+              "id": "20d15375-830d-81ae-8316-d0d5700b9255"
+            },
+            {
+              "id": "20d15375-830d-8188-95f0-eeb0aab5ec47"
+            },
+            {
+              "id": "20d15375-830d-8189-be83-d75fecc8ff8f"
+            },
+            {
+              "id": "20d15375-830d-8104-8972-cce5b8817a62"
+            },
+            {
+              "id": "20d15375-830d-81d0-9848-da63f389b2a0"
             }
           ],
           "has_more": false
@@ -6409,7 +6840,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 14,
+            "number": 20,
             "function": "count"
           }
         },
@@ -6431,7 +6862,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 0.07142857142857142,
+            "number": 0.05,
             "function": "percent_per_group"
           }
         },
@@ -6440,7 +6871,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[进度] ⚠️ 轻微延期6天 , 计划时间5月31日"
+            "string": "[进度] ⚠️ 轻微延期11天 , 计划时间5月31日"
           }
         },
         "最新计划时间": {
@@ -6457,7 +6888,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[概况] 优先级: 高, 总需求: 14, 需求输入进度: 93%, 总工作量评估: 4"
+            "string": "[概况] 优先级: 高, 总需求: 20, 需求输入进度: 95%, 总工作量评估: 8"
           }
         },
         "专项": {
@@ -6527,6 +6958,34 @@
               {
                 "type": "select",
                 "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "5",
+                  "name": "⭐️⭐️⭐️⭐️",
+                  "color": "pink"
+                }
               },
               {
                 "type": "select",
@@ -6655,7 +7114,7 @@
             {
               "type": "text",
               "text": {
-                "content": "Omada APP 5.0 正在开发中，重点优化交互体验和监控运维功能，包括UI升级、设备信息面板和网络质量显示，计划于2025年7月30日完成。",
+                "content": "Omada APP 5.0正在开发中，重点优化交互体验和监控运维功能，包括UI升级、设备信息面板和网络质量显示，计划于2025年7月30日完成。",
                 "link": null
               },
               "annotations": {
@@ -6666,7 +7125,7 @@
                 "code": false,
                 "color": "default"
               },
-              "plain_text": "Omada APP 5.0 正在开发中，重点优化交互体验和监控运维功能，包括UI升级、设备信息面板和网络质量显示，计划于2025年7月30日完成。",
+              "plain_text": "Omada APP 5.0正在开发中，重点优化交互体验和监控运维功能，包括UI升级、设备信息面板和网络质量显示，计划于2025年7月30日完成。",
               "href": null
             }
           ]
@@ -6693,7 +7152,7 @@
     },
     "1a715375-830d-800c-bca3-f5b3945ee008": {
       "name": "Omada APP 4.24",
-      "updated_at": "2025-06-06T16:22:25.235332",
+      "updated_at": "2025-06-11T16:42:03.703664",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -6707,6 +7166,9 @@
             },
             {
               "id": "1ad15375-830d-8062-8e6e-c3f23928cb89"
+            },
+            {
+              "id": "20d15375-830d-8171-bb3a-c0cd472ee05e"
             }
           ],
           "has_more": false
@@ -6732,7 +7194,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 3,
+            "number": 4,
             "function": "count"
           }
         },
@@ -6780,7 +7242,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[概况] 优先级: 高, 总需求: 3, 需求输入进度: 100%, 总工作量评估: 0"
+            "string": "[概况] 优先级: 高, 总需求: 4, 需求输入进度: 100%, 总工作量评估: 0"
           }
         },
         "专项": {
@@ -6803,6 +7265,10 @@
           "rollup": {
             "type": "array",
             "array": [
+              {
+                "type": "select",
+                "select": null
+              },
               {
                 "type": "select",
                 "select": null
@@ -6926,7 +7392,7 @@
             {
               "type": "text",
               "text": {
-                "content": "APP 4.24版本已发布，优化了设备添加方式和首页视图，支持通过扫描Device key二维码添加设备，并调整了管理模式切换入口。实际完成时间为2025年6月4日。",
+                "content": "APP 4.24已发布，优化了设备添加方式和本地控制器首页视图，调整了管理模式切换入口，提升了用户体验。实际完成时间为2025年6月4日。",
                 "link": null
               },
               "annotations": {
@@ -6937,7 +7403,7 @@
                 "code": false,
                 "color": "default"
               },
-              "plain_text": "APP 4.24版本已发布，优化了设备添加方式和首页视图，支持通过扫描Device key二维码添加设备，并调整了管理模式切换入口。实际完成时间为2025年6月4日。",
+              "plain_text": "APP 4.24已发布，优化了设备添加方式和本地控制器首页视图，调整了管理模式切换入口，提升了用户体验。实际完成时间为2025年6月4日。",
               "href": null
             }
           ]
@@ -6964,7 +7430,7 @@
     },
     "1a715375-830d-8057-af45-c1e945b57c45": {
       "name": "Omada APP 4.23",
-      "updated_at": "2025-06-06T16:22:25.235334",
+      "updated_at": "2025-06-11T16:42:03.703668",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -7194,7 +7660,7 @@
     },
     "1a715375-830d-808d-a21a-cafab9b44852": {
       "name": "AIO 1.0 - Network",
-      "updated_at": "2025-06-06T16:22:25.235336",
+      "updated_at": "2025-06-11T16:42:03.703671",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -7299,7 +7765,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 87,
+            "number": 144,
             "function": "count"
           }
         },
@@ -7321,7 +7787,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 0.7011494252873564,
+            "number": 0.7708333333333334,
             "function": "percent_per_group"
           }
         },
@@ -7343,7 +7809,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[概况] 优先级: 高, 总需求: 87, 需求输入进度: 30%, 总工作量评估: 0"
+            "string": "[概况] 优先级: 高, 总需求: 144, 需求输入进度: 23%, 总工作量评估: 0"
           }
         },
         "专项": {
@@ -7366,6 +7832,234 @@
           "rollup": {
             "type": "array",
             "array": [
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
               {
                 "type": "select",
                 "select": null
@@ -7836,7 +8530,7 @@
             {
               "type": "text",
               "text": {
-                "content": "专为一体机开发的Controller版本，重点是功能裁剪，移除MSP模式和Site Global界面，仅支持单Site，需调整Omada Surveillance服务和VPN配置以确保出差人员的网络接入安全。项目任务和需求清单待定。",
+                "content": "该项目专注于为一体机开发适配的Controller功能，强调功能裁剪和Omada Surveillance服务的调整，确保出差人员能够快速通过VPN接入网络，并在设备丢失时保障企业网络安全。",
                 "link": null
               },
               "annotations": {
@@ -7847,7 +8541,7 @@
                 "code": false,
                 "color": "default"
               },
-              "plain_text": "专为一体机开发的Controller版本，重点是功能裁剪，移除MSP模式和Site Global界面，仅支持单Site，需调整Omada Surveillance服务和VPN配置以确保出差人员的网络接入安全。项目任务和需求清单待定。",
+              "plain_text": "该项目专注于为一体机开发适配的Controller功能，强调功能裁剪和Omada Surveillance服务的调整，确保出差人员能够快速通过VPN接入网络，并在设备丢失时保障企业网络安全。",
               "href": null
             }
           ]
@@ -7874,7 +8568,7 @@
     },
     "1a715375-830d-80c8-9f70-fb0859c376e9": {
       "name": "AIO 1.0 - Portal",
-      "updated_at": "2025-06-06T16:22:25.235339",
+      "updated_at": "2025-06-11T16:42:03.703675",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -8125,7 +8819,7 @@
             {
               "type": "text",
               "text": {
-                "content": "针对OC和一体机管理的SD-WAN服务，项目包括多本地控制器管理、全球多站点监控优化及账户管理权限配置，目标完成时间为2026年1月。",
+                "content": "该项目旨在为OC和一体机管理模式提供SD-WAN服务，主要面向连锁店和多分支办公室，优化多站点监控和管理，并支持本地网络安全权限配置。预计完成时间为2026年1月1日。",
                 "link": null
               },
               "annotations": {
@@ -8136,7 +8830,7 @@
                 "code": false,
                 "color": "default"
               },
-              "plain_text": "针对OC和一体机管理的SD-WAN服务，项目包括多本地控制器管理、全球多站点监控优化及账户管理权限配置，目标完成时间为2026年1月。",
+              "plain_text": "该项目旨在为OC和一体机管理模式提供SD-WAN服务，主要面向连锁店和多分支办公室，优化多站点监控和管理，并支持本地网络安全权限配置。预计完成时间为2026年1月1日。",
               "href": null
             }
           ]
@@ -8163,7 +8857,7 @@
     },
     "1a715375-830d-8083-bf3d-d5edc490c6f8": {
       "name": "Portal 5.3",
-      "updated_at": "2025-06-06T16:22:25.235341",
+      "updated_at": "2025-06-11T16:42:03.703678",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -8442,7 +9136,7 @@
     },
     "1a715375-830d-8055-8c3e-ca7f76b326c1": {
       "name": "Portal 5.0",
-      "updated_at": "2025-06-06T16:22:25.235344",
+      "updated_at": "2025-06-11T16:42:03.703683",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -8706,7 +9400,7 @@
     },
     "1a715375-830d-80c9-996f-c84f0c9cbe2c": {
       "name": "Portal 4.2",
-      "updated_at": "2025-06-06T16:22:25.235347",
+      "updated_at": "2025-06-11T16:42:03.703687",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -8714,6 +9408,9 @@
           "relation": [
             {
               "id": "19a15375-830d-81e1-86a0-d03b7c776893"
+            },
+            {
+              "id": "20d15375-830d-81c5-b87f-f0999638d131"
             }
           ],
           "has_more": false
@@ -8739,7 +9436,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 1,
+            "number": 2,
             "function": "count"
           }
         },
@@ -8787,7 +9484,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[概况] 优先级: 中, 总需求: 1, 需求输入进度: 100%, 总工作量评估: 0"
+            "string": "[概况] 优先级: 中, 总需求: 2, 需求输入进度: 100%, 总工作量评估: 0"
           }
         },
         "专项": {
@@ -8810,6 +9507,10 @@
           "rollup": {
             "type": "array",
             "array": [
+              {
+                "type": "select",
+                "select": null
+              },
               {
                 "type": "select",
                 "select": null
@@ -8921,7 +9622,25 @@
         "概要": {
           "id": "notion%3A%2F%2Fprojects%2Fproject_summary_feature",
           "type": "rich_text",
-          "rich_text": []
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "为使用大量本地控制器的MSP提供跨控制器的统一账户管理模块，项目负责人是Lucien Chen，预计于2025年5月21日完成。",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "为使用大量本地控制器的MSP提供跨控制器的统一账户管理模块，项目负责人是Lucien Chen，预计于2025年5月21日完成。",
+              "href": null
+            }
+          ]
         },
         "任务清单": {
           "id": "notion%3A%2F%2Fprojects%2Fproject_to_task_relation",
@@ -8945,7 +9664,7 @@
     },
     "1a715375-830d-80b4-b55d-c0153bcc99b6": {
       "name": "Network 6.3",
-      "updated_at": "2025-06-06T16:22:25.235350",
+      "updated_at": "2025-06-11T16:42:03.703690",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -9050,7 +9769,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 92,
+            "number": 183,
             "function": "count"
           }
         },
@@ -9072,7 +9791,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 0.1956521739130435,
+            "number": 0.17486338797814208,
             "function": "percent_per_group"
           }
         },
@@ -9098,7 +9817,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[概况] 优先级: 中, 总需求: 92, 需求输入进度: 80%, 总工作量评估: 0"
+            "string": "[概况] 优先级: 中, 总需求: 183, 需求输入进度: 83%, 总工作量评估: 3"
           }
         },
         "专项": {
@@ -9488,6 +10207,374 @@
               {
                 "type": "select",
                 "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "3",
+                  "name": "⭐️⭐️⭐️",
+                  "color": "purple"
+                }
               }
             ],
             "function": "show_original"
@@ -9655,7 +10742,7 @@
             {
               "type": "text",
               "text": {
-                "content": "项目目标是统一平台版本，合并Pro功能并支持功能License，确保旧平台兼容，特别是Pro客户的过渡。计划时间从2025年10月31日延后至2026年3月31日。重点关注GTM和项目任务。",
+                "content": "统一平台版本6.3将合并Essential、Standard和Pro功能，通过功能License提供无缝升降级服务，需特别注意旧平台的兼容性和Pro客户的License过渡问题。计划时间更新为2026年3月31日。",
                 "link": null
               },
               "annotations": {
@@ -9666,7 +10753,7 @@
                 "code": false,
                 "color": "default"
               },
-              "plain_text": "项目目标是统一平台版本，合并Pro功能并支持功能License，确保旧平台兼容，特别是Pro客户的过渡。计划时间从2025年10月31日延后至2026年3月31日。重点关注GTM和项目任务。",
+              "plain_text": "统一平台版本6.3将合并Essential、Standard和Pro功能，通过功能License提供无缝升降级服务，需特别注意旧平台的兼容性和Pro客户的License过渡问题。计划时间更新为2026年3月31日。",
               "href": null
             }
           ]
@@ -9693,7 +10780,7 @@
     },
     "1a715375-830d-80ae-a692-f3dc640be686": {
       "name": "⚠️ Network 6.2",
-      "updated_at": "2025-06-06T16:22:25.235352",
+      "updated_at": "2025-06-11T16:42:03.703694",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -9798,7 +10885,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 52,
+            "number": 85,
             "function": "count"
           }
         },
@@ -9820,7 +10907,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 0.3269230769230769,
+            "number": 0.3058823529411765,
             "function": "percent_per_group"
           }
         },
@@ -9842,7 +10929,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[概况] 优先级: 高, 总需求: 52, 需求输入进度: 67%, 总工作量评估: 28"
+            "string": "[概况] 优先级: 高, 总需求: 85, 需求输入进度: 69%, 总工作量评估: 28"
           }
         },
         "专项": {
@@ -10104,6 +11191,138 @@
                   "name": "⭐️⭐️⭐️⭐️",
                   "color": "pink"
                 }
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
               }
             ],
             "function": "show_original"
@@ -10237,7 +11456,7 @@
             {
               "type": "text",
               "text": {
-                "content": "运维优化项目包括设备解耦、多通道配置和Gateway配置优化，支持NAT Traversal以增强故障排查功能，目标时间为2025年8月31日。负责人为Echo，优先级高。",
+                "content": "运维优化项目包括设备解耦、多通道配置和Gateway配置优化，支持NAT Traversal以增强故障恢复功能，预计在2025年8月前完成。项目优先级高，负责人为Echo。",
                 "link": null
               },
               "annotations": {
@@ -10248,7 +11467,7 @@
                 "code": false,
                 "color": "default"
               },
-              "plain_text": "运维优化项目包括设备解耦、多通道配置和Gateway配置优化，支持NAT Traversal以增强故障排查功能，目标时间为2025年8月31日。负责人为Echo，优先级高。",
+              "plain_text": "运维优化项目包括设备解耦、多通道配置和Gateway配置优化，支持NAT Traversal以增强故障恢复功能，预计在2025年8月前完成。项目优先级高，负责人为Echo。",
               "href": null
             }
           ]
@@ -10275,7 +11494,7 @@
     },
     "1a715375-830d-80ca-8c96-fb4758a39f0c": {
       "name": "Network 6.1",
-      "updated_at": "2025-06-06T16:22:25.235355",
+      "updated_at": "2025-06-11T16:42:03.703698",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -10380,7 +11599,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 111,
+            "number": 186,
             "function": "count"
           }
         },
@@ -10402,7 +11621,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 0.0990990990990991,
+            "number": 0.06989247311827956,
             "function": "percent_per_group"
           }
         },
@@ -10424,7 +11643,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[概况] 优先级: 高, 总需求: 111, 需求输入进度: 90%, 总工作量评估: 325"
+            "string": "[概况] 优先级: 高, 总需求: 186, 需求输入进度: 93%, 总工作量评估: 552"
           }
         },
         "专项": {
@@ -11294,6 +12513,570 @@
               {
                 "type": "select",
                 "select": null
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "3",
+                  "name": "⭐️⭐️⭐️",
+                  "color": "purple"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "3",
+                  "name": "⭐️⭐️⭐️",
+                  "color": "purple"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "3",
+                  "name": "⭐️⭐️⭐️",
+                  "color": "purple"
+                }
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "8",
+                  "name": "⭐️⭐️⭐️⭐️⭐️",
+                  "color": "pink"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "8",
+                  "name": "⭐️⭐️⭐️⭐️⭐️",
+                  "color": "pink"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "5",
+                  "name": "⭐️⭐️⭐️⭐️",
+                  "color": "pink"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "5",
+                  "name": "⭐️⭐️⭐️⭐️",
+                  "color": "pink"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "3",
+                  "name": "⭐️⭐️⭐️",
+                  "color": "purple"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "3",
+                  "name": "⭐️⭐️⭐️",
+                  "color": "purple"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "3",
+                  "name": "⭐️⭐️⭐️",
+                  "color": "purple"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "3",
+                  "name": "⭐️⭐️⭐️",
+                  "color": "purple"
+                }
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "5",
+                  "name": "⭐️⭐️⭐️⭐️",
+                  "color": "pink"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "5",
+                  "name": "⭐️⭐️⭐️⭐️",
+                  "color": "pink"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "3",
+                  "name": "⭐️⭐️⭐️",
+                  "color": "purple"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "5",
+                  "name": "⭐️⭐️⭐️⭐️",
+                  "color": "pink"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "5",
+                  "name": "⭐️⭐️⭐️⭐️",
+                  "color": "pink"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "5",
+                  "name": "⭐️⭐️⭐️⭐️",
+                  "color": "pink"
+                }
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "5",
+                  "name": "⭐️⭐️⭐️⭐️",
+                  "color": "pink"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "3",
+                  "name": "⭐️⭐️⭐️",
+                  "color": "purple"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "3",
+                  "name": "⭐️⭐️⭐️",
+                  "color": "purple"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "5",
+                  "name": "⭐️⭐️⭐️⭐️",
+                  "color": "pink"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "3",
+                  "name": "⭐️⭐️⭐️",
+                  "color": "purple"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "5",
+                  "name": "⭐️⭐️⭐️⭐️",
+                  "color": "pink"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "3",
+                  "name": "⭐️⭐️⭐️",
+                  "color": "purple"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "3",
+                  "name": "⭐️⭐️⭐️",
+                  "color": "purple"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "3",
+                  "name": "⭐️⭐️⭐️",
+                  "color": "purple"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "5",
+                  "name": "⭐️⭐️⭐️⭐️",
+                  "color": "pink"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "5",
+                  "name": "⭐️⭐️⭐️⭐️",
+                  "color": "pink"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "5",
+                  "name": "⭐️⭐️⭐️⭐️",
+                  "color": "pink"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "3",
+                  "name": "⭐️⭐️⭐️",
+                  "color": "purple"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "3",
+                  "name": "⭐️⭐️⭐️",
+                  "color": "purple"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "5",
+                  "name": "⭐️⭐️⭐️⭐️",
+                  "color": "pink"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "3",
+                  "name": "⭐️⭐️⭐️",
+                  "color": "purple"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "3",
+                  "name": "⭐️⭐️⭐️",
+                  "color": "purple"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "5",
+                  "name": "⭐️⭐️⭐️⭐️",
+                  "color": "pink"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "3",
+                  "name": "⭐️⭐️⭐️",
+                  "color": "purple"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "3",
+                  "name": "⭐️⭐️⭐️",
+                  "color": "purple"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "3",
+                  "name": "⭐️⭐️⭐️",
+                  "color": "purple"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "3",
+                  "name": "⭐️⭐️⭐️",
+                  "color": "purple"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "3",
+                  "name": "⭐️⭐️⭐️",
+                  "color": "purple"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "2",
+                  "name": "⭐️⭐️",
+                  "color": "blue"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "5",
+                  "name": "⭐️⭐️⭐️⭐️",
+                  "color": "pink"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "3",
+                  "name": "⭐️⭐️⭐️",
+                  "color": "purple"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "3",
+                  "name": "⭐️⭐️⭐️",
+                  "color": "purple"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "5",
+                  "name": "⭐️⭐️⭐️⭐️",
+                  "color": "pink"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "3",
+                  "name": "⭐️⭐️⭐️",
+                  "color": "purple"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "5",
+                  "name": "⭐️⭐️⭐️⭐️",
+                  "color": "pink"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "3",
+                  "name": "⭐️⭐️⭐️",
+                  "color": "purple"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "3",
+                  "name": "⭐️⭐️⭐️",
+                  "color": "purple"
+                }
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "3",
+                  "name": "⭐️⭐️⭐️",
+                  "color": "purple"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "5",
+                  "name": "⭐️⭐️⭐️⭐️",
+                  "color": "pink"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "3",
+                  "name": "⭐️⭐️⭐️",
+                  "color": "purple"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "5",
+                  "name": "⭐️⭐️⭐️⭐️",
+                  "color": "pink"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "5",
+                  "name": "⭐️⭐️⭐️⭐️",
+                  "color": "pink"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "3",
+                  "name": "⭐️⭐️⭐️",
+                  "color": "purple"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "3",
+                  "name": "⭐️⭐️⭐️",
+                  "color": "purple"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "5",
+                  "name": "⭐️⭐️⭐️⭐️",
+                  "color": "pink"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "3",
+                  "name": "⭐️⭐️⭐️",
+                  "color": "purple"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "3",
+                  "name": "⭐️⭐️⭐️",
+                  "color": "purple"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "5",
+                  "name": "⭐️⭐️⭐️⭐️",
+                  "color": "pink"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "5",
+                  "name": "⭐️⭐️⭐️⭐️",
+                  "color": "pink"
+                }
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "3",
+                  "name": "⭐️⭐️⭐️",
+                  "color": "purple"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "3",
+                  "name": "⭐️⭐️⭐️",
+                  "color": "purple"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "3",
+                  "name": "⭐️⭐️⭐️",
+                  "color": "purple"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "5",
+                  "name": "⭐️⭐️⭐️⭐️",
+                  "color": "pink"
+                }
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "5",
+                  "name": "⭐️⭐️⭐️⭐️",
+                  "color": "pink"
+                }
+              },
+              {
+                "type": "select",
+                "select": null
               }
             ],
             "function": "show_original"
@@ -11417,7 +13200,7 @@
             {
               "type": "text",
               "text": {
-                "content": "该项目涉及AP/Switch功能的迭代优化和ePOS场景增强，包括POS终端识别和客户端上下线优化，同时需要解决Central Global与Network Global的冲突和Omada Sight的架构调整问题。",
+                "content": "AP/Switch功能迭代和ePOS场景增强，包括POS终端识别和客户端上下线优化。需解决Central Global与Network Global冲突，调整Omada Sight架构以支持统一监控，并理清Omada Network与Omada Sight之间的差异。",
                 "link": null
               },
               "annotations": {
@@ -11428,7 +13211,7 @@
                 "code": false,
                 "color": "default"
               },
-              "plain_text": "该项目涉及AP/Switch功能的迭代优化和ePOS场景增强，包括POS终端识别和客户端上下线优化，同时需要解决Central Global与Network Global的冲突和Omada Sight的架构调整问题。",
+              "plain_text": "AP/Switch功能迭代和ePOS场景增强，包括POS终端识别和客户端上下线优化。需解决Central Global与Network Global冲突，调整Omada Sight架构以支持统一监控，并理清Omada Network与Omada Sight之间的差异。",
               "href": null
             }
           ]
@@ -11455,7 +13238,7 @@
     },
     "1a715375-830d-8093-b9bc-ed8ce1a75e08": {
       "name": "Network 6.0",
-      "updated_at": "2025-06-06T16:22:25.235358",
+      "updated_at": "2025-06-11T16:42:03.703701",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -11560,7 +13343,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 113,
+            "number": 170,
             "function": "count"
           }
         },
@@ -11591,7 +13374,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[进度] ⚠️ 轻微延期6天 , 计划时间5月31日"
+            "string": "[进度] ⚠️ 轻微延期11天 , 计划时间5月31日"
           }
         },
         "最新计划时间": {
@@ -11608,7 +13391,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[概况] 优先级: 高, 总需求: 113, 需求输入进度: 100%, 总工作量评估: 3"
+            "string": "[概况] 优先级: 高, 总需求: 170, 需求输入进度: 100%, 总工作量评估: 6"
           }
         },
         "专项": {
@@ -12086,6 +13869,238 @@
               {
                 "type": "select",
                 "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "3",
+                  "name": "⭐️⭐️⭐️",
+                  "color": "purple"
+                }
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
               }
             ],
             "function": "show_original"
@@ -12202,7 +14217,7 @@
             {
               "type": "text",
               "text": {
-                "content": "Controller 6.0项目旨在优化监控运维界面，提升日常监控体验，包含UC场景QoS优化，预计于2025年7月完成。负责人为Lucien Chen，优先级高。",
+                "content": "Controller 6.0项目旨在优化监控运维界面，提升日常监控体验，包括UC场景的QoS调度支持，原目标时间为2025年5月31日，最新计划时间为2025年7月10日。",
                 "link": null
               },
               "annotations": {
@@ -12213,7 +14228,7 @@
                 "code": false,
                 "color": "default"
               },
-              "plain_text": "Controller 6.0项目旨在优化监控运维界面，提升日常监控体验，包含UC场景QoS优化，预计于2025年7月完成。负责人为Lucien Chen，优先级高。",
+              "plain_text": "Controller 6.0项目旨在优化监控运维界面，提升日常监控体验，包括UC场景的QoS调度支持，原目标时间为2025年5月31日，最新计划时间为2025年7月10日。",
               "href": null
             }
           ]
@@ -12240,7 +14255,7 @@
     },
     "1a715375-830d-804e-857d-caf0cc351541": {
       "name": "Controller 5.15.24",
-      "updated_at": "2025-06-06T16:22:25.235360",
+      "updated_at": "2025-06-11T16:42:03.703704",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -12345,7 +14360,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 53,
+            "number": 77,
             "function": "count"
           }
         },
@@ -12376,7 +14391,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[进度] ❗️ 严重延期37天 , 计划时间4月30日"
+            "string": "[进度] ❗️ 严重延期42天 , 计划时间4月30日"
           }
         },
         "最新计划时间": {
@@ -12393,7 +14408,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[概况] 优先级: 中, 总需求: 53, 需求输入进度: 100%, 总工作量评估: 4"
+            "string": "[概况] 优先级: 中, 总需求: 77, 需求输入进度: 100%, 总工作量评估: 8"
           }
         },
         "专项": {
@@ -12631,6 +14646,106 @@
               {
                 "type": "select",
                 "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "5",
+                  "name": "⭐️⭐️⭐️⭐️",
+                  "color": "pink"
+                }
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
               }
             ],
             "function": "show_original"
@@ -12743,7 +14858,7 @@
             {
               "type": "text",
               "text": {
-                "content": "项目正在开发中，主要功能包括支持本地ZTP、设备发现、可定制用户有效期、基本批量配置、跨客户站点迁移等。预计完成时间为2025年6月6日，优先级为中等。",
+                "content": "设备添加优化版本包括支持本地ZTP、可定制用户有效期、基本批量配置、跨客户站点迁移等功能，预计于2025年6月6日完成。主要功能涵盖控制器、交换机和EAP的多项支持。",
                 "link": null
               },
               "annotations": {
@@ -12754,7 +14869,7 @@
                 "code": false,
                 "color": "default"
               },
-              "plain_text": "项目正在开发中，主要功能包括支持本地ZTP、设备发现、可定制用户有效期、基本批量配置、跨客户站点迁移等。预计完成时间为2025年6月6日，优先级为中等。",
+              "plain_text": "设备添加优化版本包括支持本地ZTP、可定制用户有效期、基本批量配置、跨客户站点迁移等功能，预计于2025年6月6日完成。主要功能涵盖控制器、交换机和EAP的多项支持。",
               "href": null
             }
           ]
@@ -12785,7 +14900,7 @@
     },
     "1a715375-830d-80cd-8ee2-cba42fd1e491": {
       "name": "Central 1.0",
-      "updated_at": "2025-06-06T16:22:25.235362",
+      "updated_at": "2025-06-11T16:42:03.703707",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -12802,9 +14917,6 @@
             },
             {
               "id": "19a15375-830d-81f3-a67a-fc863c1b14d2"
-            },
-            {
-              "id": "19a15375-830d-81a3-b12f-de99c3be54ed"
             },
             {
               "id": "19a15375-830d-81f2-8858-dd92af613d38"
@@ -12859,9 +14971,18 @@
             },
             {
               "id": "19a15375-830d-8165-ab1b-cb9164c9d90f"
+            },
+            {
+              "id": "20d15375-830d-8141-9e94-d20488ade858"
+            },
+            {
+              "id": "20d15375-830d-8191-8f4e-f303eddf0471"
+            },
+            {
+              "id": "20d15375-830d-8111-bd08-c36db144dc71"
             }
           ],
-          "has_more": false
+          "has_more": true
         },
         "负责人": {
           "id": "%3Ebu%3A",
@@ -12884,7 +15005,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 23,
+            "number": 37,
             "function": "count"
           }
         },
@@ -12910,7 +15031,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 0.043478260869565216,
+            "number": 0.02702702702702703,
             "function": "percent_per_group"
           }
         },
@@ -12932,7 +15053,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[概况] 优先级: 高, 总需求: 23, 需求输入进度: 96%, 总工作量评估: 0"
+            "string": "[概况] 优先级: 高, 总需求: 37, 需求输入进度: 97%, 总工作量评估: 0"
           }
         },
         "专项": {
@@ -12955,6 +15076,62 @@
           "rollup": {
             "type": "array",
             "array": [
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
               {
                 "type": "select",
                 "select": null
@@ -13158,7 +15335,25 @@
         "概要": {
           "id": "notion%3A%2F%2Fprojects%2Fproject_summary_feature",
           "type": "rich_text",
-          "rich_text": []
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Omada Central 1.0是一个集成的网络和监控云管理平台，旨在优化CCTV场景，通过智能设备识别、网络安全联动和性能优化等功能，提升整体解决方案的竞争力和市场影响力。新版本将加强网络与监控系统的协同，提供更智能、高效和安全的管理解决方案。",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Omada Central 1.0是一个集成的网络和监控云管理平台，旨在优化CCTV场景，通过智能设备识别、网络安全联动和性能优化等功能，提升整体解决方案的竞争力和市场影响力。新版本将加强网络与监控系统的协同，提供更智能、高效和安全的管理解决方案。",
+              "href": null
+            }
+          ]
         },
         "任务清单": {
           "id": "notion%3A%2F%2Fprojects%2Fproject_to_task_relation",
@@ -13182,7 +15377,7 @@
     },
     "1a715375-830d-80d4-90fd-f91541ac2b04": {
       "name": "Controller 5.15.20",
-      "updated_at": "2025-06-06T16:22:25.235364",
+      "updated_at": "2025-06-11T16:42:03.703711",
       "properties": {
         "需求池": {
           "id": "%3EBjs",
@@ -13287,7 +15482,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 72,
+            "number": 126,
             "function": "count"
           }
         },
@@ -13313,7 +15508,7 @@
           "type": "rollup",
           "rollup": {
             "type": "number",
-            "number": 0.027777777777777776,
+            "number": 0.031746031746031744,
             "function": "percent_per_group"
           }
         },
@@ -13335,7 +15530,7 @@
           "type": "formula",
           "formula": {
             "type": "string",
-            "string": "[概况] 优先级: 中, 总需求: 72, 需求输入进度: 97%, 总工作量评估: 1"
+            "string": "[概况] 优先级: 中, 总需求: 126, 需求输入进度: 97%, 总工作量评估: 2"
           }
         },
         "专项": {
@@ -13649,6 +15844,226 @@
               {
                 "type": "select",
                 "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": null
+              },
+              {
+                "type": "select",
+                "select": {
+                  "id": "1",
+                  "name": "⭐️",
+                  "color": "green"
+                }
               }
             ],
             "function": "show_original"
@@ -13761,7 +16176,7 @@
             {
               "type": "text",
               "text": {
-                "content": "MSP部署优化版本已发布，主要功能包括批量站点配置模板、多站点SD-WAN VPN连接、内容过滤和本地控制器集群模式。原目标时间为2025年2月28日，实际完成时间为2025年3月27日。",
+                "content": "MSP部署优化版本已发布，主要功能包括批量站点配置模板、多站点SD-WAN VPN连接、内容过滤和本地控制器集群模式以实现高可用性管理。",
                 "link": null
               },
               "annotations": {
@@ -13772,7 +16187,7 @@
                 "code": false,
                 "color": "default"
               },
-              "plain_text": "MSP部署优化版本已发布，主要功能包括批量站点配置模板、多站点SD-WAN VPN连接、内容过滤和本地控制器集群模式。原目标时间为2025年2月28日，实际完成时间为2025年3月27日。",
+              "plain_text": "MSP部署优化版本已发布，主要功能包括批量站点配置模板、多站点SD-WAN VPN连接、内容过滤和本地控制器集群模式以实现高可用性管理。",
               "href": null
             }
           ]
@@ -13802,6 +16217,6 @@
       }
     }
   },
-  "last_update": "2025-06-06T16:22:25.235697",
+  "last_update": "2025-06-11T16:42:03.704091",
   "cache_ttl_hours": 1.0
 }

@@ -132,6 +132,12 @@ class JiraClient:
     async def update_issue(self, issue_key: str, fields: Dict[str, Any]) -> bool:
         """更新JIRA Issue"""
         try:
+            # 确保fixVersions字段的ID为字符串格式
+            if 'fixVersions' in fields and fields['fixVersions']:
+                for version in fields['fixVersions']:
+                    if 'id' in version:
+                        version['id'] = str(version['id'])  # 确保ID为字符串
+            
             payload = {
                 'fields': fields
             }
@@ -201,38 +207,22 @@ class JiraClient:
             
             async with self.session.get(project_url) as response:
                 if response.status == 200:
-                    project_info = await response.json()
+                    project_data = await response.json()
+                    
+                    self._project_metadata = {
+                        'project': project_data,
+                        'issue_types': project_data.get('issueTypes', [])
+                    }
+                    
+                    self.logger.info(
+                        "项目元数据加载完成",
+                        project_name=project_data.get('name'),
+                        project_key=project_data.get('key'),
+                        issue_types_count=len(self._project_metadata['issue_types'])
+                    )
                 else:
-                    error_text = await response.text()
-                    raise Exception(f"获取项目信息失败: {response.status} - {error_text}")
-            
-            # 获取创建元数据
-            meta_url = f"{self.jira_config.base_url}/rest/api/2/issue/createmeta"
-            params = {
-                'projectKeys': self.jira_config.project_key,
-                'expand': 'projects.issuetypes.fields'
-            }
-            
-            async with self.session.get(meta_url, params=params) as response:
-                if response.status == 200:
-                    create_meta = await response.json()
-                else:
-                    error_text = await response.text()
-                    raise Exception(f"获取创建元数据失败: {response.status} - {error_text}")
-            
-            self._project_metadata = {
-                'project': project_info,
-                'create_meta': create_meta,
-                'loaded_at': datetime.now()
-            }
-            
-            self.logger.info(
-                "项目元数据加载完成",
-                project_name=project_info.get('name'),
-                project_key=project_info.get('key'),
-                issue_types_count=len(create_meta.get('projects', [{}])[0].get('issuetypes', []))
-            )
-            
+                    raise Exception(f"获取项目信息失败: {response.status}")
+                    
         except Exception as e:
             self.logger.error("加载项目元数据失败", error=str(e))
             raise
@@ -246,7 +236,7 @@ class JiraClient:
         return {
             'project': {'id': self.jira_config.project_id},
             'issuetype': {'id': self.jira_config.default_issue_type_id},
-            'fixVersions': [{'id': self.jira_config.default_version_id}]
+            'fixVersions': [{'id': str(self.jira_config.default_version_id)}]  # 确保ID为字符串
         }
     
     async def test_connection(self) -> bool:
@@ -274,30 +264,47 @@ class JiraClient:
     async def get_project_versions(self, project_key: str = None) -> List[Dict[str, Any]]:
         """获取项目版本列表"""
         try:
-            project = project_key or self.jira_config.project_key
-            url = f"{self.jira_config.base_url}/rest/api/2/project/{project}/versions"
+            if not project_key:
+                project_key = self.jira_config.project_key
+            
+            url = f"{self.jira_config.base_url}/rest/api/2/project/{project_key}/versions"
             
             async with self.session.get(url) as response:
                 if response.status == 200:
                     versions = await response.json()
-                    self.logger.info(
-                        "项目版本获取成功",
-                        project_key=project,
-                        version_count=len(versions)
-                    )
+                    self.logger.info("项目版本获取成功", project_key=project_key, version_count=len(versions))
                     return versions
                 else:
                     error_text = await response.text()
-                    self.logger.error(
-                        "项目版本获取失败",
-                        project_key=project,
+                    self.logger.error("获取项目版本失败", project_key=project_key, status=response.status, error=error_text)
+                    return []
+                    
+        except Exception as e:
+            self.logger.error("获取项目版本异常", error=str(e), project_key=project_key)
+            return []
+    
+    async def get_existing_remote_links(self, issue_key: str) -> List[Dict[str, Any]]:
+        """获取Issue的现有Remote Links"""
+        try:
+            url = f"{self.jira_config.base_url}/rest/api/2/issue/{issue_key}/remotelink"
+            
+            async with self.session.get(url) as response:
+                if response.status == 200:
+                    links = await response.json()
+                    self.logger.debug(f"获取到 {len(links)} 个现有Remote Links", issue_key=issue_key)
+                    return links
+                else:
+                    error_text = await response.text()
+                    self.logger.warning(
+                        "获取现有Remote Links失败",
+                        issue_key=issue_key,
                         status=response.status,
                         error=error_text
                     )
                     return []
                     
         except Exception as e:
-            self.logger.error("项目版本获取异常", error=str(e), project_key=project_key)
+            self.logger.error("获取现有Remote Links异常", error=str(e), issue_key=issue_key)
             return []
     
     async def create_remote_issue_link(self, issue_key: str, remote_link: Dict[str, Any]) -> bool:
@@ -318,8 +325,9 @@ class JiraClient:
             async with self.session.post(url, json=remote_link) as response:
                 if response.status in [200, 201]:
                     result = await response.json()
+                    status_text = "更新" if response.status == 200 else "创建"
                     self.logger.info(
-                        "远程链接创建成功",
+                        f"远程链接{status_text}成功",
                         issue_key=issue_key,
                         link_id=result.get('id'),
                         link_title=remote_link.get('object', {}).get('title', 'Unknown')
@@ -340,27 +348,29 @@ class JiraClient:
             self.logger.error("创建远程链接异常", error=str(e), issue_key=issue_key)
             return False
     
-    async def create_remote_issue_links(self, issue_key: str, remote_links: List[Dict[str, Any]]) -> bool:
-        """为JIRA Issue创建多个远程链接"""
+    async def create_or_update_remote_links(self, issue_key: str, remote_links: List[Dict[str, Any]]) -> bool:
+        """创建或更新多个远程链接（支持基于globalId的更新）"""
         try:
             if not remote_links:
                 self.logger.debug("没有远程链接需要创建", issue_key=issue_key)
                 return True
                 
             self.logger.info(
-                "开始创建远程链接",
+                "开始创建/更新远程链接",
                 issue_key=issue_key,
                 link_count=len(remote_links)
             )
             
             success_count = 0
             for remote_link in remote_links:
+                # 使用globalId来支持更新功能
+                # 如果提供了globalId，JIRA会自动判断是创建还是更新
                 success = await self.create_remote_issue_link(issue_key, remote_link)
                 if success:
                     success_count += 1
             
             self.logger.info(
-                "远程链接创建完成",
+                "远程链接创建/更新完成",
                 issue_key=issue_key,
                 success_count=success_count,
                 total_count=len(remote_links)
@@ -369,5 +379,144 @@ class JiraClient:
             return success_count > 0
             
         except Exception as e:
-            self.logger.error("创建远程链接异常", error=str(e), issue_key=issue_key)
-            return False 
+            self.logger.error("创建/更新远程链接异常", error=str(e), issue_key=issue_key)
+            return False
+    
+    async def create_remote_issue_links(self, issue_key: str, remote_links: List[Dict[str, Any]]) -> bool:
+        """为JIRA Issue创建多个远程链接（保持兼容性）"""
+        return await self.create_or_update_remote_links(issue_key, remote_links)
+    
+    async def get_issue_link_types(self) -> List[Dict[str, Any]]:
+        """获取JIRA支持的issue link types"""
+        try:
+            url = f"{self.jira_config.base_url}/rest/api/2/issueLinkType"
+            
+            async with self.session.get(url) as response:
+                if response.status == 200:
+                    result = await response.json()
+                    link_types = result.get('issueLinkTypes', [])
+                    self.logger.info(f"获取到 {len(link_types)} 个issue link types")
+                    return link_types
+                else:
+                    error_text = await response.text()
+                    self.logger.error(
+                        "获取issue link types失败",
+                        status=response.status,
+                        error=error_text
+                    )
+                    return []
+                    
+        except Exception as e:
+            self.logger.error("获取issue link types异常", error=str(e))
+            return []
+    
+    async def create_issue_link(self, from_issue_key: str, to_issue_key: str, 
+                               link_type_id: str = "10003") -> bool:
+        """创建issue之间的链接关系"""
+        try:
+            self.logger.info(
+                "开始创建issue链接",
+                from_issue=from_issue_key,
+                to_issue=to_issue_key,
+                link_type_id=link_type_id
+            )
+            
+            payload = {
+                "type": {
+                    "id": link_type_id
+                },
+                "inwardIssue": {
+                    "key": to_issue_key
+                },
+                "outwardIssue": {
+                    "key": from_issue_key
+                }
+            }
+            
+            url = f"{self.jira_config.base_url}/rest/api/2/issueLink"
+            
+            async with self.session.post(url, json=payload) as response:
+                if response.status == 201:
+                    self.logger.info(
+                        "issue链接创建成功",
+                        from_issue=from_issue_key,
+                        to_issue=to_issue_key,
+                        link_type_id=link_type_id
+                    )
+                    return True
+                else:
+                    error_text = await response.text()
+                    self.logger.error(
+                        "issue链接创建失败",
+                        from_issue=from_issue_key,
+                        to_issue=to_issue_key,
+                        status=response.status,
+                        error=error_text
+                    )
+                    return False
+            
+        except Exception as e:
+            self.logger.error(
+                "创建issue链接异常",
+                error=str(e),
+                from_issue=from_issue_key,
+                to_issue=to_issue_key
+            )
+            return False
+    
+    async def create_issue_links(self, from_issue_key: str, to_issue_keys: List[str], 
+                                link_type_id: str = "10003") -> int:
+        """批量创建issue链接关系"""
+        try:
+            if not to_issue_keys:
+                self.logger.debug("没有需要创建的issue链接", from_issue=from_issue_key)
+                return 0
+                
+            self.logger.info(
+                "开始批量创建issue链接",
+                from_issue=from_issue_key,
+                to_issues_count=len(to_issue_keys),
+                link_type_id=link_type_id
+            )
+            
+            success_count = 0
+            for to_issue_key in to_issue_keys:
+                success = await self.create_issue_link(from_issue_key, to_issue_key, link_type_id)
+                if success:
+                    success_count += 1
+            
+            self.logger.info(
+                "批量issue链接创建完成",
+                from_issue=from_issue_key,
+                success_count=success_count,
+                total_count=len(to_issue_keys)
+            )
+            
+            return success_count
+            
+        except Exception as e:
+            self.logger.error(
+                "批量创建issue链接异常",
+                error=str(e),
+                from_issue=from_issue_key
+            )
+            return 0
+    
+    def extract_jira_issue_keys(self, text: str) -> List[str]:
+        """从文本中提取JIRA issue keys"""
+        import re
+        
+        if not text:
+            return []
+        
+        # JIRA issue key 模式：项目前缀-数字
+        # 例如：SMBNET-123, ABC-456
+        pattern = r'\b([A-Z]+)-(\d+)\b'
+        matches = re.findall(pattern, text)
+        
+        issue_keys = [f"{prefix}-{number}" for prefix, number in matches]
+        
+        if issue_keys:
+            self.logger.info(f"从文本中提取到 {len(issue_keys)} 个JIRA issue keys: {issue_keys}")
+        
+        return issue_keys 

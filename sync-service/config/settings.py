@@ -16,8 +16,8 @@ class RedisConfig:
     password: Optional[str] = None
     db: int = 0
     max_connections: int = 10
-    socket_timeout: int = 30
-    socket_connect_timeout: int = 30
+    socket_timeout: int = 60  # 增加超时时间
+    socket_connect_timeout: int = 10  # 连接超时保持较短
     retry_on_timeout: bool = True
 
 

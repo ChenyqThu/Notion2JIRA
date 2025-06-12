@@ -39,7 +39,10 @@ class RedisClient:
                 socket_connect_timeout=self.settings.redis.socket_connect_timeout,
                 retry_on_timeout=self.settings.redis.retry_on_timeout,
                 decode_responses=True,
-                encoding='utf-8'
+                encoding='utf-8',
+                # 添加连接保活参数
+                socket_keepalive=True,
+                socket_keepalive_options={}
             )
             
             # 创建Redis客户端
@@ -151,34 +154,69 @@ class RedisClient:
         Returns:
             弹出的数据，如果队列为空则返回None
         """
-        try:
-            # 使用BLPOP实现阻塞式弹出（兼容低版本Redis）
-            result = await self.client.blpop(queue_name, timeout=timeout)
-            
-            if result:
-                queue, message_json = result
-                message = json.loads(message_json)
+        max_retries = 3
+        retry_delay = 1
+        
+        for attempt in range(max_retries):
+            try:
+                # 检查连接状态
+                if not await self.ping():
+                    self.logger.warning(f"Redis连接已断开，尝试重连... (第{attempt + 1}次)")
+                    await self.connect()
                 
-                self.logger.debug(
-                    "从队列弹出消息",
+                # 使用BLPOP实现阻塞式弹出（兼容低版本Redis）
+                result = await self.client.blpop(queue_name, timeout=timeout)
+                
+                if result:
+                    queue, message_json = result
+                    message = json.loads(message_json)
+                    
+                    self.logger.debug(
+                        "从队列弹出消息",
+                        queue=queue_name,
+                        message_id=message.get("id"),
+                        priority=message.get("priority")
+                    )
+                    
+                    # 返回消息数据，兼容webhook-server格式
+                    return message
+                else:
+                    # 超时，没有消息
+                    return None
+                    
+            except (ConnectionError, TimeoutError, redis.ConnectionError) as e:
+                self.logger.warning(
+                    f"Redis连接错误，尝试重试 (第{attempt + 1}/{max_retries}次)",
                     queue=queue_name,
-                    message_id=message.get("id"),
-                    priority=message.get("priority")
+                    error=str(e)
                 )
                 
-                # 返回消息数据，兼容webhook-server格式
-                return message
-            else:
-                # 超时，没有消息
-                return None
+                if attempt < max_retries - 1:
+                    await asyncio.sleep(retry_delay * (attempt + 1))  # 指数退避
+                    try:
+                        await self.connect()
+                    except Exception as reconnect_error:
+                        self.logger.error(f"重连失败: {reconnect_error}")
+                else:
+                    self.logger.error(
+                        "达到最大重试次数，放弃操作",
+                        queue=queue_name,
+                        error=str(e)
+                    )
+                    return None
+                    
+            except Exception as e:
+                self.logger.error(
+                    "从队列弹出消息时发生未知错误",
+                    queue=queue_name,
+                    error=str(e),
+                    attempt=attempt + 1
+                )
                 
-        except Exception as e:
-            self.logger.error(
-                "从队列弹出消息时发生错误",
-                queue=queue_name,
-                error=str(e)
-            )
-            return None
+                if attempt < max_retries - 1:
+                    await asyncio.sleep(retry_delay)
+                else:
+                    return None
     
     async def get_queue_length(self, queue_name: str) -> int:
         """获取队列长度"""

@@ -299,19 +299,19 @@ class SyncService:
                 'url': notion_url
             }
             
-            # 使用字段映射器转换数据
-            jira_fields = await self.field_mapper.map_notion_to_jira(
-                notion_data, 
-                page_url=notion_data['url']
-            )
+            # 字段映射转换
+            jira_fields = await self.field_mapper.map_notion_to_jira(notion_data, notion_url)
             
-            # 提取远程链接信息（如果存在）
-            notion_relations = jira_fields.pop('_notion_relations', None)
+            # 提取特殊字段（remote links 和 issue links）
+            remote_links_data = jira_fields.pop('_remote_links', {})
+            issue_links_data = jira_fields.pop('_issue_links', [])
             
-            # 验证必填字段
-            missing_fields = self.field_mapper.validate_required_fields(jira_fields)
-            if missing_fields:
-                raise ValueError(f"缺少必填字段: {', '.join(missing_fields)}")
+            # 计算远程链接总数
+            remote_links_count = 0
+            if isinstance(remote_links_data, dict):
+                remote_links_count = len(remote_links_data.get('original', [])) + len(remote_links_data.get('prd', [])) + len(remote_links_data.get('other', []))
+            elif isinstance(remote_links_data, list):
+                remote_links_count = len(remote_links_data)  # 向后兼容
             
             self.logger.info(
                 "字段映射完成，准备创建JIRA Issue",
@@ -320,28 +320,40 @@ class SyncService:
                 priority=jira_fields.get('priority', {}).get('id'),
                 has_assignee=bool(jira_fields.get('assignee')),
                 description_length=len(jira_fields.get('description', '')),
-                has_relations=bool(notion_relations),
-                relation_count=len(notion_relations) if notion_relations else 0
+                remote_links_count=remote_links_count,
+                issue_links_count=len(issue_links_data)
             )
             
-            # 在JIRA中创建Issue
+            # 创建JIRA Issue
             jira_result = await self.jira_client.create_issue(jira_fields)
+            
+            if not jira_result:
+                raise Exception("JIRA Issue创建失败")
+            
             jira_issue_key = jira_result.get('key')
             jira_issue_id = jira_result.get('id')
             
             if not jira_issue_key:
                 raise Exception("JIRA Issue创建失败：未返回Issue Key")
             
-            # 如果有关联链接，创建远程链接
-            if notion_relations:
+            # 处理远程链接
+            if remote_links_data:
                 try:
-                    remote_links = self.field_mapper.build_remote_issue_links(
-                        notion_relations, 
-                        jira_fields.get('summary', 'Notion页面')
-                    )
+                    # 支持新的分类格式和旧格式
+                    if isinstance(remote_links_data, dict):
+                        remote_links = await self.field_mapper.build_categorized_remote_links(
+                            remote_links_data, 
+                            jira_fields.get('summary', 'Notion页面')
+                        )
+                    else:
+                        # 向后兼容旧格式
+                        remote_links = await self.field_mapper.build_remote_links_from_data_with_titles(
+                            remote_links_data, 
+                            jira_fields.get('summary', 'Notion页面')
+                        )
                     
                     if remote_links:
-                        success = await self.jira_client.create_remote_issue_links(
+                        success = await self.jira_client.create_or_update_remote_links(
                             jira_issue_key, 
                             remote_links
                         )
@@ -368,6 +380,41 @@ class SyncService:
                         error=str(link_e)
                     )
                     # 远程链接创建失败不影响主流程
+            
+            # 处理JIRA issue链接
+            if issue_links_data:
+                try:
+                    # 使用"Relates"类型的链接（ID: 10003）
+                    success_count = await self.jira_client.create_issue_links(
+                        jira_issue_key,
+                        issue_links_data,
+                        "10003"  # Relates类型
+                    )
+                    
+                    if success_count > 0:
+                        self.logger.info(
+                            "JIRA issue链接创建成功",
+                            page_id=page_id,
+                            jira_issue_key=jira_issue_key,
+                            success_count=success_count,
+                            total_count=len(issue_links_data)
+                        )
+                    else:
+                        self.logger.warning(
+                            "JIRA issue链接创建失败",
+                            page_id=page_id,
+                            jira_issue_key=jira_issue_key,
+                            issue_keys=issue_links_data
+                        )
+                        
+                except Exception as issue_link_e:
+                    self.logger.error(
+                        "创建JIRA issue链接异常",
+                        page_id=page_id,
+                        jira_issue_key=jira_issue_key,
+                        error=str(issue_link_e)
+                    )
+                    # JIRA issue链接创建失败不影响主流程
             
             # 保存映射关系
             mapping_data = {
@@ -441,49 +488,62 @@ class SyncService:
                 'url': notion_url
             }
             
-            # 使用字段映射器转换数据
-            jira_fields = await self.field_mapper.map_notion_to_jira(
-                notion_data, 
-                page_url=notion_data['url']
-            )
+            # 字段映射转换
+            jira_fields = await self.field_mapper.map_notion_to_jira(notion_data, notion_url)
             
-            # 提取远程链接信息（如果存在）
-            notion_relations = jira_fields.pop('_notion_relations', None)
+            # 提取特殊字段（remote links 和 issue links）
+            remote_links_data = jira_fields.pop('_remote_links', {})
+            issue_links_data = jira_fields.pop('_issue_links', [])
             
-            # 移除创建时才需要的字段
-            update_fields = {k: v for k, v in jira_fields.items() 
-                           if k not in ['project', 'issuetype']}
+            # 计算远程链接总数
+            remote_links_count = 0
+            if isinstance(remote_links_data, dict):
+                remote_links_count = len(remote_links_data.get('original', [])) + len(remote_links_data.get('prd', [])) + len(remote_links_data.get('other', []))
+            elif isinstance(remote_links_data, list):
+                remote_links_count = len(remote_links_data)  # 向后兼容
             
             self.logger.info(
                 "字段映射完成，准备更新JIRA Issue",
                 page_id=page_id,
                 issue_key=issue_key,
-                summary=update_fields.get('summary'),
-                priority=update_fields.get('priority', {}).get('id'),
-                has_assignee=bool(update_fields.get('assignee')),
-                description_length=len(update_fields.get('description', '')),
-                has_relations=bool(notion_relations),
-                relation_count=len(notion_relations) if notion_relations else 0
+                summary=jira_fields.get('summary'),
+                priority=jira_fields.get('priority', {}).get('id'),
+                has_assignee=bool(jira_fields.get('assignee')),
+                description_length=len(jira_fields.get('description', '')),
+                remote_links_count=remote_links_count,
+                issue_links_count=len(issue_links_data)
             )
+            
+            # 移除创建时才需要的字段，用于更新
+            update_fields = {k: v for k, v in jira_fields.items() 
+                            if k not in ['project', 'issuetype']}
             
             # 更新JIRA Issue
             success = await self.jira_client.update_issue(issue_key, update_fields)
             
-            # 如果有关联链接，创建远程链接（更新操作中也处理）
-            if success and notion_relations:
+            # 处理远程链接
+            if remote_links_data:
                 try:
-                    remote_links = self.field_mapper.build_remote_issue_links(
-                        notion_relations, 
-                        update_fields.get('summary', 'Notion页面')
-                    )
+                    # 支持新的分类格式和旧格式
+                    if isinstance(remote_links_data, dict):
+                        remote_links = await self.field_mapper.build_categorized_remote_links(
+                            remote_links_data, 
+                            jira_fields.get('summary', 'Notion页面')
+                        )
+                    else:
+                        # 向后兼容旧格式
+                        remote_links = await self.field_mapper.build_remote_links_from_data_with_titles(
+                            remote_links_data, 
+                            jira_fields.get('summary', 'Notion页面')
+                        )
                     
                     if remote_links:
-                        link_success = await self.jira_client.create_remote_issue_links(
+                        success = await self.jira_client.create_or_update_remote_links(
                             issue_key, 
                             remote_links
                         )
                         
-                        if link_success:
+                        if success:
                             self.logger.info(
                                 "更新操作中远程链接创建成功",
                                 page_id=page_id,
@@ -505,6 +565,41 @@ class SyncService:
                         error=str(link_e)
                     )
                     # 远程链接创建失败不影响主流程
+            
+            # 处理JIRA issue链接
+            if issue_links_data:
+                try:
+                    # 使用"Relates"类型的链接（ID: 10003）
+                    success_count = await self.jira_client.create_issue_links(
+                        issue_key,
+                        issue_links_data,
+                        "10003"  # Relates类型
+                    )
+                    
+                    if success_count > 0:
+                        self.logger.info(
+                            "更新操作中JIRA issue链接创建成功",
+                            page_id=page_id,
+                            issue_key=issue_key,
+                            success_count=success_count,
+                            total_count=len(issue_links_data)
+                        )
+                    else:
+                        self.logger.warning(
+                            "更新操作中JIRA issue链接创建失败",
+                            page_id=page_id,
+                            issue_key=issue_key,
+                            issue_keys=issue_links_data
+                        )
+                        
+                except Exception as issue_link_e:
+                    self.logger.error(
+                        "更新操作中创建JIRA issue链接异常",
+                        page_id=page_id,
+                        issue_key=issue_key,
+                        error=str(issue_link_e)
+                    )
+                    # JIRA issue链接创建失败不影响主流程
             
             if success:
                 # 更新映射关系的同步时间
@@ -572,9 +667,6 @@ class SyncService:
                 error=str(e)
             )
             # 回写失败不影响主流程，只记录错误
-    
-
-
     
     async def _handle_jira_to_notion_update(self, message: Dict[str, Any], event_data: Dict[str, Any]):
         """处理JIRA到Notion的更新同步"""

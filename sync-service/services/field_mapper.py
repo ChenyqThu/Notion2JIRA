@@ -15,90 +15,158 @@ from services.notion_version_cache import NotionVersionCache
 class FieldMapper:
     """字段映射引擎"""
     
-    def __init__(self, settings: Settings, notion_client=None):
+    def __init__(self, settings: Settings, jira_client=None, notion_client=None):
         self.settings = settings
-        self.logger = get_logger("field_mapper")
+        self.jira_client = jira_client
         self.notion_client = notion_client
+        self.logger = get_logger("field_mapper")
         
-        # 初始化版本映射器
-        self.version_mapper = VersionMapper(settings)
-        
-        # 初始化Notion版本缓存
-        self.notion_version_cache = NotionVersionCache(settings, notion_client)
-        
-        # 状态映射表（Notion状态 -> JIRA状态）
-        self.status_mapping = {
-            "初始反馈 OR": "待可行性评估",
-            "待评估 UR": "待可行性评估", 
-            "待输入 WI": "TODO",
-            "同步中 SYNC": "TODO",
-            "已输入 JIRA": "TODO",
-            "PRD Done": "TODO",
-            "UI Done": "TODO", 
-            "UX Done": "TODO",
-            "DEVING": "开发中",
-            "DELAYED": "开发中",
-            "Testing": "Testing（测试）",
-            "已发布 DONE": "完成",
-            "重复 DUMP": "完成",
-            "无效 INVALID": "完成",
-            "暂不支持 PENDING": "完成",
-            "无法支持 BAN": "完成"
+        # 初始化字段映射表
+        self.priority_mapping = {
+            '高 High': '1',    # Highest
+            '中 Medium': '3',  # Medium  
+            '低 Low': '4',     # Low
+            '无 None': '5'     # Lowest
         }
         
-        # 优先级映射表
-        self.priority_mapping = {
-            "高 High": {"id": "1"},
-            "中 Medium": {"id": "3"},
-            "低 Low": {"id": "4"},
-            "无 None": {"id": "5"}
+        self.status_mapping = {
+            '初始反馈 OR': '待可行性评估',
+            '待评估 UR': '待可行性评估', 
+            '待输入 WI': 'TODO',
+            '同步中 SYNC': 'TODO',
+            '已输入 JIRA': 'TODO',
+            'DEVING': '开发中',
+            'Testing': 'Testing（测试）',
+            '已发布 DONE': '完成'
+        }
+        
+        # 产品线到经办人的映射
+        self.product_line_assignee_mapping = {
+            'Controller': 'ludingyang@tp-link.com.hk',
+            'Gateway': 'zhujiayin@tp-link.com.hk', 
+            'Managed Switch': 'huangguangrun@tp-link.com.hk',
+            'Unmanaged Switch': 'huangguangrun@tp-link.com.hk',
+            'EAP': 'ouhuanrui@tp-link.com.hk',
+            'OLT': 'fancunlian@tp-link.com.hk',
+            'APP': 'xingxiaosong@tp-link.com.hk'
+        }
+        
+        # 默认经办人（其他未命中的产品线）
+        self.default_assignee = 'ludingyang@tp-link.com.hk'
+        
+        # 初始化版本缓存（如果需要）
+        try:
+            if hasattr(settings.notion, 'enable_version_mapping') and settings.notion.enable_version_mapping:
+                from services.notion_version_cache import NotionVersionCache
+                self.notion_version_cache = NotionVersionCache(settings)
+            else:
+                self.notion_version_cache = None
+        except (ImportError, AttributeError):
+            self.logger.warning("版本映射功能不可用")
+            self.notion_version_cache = None
+        
+        # 初始化版本映射器
+        try:
+            from services.version_mapper import VersionMapper
+            self.version_mapper = VersionMapper(settings)
+        except ImportError:
+            self.logger.warning("版本映射器不可用，VersionMapper模块未找到")
+            self.version_mapper = None
+    
+    def get_default_fields(self) -> Dict[str, Any]:
+        """获取默认字段配置"""
+        return {
+            'project': {'id': self.settings.jira.project_id},
+            'issuetype': {'id': self.settings.jira.default_issue_type_id},
+            'fixVersions': [{'id': self.settings.jira.default_version_id}]
         }
     
     async def map_notion_to_jira(self, notion_data: Dict[str, Any], page_url: str = None) -> Dict[str, Any]:
         """将Notion数据映射为JIRA字段"""
         try:
-            self.logger.info("开始字段映射转换", page_id=notion_data.get('page_id'))
+            page_id = notion_data.get('page_id', 'Unknown')
+            self.logger.info("开始字段映射转换", page_id=page_id)
             
-            # 获取基础字段
-            jira_fields = {
-                'project': {'id': self.settings.jira.project_id},
-                'issuetype': {'id': self.settings.jira.default_issue_type_id},
-                'fixVersions': [{'id': self.settings.jira.default_version_id}]
-            }
+            # 基础字段映射
+            jira_fields = self.get_default_fields()
             
-            # 映射标题
+            # 标题映射
             title = self._extract_title(notion_data)
             if title:
                 jira_fields['summary'] = title
-            else:
-                raise ValueError("缺少必需的标题字段")
             
-            # 映射描述（组合多个字段）
-            description = self._build_description(notion_data, page_url)
+            # 描述字段映射（不再包含原需求链接和PRD链接）
+            description = self._build_description_without_links(notion_data)
             if description:
                 jira_fields['description'] = description
             
-            # 映射优先级
+            # 优先级映射
             priority = self._extract_priority(notion_data)
             if priority and priority in self.priority_mapping:
-                jira_fields['priority'] = self.priority_mapping[priority]
+                jira_fields['priority'] = {'id': self.priority_mapping[priority]}
+                self.logger.debug(f"优先级映射: {priority} -> {self.priority_mapping[priority]}")
             
-            # 映射分配人员
+            # 经办人映射
             assignee = await self._extract_assignee(notion_data)
             if assignee:
-                jira_fields['assignee'] = assignee
+                # 检查assignee是否已经是字典格式
+                if isinstance(assignee, dict):
+                    jira_fields['assignee'] = assignee
+                else:
+                    jira_fields['assignee'] = {'name': assignee}
+                self.logger.debug(f"经办人映射成功")
             
-            # 映射版本信息
-            versions = await self._extract_version(notion_data)
-            if versions:
-                jira_fields['fixVersions'] = versions
+            # 版本映射
+            try:
+                version_id = await self._extract_version(notion_data)
+                if version_id:
+                    # version_id已经是字符串格式
+                    jira_fields['fixVersions'] = [{'id': version_id}]
+                    self.logger.debug(f"版本映射成功: {version_id}")
+                else:
+                    # 使用默认版本，确保ID为字符串格式
+                    jira_fields['fixVersions'] = [{'id': str(self.settings.jira.default_version_id)}]
+            except Exception as e:
+                self.logger.warning(f"版本映射失败: {str(e)}")
+                # 使用默认版本，确保ID为字符串格式
+                jira_fields['fixVersions'] = [{'id': str(self.settings.jira.default_version_id)}]
             
-            # 提取relation信息（用于后续创建远程链接）
+            # 提取关联链接信息（用于remote link和issue link）
             relations = self._extract_relations(notion_data)
+            original_links = self._extract_original_links(notion_data, page_url)
+            prd_links = self._extract_prd_links_for_remote(notion_data)
+            
+            # 分离JIRA issue keys 和 其他链接
+            jira_issue_keys = []
+            other_links = []
+            
             if relations:
-                # 将关系信息添加到特殊字段中，供同步服务使用
-                jira_fields['_notion_relations'] = relations
-                self.logger.info(f"字段映射中包含 {len(relations)} 个关联链接，将在JIRA操作后处理")
+                for relation in relations:
+                    if self._is_jira_issue_link(relation):
+                        # 提取JIRA issue keys
+                        issue_keys = self._extract_jira_issue_keys_from_text(relation)
+                        jira_issue_keys.extend(issue_keys)
+                    else:
+                        other_links.append(relation)
+            
+            # 收集需要创建remote link的链接（按类型分类）
+            remote_links_data = {
+                'original': original_links if original_links else [],
+                'prd': prd_links if prd_links else [], 
+                'other': other_links if other_links else []
+            }
+            
+            # 计算总链接数
+            total_remote_links = len(remote_links_data['original']) + len(remote_links_data['prd']) + len(remote_links_data['other'])
+            
+            # 将特殊字段添加到jira_fields中，供同步服务使用
+            if total_remote_links > 0:
+                jira_fields['_remote_links'] = remote_links_data
+                self.logger.info(f"字段映射中包含 {total_remote_links} 个远程链接，将在JIRA操作后处理 (原始需求:{len(remote_links_data['original'])}, PRD:{len(remote_links_data['prd'])}, 其他:{len(remote_links_data['other'])})")
+            
+            if jira_issue_keys:
+                jira_fields['_issue_links'] = jira_issue_keys
+                self.logger.info(f"字段映射中包含 {len(jira_issue_keys)} 个JIRA issue链接，将在JIRA操作后处理")
             
             # 映射状态（如果需要的话，JIRA创建时通常不需要设置状态）
             status = self._extract_status(notion_data)
@@ -113,7 +181,9 @@ class FieldMapper:
                 summary=jira_fields.get('summary'),
                 priority=jira_fields.get('priority', {}).get('id'),
                 has_assignee=bool(jira_fields.get('assignee')),
-                description_length=len(jira_fields.get('description', ''))
+                description_length=len(jira_fields.get('description', '')),
+                remote_links_count=total_remote_links,
+                issue_links_count=len(jira_issue_keys)
             )
             
             return jira_fields
@@ -225,6 +295,11 @@ class FieldMapper:
         if func_desc and isinstance(func_desc, str):
             description_parts.append(f"## 需求说明\n{func_desc}")
         
+        # PRD 文档库链接
+        prd_links = self._extract_prd_links(properties)
+        if prd_links:
+            description_parts.append(f"## PRD 链接\n{prd_links}")
+        
         # 移除AI整理部分 - 不在JIRA中显示
         # ai_summary = self._extract_field_value(properties, ['需求整理', 'ai_summary', 'AI整理'])
         # if ai_summary and isinstance(ai_summary, str):
@@ -238,6 +313,180 @@ class FieldMapper:
             description_parts.append(f"## 原始需求链接\n{notion_url}")
         
         return '\n\n'.join(description_parts) if description_parts else "无详细描述"
+    
+    def _build_description_without_links(self, notion_data: Dict[str, Any]) -> str:
+        """构建描述字段（不包含原需求链接和PRD链接，这些将作为remote link处理）"""
+        description_parts = []
+        properties = notion_data.get('properties', {})
+        
+        # 功能说明
+        func_desc = self._extract_field_value(properties, ['功能说明 Desc', 'description', 'Description'])
+        if func_desc and isinstance(func_desc, str):
+            description_parts.append(f"## 需求说明\n{func_desc}")
+        
+        # AI整理（如果需要在描述中显示）
+        # ai_summary = self._extract_field_value(properties, ['需求整理', 'ai_summary', 'AI整理'])
+        # if ai_summary and isinstance(ai_summary, str):
+        #     description_parts.append(f"## 需求整理(AI)\n{ai_summary}")
+        
+        return '\n\n'.join(description_parts) if description_parts else "无详细描述"
+    
+    def _extract_original_links(self, notion_data: Dict[str, Any], page_url: str = None) -> List[str]:
+        """提取原始需求链接"""
+        links = []
+        
+        # 优先使用raw_data中的URL
+        raw_data = notion_data.get('raw_data', {})
+        notion_url = raw_data.get('url') or page_url or notion_data.get('url')
+        
+        if notion_url:
+            links.append(notion_url)
+            self.logger.info(f"提取到原始需求链接: {notion_url}")
+        
+        return links
+    
+    def _extract_prd_links_for_remote(self, notion_data: Dict[str, Any]) -> List[str]:
+        """提取PRD文档库链接（用于remote link）"""
+        properties = notion_data.get('properties', {})
+        
+        # 先检查是否存在PRD文档库字段
+        prd_fields = ['PRD 文档库', 'PRD文档库', 'PRD Documents', 'prd_docs']
+        available_fields = list(properties.keys())
+        
+        # 记录调试信息
+        self.logger.debug(f"查找PRD文档库字段，尝试字段名: {prd_fields}")
+        self.logger.debug(f"可用字段: {available_fields}")
+        
+        found_prd_fields = [field for field in prd_fields if field in properties]
+        if found_prd_fields:
+            self.logger.info(f"找到PRD文档库字段: {found_prd_fields}")
+        else:
+            self.logger.warning(f"未找到PRD文档库字段，可用字段: {available_fields}")
+            return []
+        
+        prd_links_text = self._extract_prd_links(properties)
+        
+        if not prd_links_text:
+            self.logger.warning("PRD文档库字段存在但无法提取到链接内容")
+            return []
+        
+        # 将多行链接分割为列表
+        links = [link.strip() for link in prd_links_text.split('\n') if link.strip()]
+        
+        if links:
+            self.logger.info(f"成功提取到 {len(links)} 个PRD文档库链接用于remote link: {links}")
+        else:
+            self.logger.warning("PRD文档库链接分割后为空")
+        
+        return links
+    
+    def _is_jira_issue_link(self, link: str) -> bool:
+        """判断链接是否为JIRA issue链接"""
+        if not link:
+            return False
+        
+        # 检查是否包含JIRA issue key模式
+        import re
+        pattern = r'\b([A-Z]+)-(\d+)\b'
+        
+        return bool(re.search(pattern, link))
+    
+    def _extract_jira_issue_keys_from_text(self, text: str) -> List[str]:
+        """从文本中提取JIRA issue keys"""
+        import re
+        
+        if not text:
+            return []
+        
+        # JIRA issue key 模式：项目前缀-数字
+        # 例如：SMBNET-123, ABC-456
+        pattern = r'\b([A-Z]+)-(\d+)\b'
+        matches = re.findall(pattern, text)
+        
+        issue_keys = [f"{prefix}-{number}" for prefix, number in matches]
+        
+        if issue_keys:
+            self.logger.info(f"从文本中提取到 {len(issue_keys)} 个JIRA issue keys: {issue_keys}")
+        
+        return issue_keys
+    
+    def _extract_prd_links(self, properties: Dict[str, Any]) -> Optional[str]:
+        """提取PRD文档库链接"""
+        try:
+            # 尝试多种可能的PRD文档库字段名
+            prd_fields = ['PRD 文档库', 'PRD文档库', 'PRD Documents', 'prd_docs']
+            
+            # 增加详细调试信息
+            available_fields = list(properties.keys())
+            self.logger.debug(f"所有可用字段: {available_fields}")
+            self.logger.debug(f"查找PRD字段: {prd_fields}")
+            
+            for field_name in prd_fields:
+                if field_name in properties:
+                    self.logger.info(f"找到PRD文档库字段: {field_name}")
+                    field_data = properties[field_name]
+                    
+                    # 记录字段的详细结构
+                    self.logger.debug(f"PRD字段数据类型: {type(field_data)}")
+                    self.logger.debug(f"PRD字段完整数据: {field_data}")
+                    
+                    # 处理webhook-server格式
+                    if isinstance(field_data, dict) and 'value' in field_data:
+                        relation_data = field_data['value']
+                        self.logger.debug(f"webhook-server格式，value: {relation_data}")
+                    # 处理原始Notion格式
+                    elif isinstance(field_data, dict) and 'relation' in field_data:
+                        relation_data = field_data['relation']
+                        self.logger.debug(f"原始Notion格式，relation: {relation_data}")
+                    else:
+                        self.logger.warning(f"PRD字段格式不识别: {field_data}")
+                        continue
+                    
+                    # 检查是否有关联的页面
+                    if isinstance(relation_data, list) and len(relation_data) > 0:
+                        prd_urls = []
+                        
+                        self.logger.debug(f"开始处理 {len(relation_data)} 个关联项目")
+                        for i, item in enumerate(relation_data):
+                            page_id = None
+                            
+                            # 处理字典格式 {'id': 'page_id'}
+                            if isinstance(item, dict) and 'id' in item:
+                                page_id = item['id']
+                                self.logger.debug(f"从字典格式提取页面ID: {page_id}")
+                            # 处理直接字符串格式 'page_id'
+                            elif isinstance(item, str):
+                                page_id = item
+                                self.logger.debug(f"从字符串格式提取页面ID: {page_id}")
+                            else:
+                                self.logger.warning(f"关联项目格式异常: {item} (类型: {type(item)})")
+                                continue
+                            
+                            if page_id:
+                                # 去掉连字符生成Notion URL
+                                clean_page_id = page_id.replace('-', '')
+                                notion_url = f"https://www.notion.so/{clean_page_id}"
+                                prd_urls.append(notion_url)
+                                self.logger.debug(f"生成PRD链接: {page_id} -> {notion_url}")
+                        
+                        if prd_urls:
+                            # 多个链接用换行分隔
+                            links_text = '\n'.join(prd_urls)
+                            self.logger.info(f"✅ 成功提取到 {len(prd_urls)} 个PRD文档库链接: {prd_urls}")
+                            return links_text
+                        else:
+                            self.logger.warning("关联数据处理后未生成任何链接")
+                    else:
+                        self.logger.warning(f"PRD字段relation_data为空或格式错误: {relation_data}")
+                        
+            self.logger.warning(f"未找到PRD文档库字段或字段为空，可用字段: {available_fields}")
+            return None
+            
+        except Exception as e:
+            self.logger.error(f"提取PRD文档库链接失败: {str(e)}")
+            import traceback
+            self.logger.error(f"异常详情: {traceback.format_exc()}")
+            return None
     
     def _extract_field_value(self, properties: Dict[str, Any], field_names: List[str]) -> Optional[Any]:
         """通用字段值提取方法，支持webhook-server和原始Notion格式"""
@@ -330,17 +579,6 @@ class FieldMapper:
         """提取分配人员字段 - 根据产品线字段决定分配人员"""
         properties = notion_data.get('properties', {})
         
-        # 产品线到经办人的映射关系
-        product_line_assignee_mapping = {
-            "Controller": "ludingyang@tp-link.com.hk",
-            "Gateway": "zhujiayin@tp-link.com.hk", 
-            "Managed Switch": "huangguangrun@tp-link.com.hk",
-            "Unmanaged Switch": "huangguangrun@tp-link.com.hk",
-            "EAP": "ouhuanrui@tp-link.com.hk",
-            "OLT": "fancunlian@tp-link.com.hk",
-            "APP": "xingxiaosong@tp-link.com.hk"
-        }
-        
         # 尝试多种可能的产品线字段名
         product_line_fields = ['涉及产品线', 'product_line', 'Product Line', 'Product']
         
@@ -361,7 +599,7 @@ class FieldMapper:
         
         if product_line:
             # 查找匹配的产品线
-            assignee_email = product_line_assignee_mapping.get(product_line)
+            assignee_email = self.product_line_assignee_mapping.get(product_line)
             if assignee_email:
                 self.logger.info(f"根据产品线 '{product_line}' (类型: {type(product_line_value).__name__}) 分配经办人: {assignee_email}")
                 return {'name': assignee_email}
@@ -371,12 +609,12 @@ class FieldMapper:
             self.logger.warning(f"未找到产品线字段或产品线为空，原始值: {product_line_value}，使用默认经办人")
         
         # 未命中的默认指定为鲁定阳
-        default_assignee = "ludingyang@tp-link.com.hk"
+        default_assignee = self.default_assignee
         self.logger.info(f"使用默认经办人: {default_assignee}")
         return {'name': default_assignee}
     
-    async def _extract_version(self, notion_data: Dict[str, Any]) -> Optional[List[Dict[str, str]]]:
-        """提取版本字段"""
+    async def _extract_version(self, notion_data: Dict[str, Any]) -> Optional[str]:
+        """提取版本字段，返回版本ID字符串"""
         properties = notion_data.get('properties', {})
         
         # 首先尝试从关联项目字段获取版本信息
@@ -403,21 +641,38 @@ class FieldMapper:
         
         if version_name:
             self.logger.info(f"提取到版本名称: {version_name}")
-            version_id = await self.version_mapper.get_jira_version_id(version_name)
-            return [{'id': version_id}]
+            if self.version_mapper:
+                version_id = await self.version_mapper.get_jira_version_id(version_name)
+                return str(version_id)  # 确保返回字符串
         
         # 如果没有找到版本信息，使用默认版本
         self.logger.warning("未找到版本信息，使用默认版本")
-        return [{'id': self.settings.jira.default_version_id}]
+        return str(self.settings.jira.default_version_id)
     
     async def _extract_version_from_relation(self, properties: Dict[str, Any]) -> Optional[str]:
         """从关联项目字段提取版本信息"""
         try:
-            # 查找关联项目字段
+            # 优先使用关联项目名 Formula 属性（性能更好，无需API调用）
+            formula_fields = ['关联项目名', '关联项目名 (Formula)', 'related_project_name', 'project_name_formula']
+            
+            for field_name in formula_fields:
+                if field_name in properties:
+                    self.logger.info(f"找到关联项目名Formula字段: {field_name}")
+                    project_name = self._extract_field_value(properties, [field_name])
+                    
+                    if project_name and isinstance(project_name, str) and project_name.strip():
+                        project_name = project_name.strip()
+                        self.logger.info(f"从Formula字段提取到关联项目名称: {project_name}")
+                        
+                        # 直接使用项目名称作为版本名称进行映射
+                        return project_name
+            
+            # Fallback: 如果没有Formula字段，使用原有的relation方式（保持向后兼容）
             relation_fields = ['关联项目', 'related_project', 'project_relation']
             
             for field_name in relation_fields:
                 if field_name in properties:
+                    self.logger.info(f"未找到Formula字段，尝试使用relation字段: {field_name}")
                     field_data = properties[field_name]
                     
                     # 处理webhook-server格式
@@ -442,12 +697,31 @@ class FieldMapper:
                         if related_page_id:
                             self.logger.info(f"找到关联项目页面ID: {related_page_id}")
                             
-                            # 使用版本缓存获取版本名称
-                            version_name = await self.notion_version_cache.get_version_name(related_page_id)
-                            if version_name:
-                                self.logger.info(f"从关联项目页面提取到版本名称: {version_name}")
-                                return version_name
+                            # 优先使用版本缓存获取版本名称
+                            if self.notion_version_cache:
+                                version_name = await self.notion_version_cache.get_version_name(related_page_id)
+                                if version_name:
+                                    self.logger.info(f"从版本缓存提取到版本名称: {version_name}")
+                                    return version_name
                             
+                            # 如果版本缓存不可用或未找到，直接通过Notion API获取页面信息
+                            if self.notion_client:
+                                try:
+                                    related_page = await self.notion_client.get_page(related_page_id)
+                                    if related_page and 'properties' in related_page:
+                                        related_properties = related_page['properties']
+                                        
+                                        # 尝试从关联项目页面的多种字段获取版本信息
+                                        version_fields = ['Name', 'name', '名称', 'title', '版本', 'version', 'Version', '项目版本']
+                                        for version_field in version_fields:
+                                            if version_field in related_properties:
+                                                version_value = self._extract_field_value(related_properties, [version_field])
+                                                if version_value and isinstance(version_value, str) and version_value.strip():
+                                                    self.logger.info(f"从关联项目页面字段 '{version_field}' 提取到版本名称: {version_value}")
+                                                    return version_value.strip()
+                                except Exception as e:
+                                    self.logger.warning(f"通过Notion API获取关联项目页面信息失败: {str(e)}")
+            
             return None
             
         except Exception as e:
@@ -616,4 +890,242 @@ class FieldMapper:
             remote_links.append(remote_link)
         
         self.logger.info(f"构建了 {len(remote_links)} 个远程链接对象")
+        return remote_links
+    
+    async def build_remote_links_from_data_with_titles(self, links_data: List[str], issue_summary: str) -> List[Dict[str, Any]]:
+        """从链接数据构建JIRA远程链接对象（简化版本，使用固定标题）"""
+        if not links_data:
+            return []
+        
+        remote_links = []
+        
+        for i, link_url in enumerate(links_data):
+            # 生成稳定的globalId，基于URL的hash
+            import hashlib
+            url_hash = hashlib.md5(link_url.encode('utf-8')).hexdigest()[:8]
+            
+            # 判断链接类型并设置相应的标题和图标（使用固定标题，不再获取真实标题）
+            if "notion.so" in link_url:
+                link_title = "原始需求链接"
+                app_name = "Notion"
+                app_type = "com.notion.pages"
+                icon_url = "https://www.notion.so/images/favicon.ico"
+                relationship = "documented by"
+                global_id = f"notion-page-{url_hash}"
+            elif any(keyword in link_url.lower() for keyword in ['prd', 'document', 'doc']):
+                link_title = "需求PRD链接"
+                app_name = "Documentation" 
+                app_type = "com.notion.pages"
+                icon_url = "https://www.notion.so/images/favicon.ico"
+                relationship = "documented by"
+                global_id = f"notion-prd-{url_hash}"
+            else:
+                link_title = "关联页面"
+                app_name = "External Link"
+                app_type = "com.external.link"
+                icon_url = "https://www.notion.so/images/favicon.ico"
+                relationship = "relates to"
+                global_id = f"notion-related-{url_hash}"
+            
+            remote_link = {
+                "globalId": global_id,  # 使用稳定的globalId支持更新
+                "application": {
+                    "type": app_type,
+                    "name": app_name
+                },
+                "relationship": relationship,
+                "object": {
+                    "url": link_url,
+                    "title": link_title,
+                    "icon": {
+                        "url16x16": icon_url,
+                        "title": link_title
+                    },
+                    "status": {
+                        "resolved": False,
+                        "icon": {
+                            "url16x16": icon_url,
+                            "title": "Active",
+                            "link": link_url
+                        }
+                    }
+                }
+            }
+            
+            remote_links.append(remote_link)
+        
+        self.logger.info(f"构建了 {len(remote_links)} 个远程链接对象（简化版本，使用固定标题）")
+        return remote_links
+
+    async def build_categorized_remote_links(self, links_data: Dict[str, List[str]], issue_summary: str) -> List[Dict[str, Any]]:
+        """从分类的链接数据构建JIRA远程链接对象（根据类型使用不同标题）"""
+        if not links_data:
+            return []
+        
+        remote_links = []
+        
+        # 处理原始需求链接
+        for link_url in links_data.get('original', []):
+            import hashlib
+            url_hash = hashlib.md5(link_url.encode('utf-8')).hexdigest()[:8]
+            
+            remote_link = {
+                "globalId": f"notion-original-{url_hash}",
+                "application": {
+                    "type": "com.notion.pages",
+                    "name": "Notion"
+                },
+                "relationship": "documented by",
+                "object": {
+                    "url": link_url,
+                    "title": "原始需求链接",
+                    "icon": {
+                        "url16x16": "https://www.notion.so/images/favicon.ico",
+                        "title": "原始需求链接"
+                    },
+                    "status": {
+                        "resolved": False,
+                        "icon": {
+                            "url16x16": "https://www.notion.so/images/favicon.ico",
+                            "title": "Active",
+                            "link": link_url
+                        }
+                    }
+                }
+            }
+            remote_links.append(remote_link)
+        
+        # 处理PRD文档链接
+        for link_url in links_data.get('prd', []):
+            import hashlib
+            url_hash = hashlib.md5(link_url.encode('utf-8')).hexdigest()[:8]
+            
+            remote_link = {
+                "globalId": f"notion-prd-{url_hash}",
+                "application": {
+                    "type": "com.notion.pages",
+                    "name": "Documentation"
+                },
+                "relationship": "documented by",
+                "object": {
+                    "url": link_url,
+                    "title": "需求PRD链接",
+                    "icon": {
+                        "url16x16": "https://www.notion.so/images/favicon.ico",
+                        "title": "需求PRD链接"
+                    },
+                    "status": {
+                        "resolved": False,
+                        "icon": {
+                            "url16x16": "https://www.notion.so/images/favicon.ico",
+                            "title": "Active",
+                            "link": link_url
+                        }
+                    }
+                }
+            }
+            remote_links.append(remote_link)
+        
+        # 处理其他关联链接
+        for link_url in links_data.get('other', []):
+            import hashlib
+            url_hash = hashlib.md5(link_url.encode('utf-8')).hexdigest()[:8]
+            
+            remote_link = {
+                "globalId": f"notion-related-{url_hash}",
+                "application": {
+                    "type": "com.external.link",
+                    "name": "External Link"
+                },
+                "relationship": "relates to",
+                "object": {
+                    "url": link_url,
+                    "title": "关联页面",
+                    "icon": {
+                        "url16x16": "https://www.notion.so/images/favicon.ico",
+                        "title": "关联页面"
+                    },
+                    "status": {
+                        "resolved": False,
+                        "icon": {
+                            "url16x16": "https://www.notion.so/images/favicon.ico",
+                            "title": "Active",
+                            "link": link_url
+                        }
+                    }
+                }
+            }
+            remote_links.append(remote_link)
+        
+        total_links = len(links_data.get('original', [])) + len(links_data.get('prd', [])) + len(links_data.get('other', []))
+        self.logger.info(f"构建了 {len(remote_links)} 个分类远程链接对象 (原始:{len(links_data.get('original', []))}, PRD:{len(links_data.get('prd', []))}, 其他:{len(links_data.get('other', []))})")
+        return remote_links
+
+    def build_remote_links_from_data(self, links_data: List[str], issue_summary: str) -> List[Dict[str, Any]]:
+        """从链接数据构建JIRA远程链接对象（支持多种类型）- 同步版本，保持向后兼容"""
+        if not links_data:
+            return []
+        
+        remote_links = []
+        
+        for i, link_url in enumerate(links_data):
+            # 生成稳定的globalId，基于URL的hash
+            import hashlib
+            url_hash = hashlib.md5(link_url.encode('utf-8')).hexdigest()[:8]
+            
+            # 判断链接类型并设置相应的标题和图标
+            if "notion.so" in link_url:
+                link_title = "源需求页面"
+                app_name = "Notion"
+                app_type = "com.notion.pages"
+                icon_url = "https://www.notion.so/images/favicon.ico"
+                relationship = "documented by"
+                link_summary = f"来自{issue_summary}的原始需求页面"
+                global_id = f"notion-page-{url_hash}"
+            elif any(keyword in link_url.lower() for keyword in ['prd', 'document', 'doc']):
+                link_title = "PRD文档"
+                app_name = "Documentation"
+                app_type = "com.notion.pages"
+                icon_url = "https://www.notion.so/images/favicon.ico"
+                relationship = "documented by"
+                link_summary = f"来自{issue_summary}的PRD文档"
+                global_id = f"notion-prd-{url_hash}"
+            else:
+                link_title = "关联页面"
+                app_name = "External Link"
+                app_type = "com.external.link"
+                icon_url = "https://www.notion.so/images/favicon.ico"
+                relationship = "relates to"
+                link_summary = f"来自{issue_summary}的关联页面"
+                global_id = f"notion-related-{url_hash}"
+            
+            remote_link = {
+                "globalId": global_id,  # 使用稳定的globalId支持更新
+                "application": {
+                    "type": app_type,
+                    "name": app_name
+                },
+                "relationship": relationship,
+                "object": {
+                    "url": link_url,
+                    "title": link_title,
+                    "summary": link_summary,
+                    "icon": {
+                        "url16x16": icon_url,
+                        "title": link_title
+                    },
+                    "status": {
+                        "resolved": False,
+                        "icon": {
+                            "url16x16": icon_url,
+                            "title": "Active",
+                            "link": link_url
+                        }
+                    }
+                }
+            }
+            
+            remote_links.append(remote_link)
+        
+        self.logger.info(f"构建了 {len(remote_links)} 个远程链接对象（多种类型，支持globalId更新）")
         return remote_links 
