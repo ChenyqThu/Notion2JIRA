@@ -94,7 +94,7 @@ pm2 startup
 | `功能类别 Feature Type` | select | 功能类别 | "UI体验优化 UI Optimization" |
 | `规划版本 Release Version` | multi_select | 规划版本 | ["Omada APP 4.22"] |
 | `涉及产品线` | multi_select | 产品线 | ["Controller", "APP"] |
-| `需求录入` | people | 录入人员 | 用户对象数组 |
+| `需求负责人` | people | 负责人员 | 用户对象数组 |
 | `功能说明 Desc` | rich_text | 中文描述 | 富文本内容 |
 | `Description` | rich_text | 英文描述 | 富文本内容 |
 | `AI Desc` | rich_text | AI 生成描述 | 富文本内容 |

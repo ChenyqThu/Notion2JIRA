@@ -79,16 +79,18 @@ const mockNotionData = {
         "type": "url",
         "url": "https://jira.example.com/browse/PROJ-123"
       },
-      "需求录入": {
-        "id": "people",
+      "需求负责人": {
+        "id": "notion%3A%2F%2Fpeople_property",
         "type": "people",
         "people": [
           {
-            "id": "user-1",
+            "object": "user",
+            "id": "user-id-123",
             "name": "张三",
-            "avatar_url": "https://example.com/avatar1.jpg",
+            "avatar_url": null,
+            "type": "person",
             "person": {
-              "email": "zhangsan@example.com"
+              "email": "zhangsan@tp-link.com.hk"
             }
           }
         ]

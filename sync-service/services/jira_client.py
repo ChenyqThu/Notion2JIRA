@@ -167,7 +167,10 @@ class JiraClient:
         try:
             # 先检查缓存
             if query in self._users_cache:
+                self.logger.debug(f"从缓存中获取用户搜索结果: {query}")
                 return self._users_cache[query]
+            
+            self.logger.info(f"开始搜索JIRA用户: {query}")
             
             url = f"{self.jira_config.base_url}/rest/api/2/user/search"
             params = {
@@ -178,15 +181,76 @@ class JiraClient:
             async with self.session.get(url, params=params) as response:
                 if response.status == 200:
                     users = await response.json()
+                    self.logger.info(f"用户搜索成功: {query}, 找到 {len(users)} 个用户")
                     # 缓存结果
                     self._users_cache[query] = users
                     return users
                 else:
-                    self.logger.warning("搜索用户失败", query=query, status=response.status)
+                    error_text = await response.text()
+                    self.logger.warning(
+                        "搜索用户失败", 
+                        query=query, 
+                        status=response.status,
+                        error_text=error_text,
+                        url=url,
+                        params=params
+                    )
+                    
+                    # 如果是400错误，尝试使用不同的搜索方式
+                    if response.status == 400:
+                        self.logger.info(f"尝试使用用户名搜索: {query}")
+                        return await self._search_users_by_username(query)
+                    
                     return []
                     
         except Exception as e:
             self.logger.error("搜索用户异常", error=str(e), query=query)
+            return []
+    
+    async def _search_users_by_username(self, email: str) -> List[Dict[str, Any]]:
+        """通过用户名搜索用户（备用方法）"""
+        try:
+            # 尝试从邮箱提取用户名
+            username = email.split('@')[0] if '@' in email else email
+            
+            url = f"{self.jira_config.base_url}/rest/api/2/user/search"
+            params = {
+                'username': username,
+                'maxResults': 10
+            }
+            
+            self.logger.info(f"尝试通过用户名搜索: {username}")
+            
+            async with self.session.get(url, params=params) as response:
+                if response.status == 200:
+                    users = await response.json()
+                    self.logger.info(f"用户名搜索成功: {username}, 找到 {len(users)} 个用户")
+                    
+                    # 调试：打印用户数据结构
+                    for user in users:
+                        self.logger.debug(f"完整用户数据: {user}")
+                        # 检查不同可能的ID字段
+                        account_id = user.get('accountId') or user.get('name') or user.get('key')
+                        self.logger.debug(f"用户ID字段: accountId={user.get('accountId')}, key={user.get('key')}, name={user.get('name')}")
+                        
+                        # 如果accountId为空，优先使用name字段（JIRA API通常使用name作为用户标识符）
+                        if not user.get('accountId') and account_id:
+                            user['accountId'] = account_id
+                            self.logger.debug(f"修正用户accountId: {account_id}")
+                    
+                    return users
+                else:
+                    error_text = await response.text()
+                    self.logger.warning(
+                        "用户名搜索失败", 
+                        username=username, 
+                        status=response.status,
+                        error_text=error_text
+                    )
+                    return []
+                    
+        except Exception as e:
+            self.logger.error("用户名搜索异常", error=str(e), username=username)
             return []
     
     async def find_user_by_email(self, email: str) -> Optional[Dict[str, Any]]:

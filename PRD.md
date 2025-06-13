@@ -79,7 +79,8 @@ EBG 商用产品团队当前使用双系统管理产研流程：
 | 需求描述 | 功能说明 Desc | rich_text | Description | 组合字段（见下方） |
 | AI整理 | 需求整理 | rich_text | Description | 组合到Description |
 | 需求链接 | url | url | Description | 组合到Description |
-| 分配人员 | 需求录入 | people | Assignee | 邮箱匹配转换 |
+| 分配人员 | 需求负责人 | people | Assignee | 邮箱匹配转换 |
+| 报告人员 | 需求负责人 | people | Reporter | 邮箱匹配转换（同一字段） |
 | 实现版本 | 关联项目 | relation | fixVersions | 版本名称匹配 |
 | JIRA链接 | JIRA Card | url | - | 回写字段（同步后更新） |
 
@@ -103,7 +104,7 @@ EBG 商用产品团队当前使用双系统管理产研流程：
 | 待评估 UR | 待可行性评估 | 等待技术评估 |
 | 待输入 WI | TODO | 准备开发 |
 | 同步中 SYNC | TODO | 同步过程中 |
-| 已输入 JIRA | TODO | 已同步到JIRA |
+| JIRA Wait Review | TODO | 已同步到JIRA，等待评审 |
 | DEVING | 开发中 | 开发进行中 |
 | Testing | Testing（测试） | 测试阶段 |
 | 已发布 DONE | 完成 | 开发完成 |

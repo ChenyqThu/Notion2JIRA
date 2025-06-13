@@ -5,11 +5,11 @@
 
 from typing import Dict, Any, Optional, List
 from datetime import datetime
-
 from config.settings import Settings
 from config.logger import get_logger
 from services.version_mapper import VersionMapper
 from services.notion_version_cache import NotionVersionCache
+import logging
 
 
 class FieldMapper:
@@ -34,7 +34,7 @@ class FieldMapper:
             '待评估 UR': '待可行性评估', 
             '待输入 WI': 'TODO',
             '同步中 SYNC': 'TODO',
-            '已输入 JIRA': 'TODO',
+            'JIRA Wait Review': 'TODO',
             'DEVING': '开发中',
             'Testing': 'Testing（测试）',
             '已发布 DONE': '完成'
@@ -116,6 +116,12 @@ class FieldMapper:
                     jira_fields['assignee'] = {'name': assignee}
                 self.logger.debug(f"经办人映射成功")
             
+            # Reporter映射 - 从需求负责人字段提取邮箱，直接使用邮箱
+            reporter = await self._extract_reporter(notion_data)
+            if reporter:
+                jira_fields['reporter'] = reporter
+                self.logger.debug(f"Reporter映射成功")
+            
             # 版本映射
             try:
                 version_id = await self._extract_version(notion_data)
@@ -181,6 +187,7 @@ class FieldMapper:
                 summary=jira_fields.get('summary'),
                 priority=jira_fields.get('priority', {}).get('id'),
                 has_assignee=bool(jira_fields.get('assignee')),
+                has_reporter=bool(jira_fields.get('reporter')),
                 description_length=len(jira_fields.get('description', '')),
                 remote_links_count=total_remote_links,
                 issue_links_count=len(jira_issue_keys)
@@ -528,7 +535,7 @@ class FieldMapper:
                     elif 'people' in field_data:
                         people_array = field_data['people']
                         if people_array and len(people_array) > 0:
-                            return people_array[0]
+                            return people_array  # 返回完整的用户数组
                     
                     # title类型
                     elif 'title' in field_data:
@@ -576,7 +583,7 @@ class FieldMapper:
         return None
     
     async def _extract_assignee(self, notion_data: Dict[str, Any]) -> Optional[Dict[str, str]]:
-        """提取分配人员字段 - 根据产品线字段决定分配人员"""
+        """提取分配人员字段 - 根据产品线字段决定分配人员，直接使用邮箱"""
         properties = notion_data.get('properties', {})
         
         # 尝试多种可能的产品线字段名
@@ -598,20 +605,62 @@ class FieldMapper:
                     product_line = product_line_value[0]['name'].strip()
         
         if product_line:
-            # 查找匹配的产品线
-            assignee_email = self.product_line_assignee_mapping.get(product_line)
-            if assignee_email:
-                self.logger.info(f"根据产品线 '{product_line}' (类型: {type(product_line_value).__name__}) 分配经办人: {assignee_email}")
-                return {'name': assignee_email}
-            else:
-                self.logger.warning(f"未找到产品线 '{product_line}' 对应的经办人，使用默认经办人")
+            self.logger.info(f"检测到产品线: {product_line}")
+            
+            # 根据产品线映射分配人员邮箱
+            assignee_email = self.product_line_assignee_mapping.get(product_line, self.default_assignee)
+            self.logger.info(f"产品线 '{product_line}' 映射到分配人员: {assignee_email}")
+            
+            return {'name': assignee_email}  # 直接使用邮箱
         else:
-            self.logger.warning(f"未找到产品线字段或产品线为空，原始值: {product_line_value}，使用默认经办人")
+            self.logger.info("未检测到产品线信息，使用默认分配人员")
+            return {'name': self.default_assignee}  # 直接使用默认邮箱
+    
+    async def _extract_reporter(self, notion_data: Dict[str, Any]) -> Optional[Dict[str, str]]:
+        """提取Reporter字段 - 从需求负责人字段提取邮箱，直接使用邮箱"""
+        properties = notion_data.get('properties', {})
         
-        # 未命中的默认指定为鲁定阳
-        default_assignee = self.default_assignee
-        self.logger.info(f"使用默认经办人: {default_assignee}")
-        return {'name': default_assignee}
+        # 尝试多种可能的需求负责人字段名
+        reporter_fields = ['需求负责人', '需求录入', 'reporter', 'Reporter', 'owner', 'Owner']
+        
+        reporter_value = self._extract_field_value(properties, reporter_fields)
+        
+        if reporter_value:
+            # 处理people类型字段
+            if isinstance(reporter_value, dict):
+                # 单个用户对象
+                email = None
+                
+                # webhook-server格式: {'email': 'xxx@xxx.com'}
+                if 'email' in reporter_value:
+                    email = reporter_value['email']
+                # 原始Notion格式: {'person': {'email': 'xxx@xxx.com'}}
+                elif 'person' in reporter_value and isinstance(reporter_value['person'], dict):
+                    email = reporter_value['person'].get('email')
+                
+                if email:
+                    self.logger.info(f"从需求负责人字段提取到Reporter邮箱: {email}")
+                    return {'name': email}  # 直接使用邮箱
+            
+            elif isinstance(reporter_value, list) and len(reporter_value) > 0:
+                # 用户数组，取第一个用户
+                first_user = reporter_value[0]
+                if isinstance(first_user, dict):
+                    email = None
+                    
+                    # webhook-server格式: {'email': 'xxx@xxx.com'}
+                    if 'email' in first_user:
+                        email = first_user['email']
+                    # 原始Notion格式: {'person': {'email': 'xxx@xxx.com'}}
+                    elif 'person' in first_user and isinstance(first_user['person'], dict):
+                        email = first_user['person'].get('email')
+                    
+                    if email:
+                        self.logger.info(f"从需求负责人字段（数组）提取到Reporter邮箱: {email}")
+                        return {'name': email}  # 直接使用邮箱
+        
+        self.logger.warning("未找到需求负责人字段或字段为空")
+        return None
     
     async def _extract_version(self, notion_data: Dict[str, Any]) -> Optional[str]:
         """提取版本字段，返回版本ID字符串"""

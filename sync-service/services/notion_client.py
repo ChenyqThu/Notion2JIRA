@@ -121,13 +121,13 @@ class NotionClient:
         try:
             # 状态映射：JIRA状态 -> Notion状态
             status_mapping = {
-                "TODO": "已输入 JIRA",
+                "TODO": "JIRA Wait Review",
                 "开发中": "DEVING", 
                 "Testing（测试）": "Testing",
                 "完成": "已发布 DONE"
             }
             
-            notion_status = status_mapping.get(status_name, "已输入 JIRA")
+            notion_status = status_mapping.get(status_name, "JIRA Wait Review")
             
             properties = {
                 'Status': {
@@ -225,4 +225,32 @@ class NotionClient:
                     
         except Exception as e:
             self.logger.error("Notion连接测试异常", error=str(e))
-            return False 
+            return False
+    
+    async def get_database(self, database_id: str) -> Dict[str, Any]:
+        """获取数据库信息"""
+        try:
+            url = f"https://api.notion.com/v1/databases/{database_id}"
+            
+            async with self.session.get(url) as response:
+                if response.status == 200:
+                    database_data = await response.json()
+                    self.logger.info(
+                        "获取数据库信息成功",
+                        database_id=database_id,
+                        title=database_data.get('title', [{}])[0].get('plain_text', 'Unknown')
+                    )
+                    return database_data
+                else:
+                    error_text = await response.text()
+                    self.logger.error(
+                        "获取数据库信息失败",
+                        database_id=database_id,
+                        status=response.status,
+                        error=error_text
+                    )
+                    raise Exception(f"获取数据库信息失败: {response.status} - {error_text}")
+                    
+        except Exception as e:
+            self.logger.error("获取数据库信息异常", error=str(e), database_id=database_id)
+            raise 

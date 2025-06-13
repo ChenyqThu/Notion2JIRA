@@ -64,8 +64,8 @@ class SyncService:
                 self.notion_client = None
                 self.logger.warning("未配置Notion token，跳过Notion客户端初始化")
             
-            # 初始化字段映射器（传入NotionClient）
-            self.field_mapper = FieldMapper(self.settings, self.notion_client)
+            # 初始化字段映射器（传入JiraClient和NotionClient）
+            self.field_mapper = FieldMapper(self.settings, self.jira_client, self.notion_client)
             self.logger.info("字段映射器初始化完成")
             
             self.stats["start_time"] = time.time()
@@ -611,7 +611,7 @@ class SyncService:
                 # 回写Notion状态（更新操作也需要回写）
                 if self.notion_client:
                     try:
-                        # 更新页面状态为"已输入 JIRA"
+                        # 更新页面状态为"JIRA Wait Review"
                         await self.notion_client.update_status(page_id, "TODO")
                         self.logger.info(
                             "更新操作Notion状态回写完成",
@@ -652,7 +652,7 @@ class SyncService:
             if jira_browse_url:
                 await self.notion_client.update_jira_card_url(page_id, jira_browse_url)
             
-            # 2. 更新页面状态为"已输入 JIRA"
+            # 2. 更新页面状态为"JIRA Wait Review"
             await self.notion_client.update_status(page_id, "TODO")
             
             self.logger.info(
