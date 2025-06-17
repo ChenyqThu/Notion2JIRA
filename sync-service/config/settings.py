@@ -4,6 +4,7 @@
 """
 
 import os
+import base64
 from typing import Optional, List
 from dataclasses import dataclass
 
@@ -112,14 +113,35 @@ class Settings:
             retry_on_timeout=os.getenv("REDIS_RETRY_ON_TIMEOUT", "true").lower() == "true"
         )
     
+    def _decode_password(self, encoded_password: str) -> str:
+        """解码 base64 编码的密码
+        
+        Args:
+            encoded_password: base64 编码的密码
+            
+        Returns:
+            str: 解码后的明文密码
+        """
+        try:
+            # 尝试 base64 解码
+            decoded_bytes = base64.b64decode(encoded_password.encode('utf-8'))
+            return decoded_bytes.decode('utf-8')
+        except Exception:
+            # 如果解码失败，说明可能是明文密码，直接返回
+            print("Warning: 密码解码失败，使用原始值（可能是明文密码）")
+            return encoded_password
+    
     def _load_jira_config(self) -> JiraConfig:
         """加载JIRA配置"""
         base_url = os.getenv("JIRA_BASE_URL")
         username = os.getenv("JIRA_USER_EMAIL")  # 使用.env_example中的字段名
-        password = os.getenv("JIRA_USER_PASSWORD")  # 使用.env_example中的字段名
+        encoded_password = os.getenv("JIRA_USER_PASSWORD")  # 使用.env_example中的字段名
         
-        if not all([base_url, username, password]):
+        if not all([base_url, username, encoded_password]):
             raise ValueError("JIRA配置不完整，请检查环境变量: JIRA_BASE_URL, JIRA_USER_EMAIL, JIRA_USER_PASSWORD")
+        
+        # 解码密码
+        password = self._decode_password(encoded_password)
         
         return JiraConfig(
             base_url=base_url,
