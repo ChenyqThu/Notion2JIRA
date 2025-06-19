@@ -462,7 +462,7 @@ class NotionWebhookHandler {
    */
   extractTitle(properties) {
     // 尝试多种可能的标题字段名
-    const titleFields = ['功能 Name', 'title', 'Title', 'Name', 'name', '标题'];
+    const titleFields = ['Function Name', '功能 Name', 'title', 'Title', 'Name', 'name', '标题'];
     
     for (const fieldName of titleFields) {
       const field = properties[fieldName];

@@ -85,7 +85,7 @@ pm2 startup
 
 | Notion 字段名 | 字段类型 | 说明 | 示例值 |
 |---------------|----------|------|--------|
-| `功能 Name` | title | 功能名称（主标题） | "roaming等功能联动wifi navi" |
+| `Function Name` | title | 功能名称（主标题） | "roaming等功能联动wifi navi" |
 | `Status` | status | 状态 | "待评估 UR" |
 | `优先级 P` | select | 优先级 | "低 Low" |
 | `类型 Type` | multi_select | 类型标签 | ["APP"] |
@@ -94,9 +94,8 @@ pm2 startup
 | `功能类别 Feature Type` | select | 功能类别 | "UI体验优化 UI Optimization" |
 | `规划版本 Release Version` | multi_select | 规划版本 | ["Omada APP 4.22"] |
 | `涉及产品线` | multi_select | 产品线 | ["Controller", "APP"] |
-| `需求负责人` | people | 负责人员 | 用户对象数组 |
-| `功能说明 Desc` | rich_text | 中文描述 | 富文本内容 |
-| `Description` | rich_text | 英文描述 | 富文本内容 |
+| `Owner` | people | 负责人员 | 用户对象数组 |
+| `Description` | rich_text | 功能描述 | 富文本内容 |
 | `AI Desc` | rich_text | AI 生成描述 | 富文本内容 |
 
 ### 同步触发条件
@@ -192,7 +191,7 @@ pm2 startup
     "archived": false,
     "in_trash": false,
     "properties": {
-      "功能 Name": {
+      "Function Name": {
         "id": "title",
         "type": "title",
         "title": [
@@ -298,7 +297,7 @@ pm2 startup
   "pageId": "d1cdcd9d-c6b0-44ca-9439-318d5a92fac7",
   "eventType": "page.updated",
   "properties": {
-    "功能 Name": "测试页面",
+    "Function Name": "测试页面",
     "Status": "待评估 UR",
     "优先级 P": "低 Low"
   }

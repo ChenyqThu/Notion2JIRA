@@ -153,25 +153,25 @@ python manage_user_cache.py test
 ## Reporter字段映射功能
 
 ### 新增功能说明
-现在系统支持将Notion的"需求负责人"字段同时映射为JIRA Issue的Reporter字段。
+现在系统支持将Notion的"Owner"字段同时映射为JIRA Issue的Reporter字段。
 
 ### 工作原理
-1. 从Notion的"需求负责人"字段提取用户邮箱
+1. 从Notion的"Owner"字段提取用户邮箱
 2. 在JIRA中查找对应的用户账户
 3. 将找到的用户设置为JIRA Issue的Reporter
 4. 如果找不到对应用户，会记录警告日志但不影响Issue创建
 
 ### 支持的字段名
-- 需求负责人 (推荐)
+- Owner (推荐)
+- 需求负责人 (向后兼容)
 - 需求录入 (向后兼容)
 - reporter
 - Reporter
 - owner
-- Owner
 
 ### 日志示例
 ```
-从需求负责人字段提取到Reporter邮箱: user@tp-link.com.hk
+从Owner字段提取到Reporter邮箱: user@tp-link.com.hk
 找到Reporter对应的JIRA用户: 张三 (account-id-123)
 字段映射转换完成 - has_reporter: True
 ``` 

@@ -53,7 +53,7 @@ async function testWebhookReceive() {
       archived: false,
       in_trash: false,
       properties: {
-        '功能 Name': {
+        'Function Name': {
           id: 'title',
           type: 'title',
           title: [

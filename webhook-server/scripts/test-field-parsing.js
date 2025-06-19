@@ -27,7 +27,7 @@ const mockNotionData = {
     "archived": false,
     "in_trash": false,
     "properties": {
-      "功能 Name": {
+              "Function Name": {
         "id": "title",
         "type": "title",
         "title": [
@@ -79,7 +79,7 @@ const mockNotionData = {
         "type": "url",
         "url": "https://jira.example.com/browse/PROJ-123"
       },
-      "需求负责人": {
+              "Owner": {
         "id": "notion%3A%2F%2Fpeople_property",
         "type": "people",
         "people": [
@@ -123,7 +123,7 @@ const mockNotionData = {
         "type": "button",
         "button": {}
       },
-      "功能说明 Desc": {
+              "Description": {
         "id": "desc",
         "type": "rich_text",
         "rich_text": [
@@ -267,7 +267,7 @@ class TestNotionWebhookHandler {
   }
 
   extractTitle(properties) {
-    const titleFields = ['功能 Name', 'title', 'Title', 'Name', 'name', '标题'];
+    const titleFields = ['Function Name', '功能 Name', 'title', 'Title', 'Name', 'name', '标题'];
     
     for (const fieldName of titleFields) {
       const field = properties[fieldName];

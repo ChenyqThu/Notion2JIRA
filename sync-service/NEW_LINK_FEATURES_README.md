@@ -122,8 +122,8 @@ POST /rest/api/2/issueLink
 ### Notion页面示例
 
 ```yaml
-功能 Name: "支付功能优化"
-功能说明 Desc: "优化支付流程，提升用户体验"
+Function Name: "支付功能优化"
+Description: "优化支付流程，提升用户体验"
 PRD 文档库: 
   - page-id-1 (PRD文档1)
   - page-id-2 (PRD文档2)  

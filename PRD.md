@@ -73,21 +73,21 @@ EBG 商用产品团队当前使用双系统管理产研流程：
 
 | 字段用途 | Notion字段名 | Notion字段类型 | JIRA字段名 | 映射规则 |
 |----------|-------------|---------------|-----------|----------|
-| 需求标题 | 功能 Name | title | Summary | 直接映射 |
+| 需求标题 | Function Name | title | Summary | 直接映射 |
 | 需求状态 | Status | status | Status | 状态映射表转换 |
 | 优先级 | 优先级 P | select | Priority | 优先级映射表转换 |
-| 需求描述 | 功能说明 Desc | rich_text | Description | 组合字段（见下方） |
+| 需求描述 | Description | rich_text | Description | 组合字段（见下方） |
 | AI整理 | 需求整理 | rich_text | Description | 组合到Description |
 | 需求链接 | url | url | Description | 组合到Description |
-| 分配人员 | 需求负责人 | people | Assignee | 邮箱匹配转换 |
-| 报告人员 | 需求负责人 | people | Reporter | 邮箱匹配转换（同一字段） |
+| 分配人员 | Owner | people | Assignee | 邮箱匹配转换 |
+| 报告人员 | Owner | people | Reporter | 邮箱匹配转换（同一字段） |
 | 实现版本 | 关联项目 | relation | fixVersions | 版本名称匹配 |
 | JIRA链接 | JIRA Card | url | - | 回写字段（同步后更新） |
 
 #### Description 字段组合规则
 ```
 ## 需求说明
-{功能说明 Desc 内容}
+{Description 内容}
 
 ## 需求整理(AI)
 {需求整理 内容}

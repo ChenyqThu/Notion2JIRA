@@ -116,7 +116,7 @@ class FieldMapper:
                     jira_fields['assignee'] = {'name': assignee}
                 self.logger.debug(f"经办人映射成功")
             
-            # Reporter映射 - 从需求负责人字段提取邮箱，直接使用邮箱
+            # Reporter映射 - 从Owner字段提取邮箱，直接使用邮箱
             reporter = await self._extract_reporter(notion_data)
             if reporter:
                 jira_fields['reporter'] = reporter
@@ -208,7 +208,7 @@ class FieldMapper:
         self.logger.debug(f"可用的属性字段: {available_fields}")
         
         # 尝试多种可能的标题字段名（按优先级排序）
-        title_fields = ['功能 Name', 'title', 'name', 'Title', 'Name', '需求名']
+        title_fields = ['Function Name', '功能 Name', 'title', 'name', 'Title', 'Name', '需求名']
         
         for field_name in title_fields:
             if field_name in properties:
@@ -280,7 +280,7 @@ class FieldMapper:
                 return default_title
         
         # 尝试使用功能说明作为标题
-        desc = self._extract_field_value(properties, ['功能说明 Desc'])
+        desc = self._extract_field_value(properties, ['Description', '功能说明 Desc'])
         if desc and isinstance(desc, str) and desc.strip():
             default_title = f"功能: {desc[:50]}..." if len(desc) > 50 else f"功能: {desc}"
             self.logger.info(f"使用功能说明生成默认标题: {default_title}")
@@ -298,7 +298,7 @@ class FieldMapper:
         properties = notion_data.get('properties', {})
         
         # 功能说明
-        func_desc = self._extract_field_value(properties, ['功能说明 Desc', 'description', 'Description'])
+        func_desc = self._extract_field_value(properties, ['Description', '功能说明 Desc', 'description'])
         if func_desc and isinstance(func_desc, str):
             description_parts.append(f"## 需求说明\n{func_desc}")
         
@@ -327,7 +327,7 @@ class FieldMapper:
         properties = notion_data.get('properties', {})
         
         # 功能说明
-        func_desc = self._extract_field_value(properties, ['功能说明 Desc', 'description', 'Description'])
+        func_desc = self._extract_field_value(properties, ['Description', '功能说明 Desc', 'description'])
         if func_desc and isinstance(func_desc, str):
             description_parts.append(f"## 需求说明\n{func_desc}")
         
@@ -617,11 +617,11 @@ class FieldMapper:
             return {'name': self.default_assignee}  # 直接使用默认邮箱
     
     async def _extract_reporter(self, notion_data: Dict[str, Any]) -> Optional[Dict[str, str]]:
-        """提取Reporter字段 - 从需求负责人字段提取邮箱，直接使用邮箱"""
+        """提取Reporter字段 - 从Owner字段提取邮箱，直接使用邮箱"""
         properties = notion_data.get('properties', {})
         
-        # 尝试多种可能的需求负责人字段名
-        reporter_fields = ['需求负责人', '需求录入', 'reporter', 'Reporter', 'owner', 'Owner']
+        # 尝试多种可能的Owner字段名
+        reporter_fields = ['Owner', '需求负责人', '需求录入', 'reporter', 'Reporter', 'owner']
         
         reporter_value = self._extract_field_value(properties, reporter_fields)
         
@@ -639,7 +639,7 @@ class FieldMapper:
                     email = reporter_value['person'].get('email')
                 
                 if email:
-                    self.logger.info(f"从需求负责人字段提取到Reporter邮箱: {email}")
+                    self.logger.info(f"从Owner字段提取到Reporter邮箱: {email}")
                     return {'name': email}  # 直接使用邮箱
             
             elif isinstance(reporter_value, list) and len(reporter_value) > 0:
@@ -656,10 +656,10 @@ class FieldMapper:
                         email = first_user['person'].get('email')
                     
                     if email:
-                        self.logger.info(f"从需求负责人字段（数组）提取到Reporter邮箱: {email}")
+                        self.logger.info(f"从Owner字段（数组）提取到Reporter邮箱: {email}")
                         return {'name': email}  # 直接使用邮箱
         
-        self.logger.warning("未找到需求负责人字段或字段为空")
+        self.logger.warning("未找到Owner字段或字段为空")
         return None
     
     async def _extract_version(self, notion_data: Dict[str, Any]) -> Optional[str]:

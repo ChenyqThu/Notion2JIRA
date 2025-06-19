@@ -127,7 +127,7 @@ async def analyze_message_fields(message):
     
     # 显示一些关键字段的原始数据
     print(f"\n🔧 关键字段的原始数据:")
-    key_fields = ["功能 Name", "Status", "优先级 P", "功能说明 Desc"]
+    key_fields = ["Function Name", "功能 Name", "Status", "优先级 P", "Description", "功能说明 Desc"]
     
     for field_name in key_fields:
         if field_name in raw_properties:
@@ -143,7 +143,7 @@ def extract_and_display_fields(properties):
     print(f"\n🎯 提取的关键字段:")
     
     # 提取标题
-    title_fields = ["功能 Name", "Name", "title", "标题"]
+    title_fields = ["Function Name", "功能 Name", "Name", "title", "标题"]
     title = "未找到"
     for field in title_fields:
         if field in properties:
@@ -176,7 +176,7 @@ def extract_and_display_fields(properties):
     print(f"  ⭐ 优先级: {priority}")
     
     # 提取描述
-    desc_fields = ["功能说明 Desc", "需求整理", "Description", "描述"]
+    desc_fields = ["Description", "功能说明 Desc", "需求整理", "描述"]
     description = "未找到"
     for field in desc_fields:
         if field in properties:
