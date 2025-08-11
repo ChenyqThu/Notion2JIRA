@@ -1,6 +1,6 @@
 const express = require('express');
 const logger = require('../config/logger');
-const redisClient = require('../config/redis');
+const redisManager = require('../config/redis_manager');
 const { verifyApiKey } = require('../middleware/auth');
 
 const router = express.Router();
@@ -14,8 +14,28 @@ router.use(verifyApiKey);
  */
 router.get('/status', async (req, res) => {
   try {
-    const redisStatus = redisClient.getStatus();
-    const queueLength = await redisClient.getQueueLength('sync_queue');
+    const redisStatus = redisManager.getAllStatus();
+    
+    // 获取所有数据库的队列长度
+    const queueStats = {};
+    for (const [dbName, dbStatus] of Object.entries(redisStatus.databases)) {
+      if (dbStatus.connected) {
+        try {
+          const dbNumber = dbStatus.database;
+          const queueLength = await redisManager.getQueueLengthByDatabase(
+            Object.keys(redisStatus.mapping).find(key => 
+              redisStatus.mapping[key] === dbNumber
+            ) || null, 
+            'sync_queue'
+          );
+          queueStats[`${dbName}_sync_queue`] = queueLength;
+        } catch (error) {
+          queueStats[`${dbName}_sync_queue`] = 'error';
+        }
+      } else {
+        queueStats[`${dbName}_sync_queue`] = 'disconnected';
+      }
+    }
     
     const status = {
       service: 'webhook-server',
@@ -23,9 +43,7 @@ router.get('/status', async (req, res) => {
       uptime: process.uptime(),
       memory: process.memoryUsage(),
       redis: redisStatus,
-      queue: {
-        sync_queue_length: queueLength
-      },
+      queues: queueStats,
       timestamp: new Date().toISOString()
     };
 
@@ -50,15 +68,34 @@ router.get('/status', async (req, res) => {
  */
 router.get('/queue/stats', async (req, res) => {
   try {
-    const syncQueueLength = await redisClient.getQueueLength('sync_queue');
+    const redisStatus = redisManager.getAllStatus();
+    const queues = {};
+    
+    // 遍历所有数据库获取队列统计
+    for (const [databaseId, redisDB] of Object.entries(redisStatus.mapping)) {
+      try {
+        const queueLength = await redisManager.getQueueLengthByDatabase(databaseId, 'sync_queue');
+        const dbName = databaseId === '19a15375830d81cbb107f8131b2d4cc0' ? 'network' : 'security';
+        queues[`${dbName}_db${redisDB}`] = {
+          length: queueLength,
+          name: 'sync_queue',
+          database_id: databaseId,
+          redis_db: redisDB
+        };
+      } catch (error) {
+        const dbName = databaseId === '19a15375830d81cbb107f8131b2d4cc0' ? 'network' : 'security';
+        queues[`${dbName}_db${redisDB}`] = {
+          length: 'error',
+          name: 'sync_queue',
+          database_id: databaseId,
+          redis_db: redisDB,
+          error: error.message
+        };
+      }
+    }
     
     const stats = {
-      queues: {
-        sync_queue: {
-          length: syncQueueLength,
-          name: 'sync_queue'
-        }
-      },
+      queues,
       timestamp: new Date().toISOString()
     };
 
@@ -101,14 +138,29 @@ router.post('/queue/clear', async (req, res) => {
       });
     }
 
-    const lengthBefore = await redisClient.getQueueLength(queueName);
-    
-    // 清空队列
-    if (redisClient.client && redisClient.isConnected) {
-      await redisClient.client.del(queueName);
+    // 获取清空前的总长度
+    let lengthBefore = 0;
+    const redisStatus = redisManager.getAllStatus();
+    for (const databaseId of Object.keys(redisStatus.mapping)) {
+      try {
+        const queueLength = await redisManager.getQueueLengthByDatabase(databaseId, queueName);
+        lengthBefore += queueLength;
+      } catch (error) {
+        logger.warn(`获取队列长度失败`, { databaseId, error: error.message });
+      }
     }
     
-    const lengthAfter = await redisClient.getQueueLength(queueName);
+    // 清空所有数据库中的队列
+    for (const databaseId of Object.keys(redisStatus.mapping)) {
+      try {
+        const redisInstance = redisManager.getClientByDatabaseId(databaseId);
+        await redisInstance.client.del(queueName);
+      } catch (error) {
+        logger.warn(`清空Redis DB中的队列失败`, { databaseId, error: error.message });
+      }
+    }
+    
+    const lengthAfter = 0; // 清空后长度为0
 
     logger.info('队列已清空', {
       queueName,
@@ -165,14 +217,18 @@ router.post('/test/webhook', async (req, res) => {
       timestamp: new Date().toISOString()
     };
 
-    // 推送到队列
-    const messageId = await redisClient.pushToQueue('sync_queue', {
-      type: 'notion_to_jira_test',
-      source: 'admin_test',
-      event_data: testEvent,
-      created_at: new Date().toISOString(),
-      priority: 'low'
-    });
+    // 推送到队列（使用默认数据库）
+    const messageId = await redisManager.pushToQueueByDatabase(
+      testEvent.database_id, 
+      'sync_queue', 
+      {
+        type: 'notion_to_jira_test',
+        source: 'admin_test',
+        event_data: testEvent,
+        created_at: new Date().toISOString(),
+        priority: 'low'
+      }
+    );
 
     logger.info('测试事件已创建', {
       messageId,
@@ -254,7 +310,8 @@ router.post('/cache/set', async (req, res) => {
       });
     }
 
-    await redisClient.setCache(key, value, expireSeconds);
+    // 设置到默认数据库的缓存
+    await redisManager.setCacheByDatabase(null, key, value, expireSeconds);
 
     logger.info('缓存已设置', {
       key,
@@ -285,7 +342,7 @@ router.post('/cache/set', async (req, res) => {
 router.get('/cache/get/:key', async (req, res) => {
   try {
     const { key } = req.params;
-    const value = await redisClient.getCache(key);
+    const value = await redisManager.getCacheByDatabase(null, key);
 
     res.json({
       success: true,

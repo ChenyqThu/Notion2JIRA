@@ -9,7 +9,7 @@ const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 
 const logger = require('./config/logger');
-const redisClient = require('./config/redis');
+const redisManager = require('./config/redis_manager');
 const webhookRoutes = require('./routes/webhook');
 const adminRoutes = require('./routes/admin');
 
@@ -113,16 +113,19 @@ app.set('trust proxy', 1);
 
 // 健康检查端点（在其他中间件之前）
 app.get(process.env.HEALTH_CHECK_PATH || '/health', (req, res) => {
+  const redisStatus = redisManager.getAllStatus();
+  const allConnected = Object.values(redisStatus.databases).every(db => db.connected);
+  
   const health = {
-    status: 'ok',
+    status: allConnected ? 'ok' : 'degraded',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
-    redis: redisClient.getStatus(),
+    redis: redisStatus,
     memory: process.memoryUsage(),
     version: '1.0.0'
   };
 
-  const statusCode = health.redis.connected ? 200 : 503;
+  const statusCode = allConnected ? 200 : 503;
   res.status(statusCode).json(health);
 });
 
@@ -194,9 +197,9 @@ async function gracefulShutdown(signal) {
     logger.info('HTTP服务器已关闭');
     
     try {
-      // 关闭Redis连接
-      await redisClient.disconnect();
-      logger.info('Redis连接已关闭');
+      // 关闭所有Redis连接
+      await redisManager.disconnect();
+      logger.info('所有Redis连接已关闭');
       
       logger.info('优雅关闭完成');
       process.exit(0);
@@ -227,9 +230,9 @@ process.on('unhandledRejection', (reason, promise) => {
 // 启动服务器
 async function startServer() {
   try {
-    // 连接Redis
-    await redisClient.connect();
-    logger.info('Redis连接成功');
+    // 初始化RedisManager
+    await redisManager.initialize();
+    logger.info('RedisManager初始化成功');
 
     // 启动HTTP服务器
     const server = app.listen(PORT, () => {

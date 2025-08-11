@@ -1,7 +1,7 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
 const logger = require('../config/logger');
-const redisClient = require('../config/redis');
+const redisManager = require('../config/redis_manager');
 const { verifyWebhookRequest } = require('../middleware/auth');
 
 const router = express.Router();
@@ -36,7 +36,8 @@ class NotionWebhookHandler {
 
     // 提取页面基本信息
     const pageId = data.id;
-    const databaseId = data.parent?.database_id;
+    // 提取database_id并标准化（去除连接符，保持与配置一致）
+    const databaseId = data.parent?.database_id?.replace(/-/g, '');
     const lastEditedTime = data.last_edited_time;
     const createdTime = data.created_time;
     const archived = data.archived;
@@ -360,7 +361,7 @@ class NotionWebhookHandler {
     // 由于 webhook 是通过点击同步按钮触发的，默认都需要同步
     if (event.sync2jira === true) {
       // 检查是否已存在JIRA关联
-      const existingMapping = await this.checkExistingMapping(event.page_id);
+      const existingMapping = await this.checkExistingMapping(event.page_id, event.database_id);
       
       if (existingMapping) {
         await this.queueSyncEvent('notion_to_jira_update', event);
@@ -381,7 +382,7 @@ class NotionWebhookHandler {
     });
 
     // 检查是否有JIRA关联需要处理
-    const existingMapping = await this.checkExistingMapping(event.page_id);
+    const existingMapping = await this.checkExistingMapping(event.page_id, event.database_id);
     if (existingMapping) {
       await this.queueSyncEvent('notion_to_jira_delete', event);
     }
@@ -402,12 +403,18 @@ class NotionWebhookHandler {
         priority: this.getEventPriority(eventType)
       };
 
-      const messageId = await redisClient.pushToQueue('sync_queue', queueData);
+      // 根据database_id路由到对应的Redis DB
+      const messageId = await redisManager.pushToQueueByDatabase(
+        eventData.database_id, 
+        'sync_queue', 
+        queueData
+      );
       
       logger.info('同步事件已加入队列', {
         messageId,
         eventType,
-        pageId: eventData.page_id
+        pageId: eventData.page_id,
+        databaseId: eventData.database_id
       });
 
       return messageId;
@@ -420,10 +427,13 @@ class NotionWebhookHandler {
   /**
    * 检查是否存在JIRA映射关系
    */
-  async checkExistingMapping(pageId) {
+  async checkExistingMapping(pageId, databaseId) {
     try {
-      // 从缓存中检查映射关系
-      const mapping = await redisClient.getCache(`mapping:${pageId}`);
+      // 从对应database的Redis DB中检查映射关系
+      const mapping = await redisManager.getCacheByDatabase(
+        databaseId, 
+        `mapping:${pageId}`
+      );
       return mapping;
     } catch (error) {
       logger.error('检查映射关系失败:', error);
