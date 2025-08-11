@@ -12,6 +12,43 @@ from services.notion_version_cache import NotionVersionCache
 import logging
 
 
+class UserValidationCache:
+    """JIRA用户验证缓存 - 简化版本，不设置过期时间"""
+    def __init__(self):
+        self._cache = {}  # {email: is_valid} - 永久缓存，miss时更新
+        self.logger = get_logger("user_validation_cache")
+        
+    async def validate_user(self, email: str, jira_client) -> bool:
+        """验证用户，带缓存机制"""
+        # 检查缓存
+        if email in self._cache:
+            self.logger.debug(f"缓存命中: {email} -> {self._cache[email]}")
+            return self._cache[email]
+        
+        # 缓存miss，进行实际验证
+        try:
+            user = await jira_client.find_user_by_email(email)
+            is_valid = user is not None
+            
+            # 更新缓存（永久存储）
+            self._cache[email] = is_valid
+            self.logger.info(f"用户验证完成: {email} -> {'有效' if is_valid else '无效'}")
+            return is_valid
+            
+        except Exception as e:
+            self.logger.error(f"用户验证异常: {email}, 错误: {str(e)}")
+            # 验证出错时保守处理，不缓存错误结果
+            return True  # 保守处理，假设用户存在
+            
+    def get_cache_stats(self) -> dict:
+        """获取缓存统计信息"""
+        return {
+            'total_cached': len(self._cache),
+            'valid_users': sum(1 for v in self._cache.values() if v),
+            'invalid_users': sum(1 for v in self._cache.values() if not v)
+        }
+
+
 class FieldMapper:
     """字段映射引擎"""
     
@@ -54,6 +91,24 @@ class FieldMapper:
         # 默认经办人（其他未命中的产品线）
         self.default_assignee = 'ludingyang@tp-link.com.hk'
         
+        # 产品线到Reporter的映射 - 产品负责人
+        self.product_line_reporter_mapping = {
+            'Controller': 'echo.liu@tp-link.com',          # echo
+            'Gateway': 'xavier.chen@tp-link.com',          # xavier
+            'Managed Switch': 'aiden.wang@tp-link.com',   # aiden
+            'Unmanaged Switch': 'neil.qin@tp-link.com',   # neil
+            'EAP': 'shon.yang@tp-link.com',               # shon
+            'OLT': 'bill.wang@tp-link.com',               # bill
+            'APP': 'edward.rui@tp-link.com',              # edward
+            'Cloud Portal': 'bill.wang@tp-link.com',     # bill
+            'Tools': 'harry.zhao@tp-link.com',            # harry
+            'All-in-one machine': 'xavier.chen@tp-link.com',  # xavier
+            'Combination': 'lucien.chen@tp-link.com'      # lucien
+        }
+        
+        # 默认Reporter（最后的fallback）
+        self.default_reporter = 'lucien.chen@tp-link.com'  # lucien作为兜底
+        
         # 初始化版本缓存（如果需要）
         try:
             if hasattr(settings.notion, 'enable_version_mapping') and settings.notion.enable_version_mapping:
@@ -72,6 +127,9 @@ class FieldMapper:
         except ImportError:
             self.logger.warning("版本映射器不可用，VersionMapper模块未找到")
             self.version_mapper = None
+        
+        # 初始化用户验证缓存
+        self.user_cache = UserValidationCache()
     
     def get_default_fields(self) -> Dict[str, Any]:
         """获取默认字段配置"""
@@ -617,50 +675,37 @@ class FieldMapper:
             return {'name': self.default_assignee}  # 直接使用默认邮箱
     
     async def _extract_reporter(self, notion_data: Dict[str, Any]) -> Optional[Dict[str, str]]:
-        """提取Reporter字段 - 从Owner字段提取邮箱，直接使用邮箱"""
+        """提取Reporter字段 - 带用户验证缓存和产品线fallback"""
         properties = notion_data.get('properties', {})
         
-        # 尝试多种可能的Owner字段名
-        reporter_fields = ['Owner', '需求负责人', '需求录入', 'reporter', 'Reporter', 'owner']
+        # 步骤1: 尝试从Owner字段提取用户邮箱
+        original_email = await self._extract_owner_email(properties)
         
-        reporter_value = self._extract_field_value(properties, reporter_fields)
+        if original_email:
+            # 验证用户是否存在于JIRA中（带缓存）
+            if await self.user_cache.validate_user(original_email, self.jira_client):
+                self.logger.info(f"使用Owner字段中的用户: {original_email}")
+                return {'name': original_email}
+            else:
+                self.logger.warning(f"Owner用户在JIRA中不存在: {original_email}, 尝试产品线fallback")
         
-        if reporter_value:
-            # 处理people类型字段
-            if isinstance(reporter_value, dict):
-                # 单个用户对象
-                email = None
-                
-                # webhook-server格式: {'email': 'xxx@xxx.com'}
-                if 'email' in reporter_value:
-                    email = reporter_value['email']
-                # 原始Notion格式: {'person': {'email': 'xxx@xxx.com'}}
-                elif 'person' in reporter_value and isinstance(reporter_value['person'], dict):
-                    email = reporter_value['person'].get('email')
-                
-                if email:
-                    self.logger.info(f"从Owner字段提取到Reporter邮箱: {email}")
-                    return {'name': email}  # 直接使用邮箱
-            
-            elif isinstance(reporter_value, list) and len(reporter_value) > 0:
-                # 用户数组，取第一个用户
-                first_user = reporter_value[0]
-                if isinstance(first_user, dict):
-                    email = None
-                    
-                    # webhook-server格式: {'email': 'xxx@xxx.com'}
-                    if 'email' in first_user:
-                        email = first_user['email']
-                    # 原始Notion格式: {'person': {'email': 'xxx@xxx.com'}}
-                    elif 'person' in first_user and isinstance(first_user['person'], dict):
-                        email = first_user['person'].get('email')
-                    
-                    if email:
-                        self.logger.info(f"从Owner字段（数组）提取到Reporter邮箱: {email}")
-                        return {'name': email}  # 直接使用邮箱
+        # 步骤2: 产品线fallback
+        fallback_email = await self._get_product_line_reporter_fallback(properties)
+        if fallback_email:
+            if await self.user_cache.validate_user(fallback_email, self.jira_client):
+                self.logger.info(f"使用产品线默认Reporter: {fallback_email}")
+                return {'name': fallback_email}
+            else:
+                self.logger.warning(f"产品线默认Reporter在JIRA中不存在: {fallback_email}")
         
-        self.logger.warning("未找到Owner字段或字段为空")
-        return None
+        # 步骤3: 全局默认fallback
+        if await self.user_cache.validate_user(self.default_reporter, self.jira_client):
+            self.logger.info(f"使用全局默认Reporter: {self.default_reporter}")
+            return {'name': self.default_reporter}
+        else:
+            # 如果连默认用户都不存在，记录严重错误但不阻塞流程
+            self.logger.error(f"全局默认Reporter也不存在: {self.default_reporter}")
+            return None
     
     async def _extract_version(self, notion_data: Dict[str, Any]) -> Optional[str]:
         """提取版本字段，返回版本ID字符串"""
@@ -811,6 +856,70 @@ class FieldMapper:
         except Exception as e:
             self.logger.error(f"获取关联页面名称失败: {str(e)}")
             return None
+    
+    async def _extract_owner_email(self, properties: Dict[str, Any]) -> Optional[str]:
+        """从Owner字段提取邮箱 - 辅助方法"""
+        # 尝试多种可能的Owner字段名
+        reporter_fields = ['Owner', '需求负责人', '需求录入', 'reporter', 'Reporter', 'owner']
+        
+        reporter_value = self._extract_field_value(properties, reporter_fields)
+        
+        if reporter_value:
+            # 处理people类型字段
+            if isinstance(reporter_value, dict):
+                # 单个用户对象
+                email = None
+                
+                # webhook-server格式: {'email': 'xxx@xxx.com'}
+                if 'email' in reporter_value:
+                    email = reporter_value['email']
+                # 原始Notion格式: {'person': {'email': 'xxx@xxx.com'}}
+                elif 'person' in reporter_value and isinstance(reporter_value['person'], dict):
+                    email = reporter_value['person'].get('email')
+                
+                if email:
+                    return email
+            
+            elif isinstance(reporter_value, list) and len(reporter_value) > 0:
+                # 用户数组，取第一个用户
+                first_user = reporter_value[0]
+                if isinstance(first_user, dict):
+                    email = None
+                    
+                    # webhook-server格式: {'email': 'xxx@xxx.com'}
+                    if 'email' in first_user:
+                        email = first_user['email']
+                    # 原始Notion格式: {'person': {'email': 'xxx@xxx.com'}}
+                    elif 'person' in first_user and isinstance(first_user['person'], dict):
+                        email = first_user['person'].get('email')
+                    
+                    if email:
+                        return email
+        
+        return None
+    
+    async def _get_product_line_reporter_fallback(self, properties: Dict[str, Any]) -> Optional[str]:
+        """根据产品线获取默认Reporter"""
+        # 支持多种可能的产品线字段名
+        product_line_fields = ['涉及产品线', 'product_line', 'Product Line', 'Product']
+        
+        product_line_value = self._extract_field_value(properties, product_line_fields)
+        
+        if product_line_value:
+            # 处理多选和单选情况
+            if isinstance(product_line_value, list) and len(product_line_value) > 0:
+                product_line = product_line_value[0] if isinstance(product_line_value[0], str) else product_line_value[0].get('name', '')
+            elif isinstance(product_line_value, str):
+                product_line = product_line_value
+            else:
+                return None
+            
+            mapped_email = self.product_line_reporter_mapping.get(product_line.strip())
+            if mapped_email:
+                self.logger.info(f"产品线 '{product_line}' 映射到Reporter: {mapped_email}")
+            return mapped_email
+        
+        return None
     
     def _extract_status(self, notion_data: Dict[str, Any]) -> Optional[str]:
         """提取状态字段"""

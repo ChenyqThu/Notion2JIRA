@@ -58,6 +58,13 @@ class SyncConfig:
 
 
 @dataclass
+class FieldMappingConfig:
+    """字段映射配置"""
+    enable_user_validation: bool = True
+    enable_product_line_fallback: bool = True
+
+
+@dataclass
 class LogConfig:
     """日志配置"""
     level: str = "INFO"
@@ -77,6 +84,7 @@ class Settings:
         self.notion = self._load_notion_config()
         self.sync = self._load_sync_config()
         self.log = self._load_log_config()
+        self.field_mapping = self._load_field_mapping_config()
         
         # 验证必要配置
         self._validate_config()
@@ -197,6 +205,13 @@ class Settings:
             file_path=os.getenv("LOG_FILE_PATH", "logs/sync_service.log"),
             max_file_size=int(os.getenv("LOG_MAX_FILE_SIZE", str(10 * 1024 * 1024))),
             backup_count=int(os.getenv("LOG_BACKUP_COUNT", "5"))
+        )
+    
+    def _load_field_mapping_config(self) -> FieldMappingConfig:
+        """加载字段映射配置"""
+        return FieldMappingConfig(
+            enable_user_validation=os.getenv("ENABLE_USER_VALIDATION", "true").lower() == "true",
+            enable_product_line_fallback=os.getenv("ENABLE_PRODUCT_LINE_FALLBACK", "true").lower() == "true"
         )
     
     def _validate_config(self):
