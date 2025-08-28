@@ -88,9 +88,13 @@ class NotionWebhookHandler {
             };
             break;
           case 'rich_text':
+            // 连接所有rich_text元素的plain_text，保留完整内容
+            const richTextContent = value.rich_text
+              ? value.rich_text.map(item => item.plain_text || '').join('')
+              : '';
             parsed[key] = {
               type: 'rich_text',
-              value: value.rich_text?.[0]?.plain_text || '',
+              value: richTextContent,
               raw: value.rich_text || []
             };
             break;

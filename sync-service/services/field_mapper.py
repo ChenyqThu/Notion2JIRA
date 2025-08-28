@@ -84,6 +84,7 @@ class FieldMapper:
             'Managed Switch': 'huangguangrun@tp-link.com.hk',
             'Unmanaged Switch': 'huangguangrun@tp-link.com.hk',
             'EAP': 'ouhuanrui@tp-link.com.hk',
+            'EAP硬件': 'xiexinhua@tp-link.com.hk',
             'OLT': 'fancunlian@tp-link.com.hk',
             'APP': 'xingxiaosong@tp-link.com.hk'
         }
@@ -383,16 +384,17 @@ class FieldMapper:
         """构建描述字段（不包含原需求链接和PRD链接，这些将作为remote link处理）"""
         description_parts = []
         properties = notion_data.get('properties', {})
+        raw_properties = notion_data.get('raw_properties', {})
         
-        # 功能说明
-        func_desc = self._extract_field_value(properties, ['Description', '功能说明 Desc', 'description'])
-        if func_desc and isinstance(func_desc, str):
-            description_parts.append(f"## 需求说明\n{func_desc}")
+        # 功能说明 - 直接使用原始内容，优先使用raw_properties
+        func_desc = self._extract_field_value(properties, ['Description', '功能说明 Desc', 'description'], raw_properties)
+        if func_desc and isinstance(func_desc, str) and func_desc.strip():
+            description_parts.append(func_desc.strip())
         
         # AI整理（如果需要在描述中显示）
         # ai_summary = self._extract_field_value(properties, ['需求整理', 'ai_summary', 'AI整理'])
-        # if ai_summary and isinstance(ai_summary, str):
-        #     description_parts.append(f"## 需求整理(AI)\n{ai_summary}")
+        # if ai_summary and isinstance(ai_summary, str) and ai_summary.strip():
+        #     description_parts.append(f"需求整理(AI):\n{ai_summary.strip()}")
         
         return '\n\n'.join(description_parts) if description_parts else "无详细描述"
     
@@ -553,8 +555,18 @@ class FieldMapper:
             self.logger.error(f"异常详情: {traceback.format_exc()}")
             return None
     
-    def _extract_field_value(self, properties: Dict[str, Any], field_names: List[str]) -> Optional[Any]:
-        """通用字段值提取方法，支持webhook-server和原始Notion格式"""
+    def _extract_field_value(self, properties: Dict[str, Any], field_names: List[str], raw_properties: Dict[str, Any] = None) -> Optional[Any]:
+        """通用字段值提取方法，优先使用原始Notion格式"""
+        # 优先使用原始properties
+        if raw_properties:
+            for field_name in field_names:
+                if field_name in raw_properties:
+                    field_data = raw_properties[field_name]
+                    result = self._parse_raw_notion_field(field_data)
+                    if result is not None:
+                        return result
+        
+        # 回退到处理过的properties
         for field_name in field_names:
             if field_name in properties:
                 field_data = properties[field_name]
@@ -569,7 +581,15 @@ class FieldMapper:
                     if 'rich_text' in field_data:
                         rich_text_array = field_data['rich_text']
                         if rich_text_array and len(rich_text_array) > 0:
-                            return ''.join([item.get('plain_text', '') for item in rich_text_array])
+                            # 处理rich_text中的换行和段落结构
+                            text_parts = []
+                            for item in rich_text_array:
+                                text = item.get('plain_text', '')
+                                # 保留文本中的原始换行符
+                                if text:
+                                    text_parts.append(text)
+                            # 直接连接，保持原始的换行格式
+                            return ''.join(text_parts)
                     
                     # select类型
                     elif 'select' in field_data:
@@ -627,14 +647,79 @@ class FieldMapper:
         
         return None
     
+    def _parse_raw_notion_field(self, field_data: Dict[str, Any]) -> Optional[Any]:
+        """解析原始Notion字段数据"""
+        if not isinstance(field_data, dict):
+            return None
+        
+        field_type = field_data.get('type')
+        
+        if field_type == 'rich_text':
+            rich_text_array = field_data.get('rich_text', [])
+            if rich_text_array and len(rich_text_array) > 0:
+                # 连接所有rich_text元素的plain_text，保留完整内容
+                text_parts = []
+                for item in rich_text_array:
+                    text = item.get('plain_text', '')
+                    if text:
+                        text_parts.append(text)
+                return ''.join(text_parts)
+        
+        elif field_type == 'title':
+            title_array = field_data.get('title', [])
+            if title_array and len(title_array) > 0:
+                return title_array[0].get('plain_text', '')
+        
+        elif field_type == 'select':
+            select_data = field_data.get('select')
+            if select_data and 'name' in select_data:
+                return select_data['name']
+        
+        elif field_type == 'multi_select':
+            multi_select_array = field_data.get('multi_select', [])
+            if multi_select_array:
+                return [item.get('name', '') for item in multi_select_array]
+        
+        elif field_type == 'status':
+            status_data = field_data.get('status')
+            if status_data and 'name' in status_data:
+                return status_data['name']
+        
+        elif field_type == 'people':
+            people_array = field_data.get('people', [])
+            if people_array and len(people_array) > 0:
+                return people_array  # 返回完整的用户数组
+        
+        elif field_type == 'relation':
+            relation_array = field_data.get('relation', [])
+            if relation_array and len(relation_array) > 0:
+                return relation_array  # 返回整个关联数组
+        
+        elif field_type == 'formula':
+            formula_data = field_data.get('formula')
+            if formula_data:
+                # 检查formula的类型
+                if 'string' in formula_data:
+                    return formula_data['string']
+                elif 'number' in formula_data:
+                    return formula_data['number']
+                elif 'boolean' in formula_data:
+                    return formula_data['boolean']
+                elif 'date' in formula_data:
+                    return formula_data['date']
+        
+        # 对于其他类型，返回None让回退逻辑处理
+        return None
+    
     def _extract_priority(self, notion_data: Dict[str, Any]) -> Optional[str]:
         """提取优先级字段"""
         properties = notion_data.get('properties', {})
+        raw_properties = notion_data.get('raw_properties', {})
         
         # 尝试多种可能的优先级字段名（按优先级排序）
         priority_fields = ['优先级 P', 'priority', 'Priority', '优先级']
         
-        priority_value = self._extract_field_value(properties, priority_fields)
+        priority_value = self._extract_field_value(properties, priority_fields, raw_properties)
         if isinstance(priority_value, str):
             return priority_value
         
