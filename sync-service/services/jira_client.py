@@ -174,7 +174,7 @@ class JiraClient:
             
             url = f"{self.jira_config.base_url}/rest/api/2/user/search"
             params = {
-                'query': query,
+                'username': query if '@' not in query else query.split('@')[0],
                 'maxResults': 10
             }
             
@@ -298,7 +298,7 @@ class JiraClient:
     def get_default_fields(self) -> Dict[str, Any]:
         """获取默认字段配置"""
         return {
-            'project': {'id': self.jira_config.project_id},
+            'project': {'key': self.jira_config.project_key},
             'issuetype': {'id': self.jira_config.default_issue_type_id},
             'fixVersions': [{'id': str(self.jira_config.default_version_id)}]  # 确保ID为字符串
         }

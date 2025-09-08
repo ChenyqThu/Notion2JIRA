@@ -143,32 +143,78 @@ class VersionMapper:
         return new_mapping
     
     async def get_jira_version_id(self, notion_version_name: str) -> Optional[str]:
-        """根据Notion版本名称获取JIRA版本ID"""
+        """根据Notion版本名称获取JIRA版本ID
+        
+        优化策略:
+        1. 首先尝试同名匹配 (JIRA版本名 = Notion版本名)
+        2. 如果没找到，再查询映射表
+        3. 最后使用默认版本
+        """
         try:
             # 加载最新映射
             mapping_data = await self.load_mapping()
             version_mappings = mapping_data.get('version_mappings', {})
             
+            # === 策略1: 优先尝试同名匹配 ===
+            # 先看JIRA版本名是否与Notion版本名完全一致
+            for version_id, mapping_info in version_mappings.items():
+                jira_name = mapping_info.get('jira_name', '')
+                
+                # 精确同名匹配
+                if jira_name == notion_version_name:
+                    self.logger.info(
+                        "找到同名版本匹配", 
+                        notion_version=notion_version_name,
+                        jira_version=jira_name,
+                        version_id=version_id
+                    )
+                    return version_id
+                
+                # 大小写不敏感的同名匹配
+                if jira_name.lower() == notion_version_name.lower():
+                    self.logger.info(
+                        "找到同名版本匹配(忽略大小写)", 
+                        notion_version=notion_version_name,
+                        jira_version=jira_name,
+                        version_id=version_id
+                    )
+                    return version_id
+            
+            # === 策略2: 查询映射表 ===
             # 在所有版本映射中查找匹配的Notion版本名称
             for version_id, mapping_info in version_mappings.items():
                 notion_names = mapping_info.get('notion_names', [])
                 
-                # 精确匹配
+                # 精确匹配映射表
                 if notion_version_name in notion_names:
+                    self.logger.info(
+                        "找到映射表匹配", 
+                        notion_version=notion_version_name,
+                        jira_version=mapping_info.get('jira_name', ''),
+                        version_id=version_id
+                    )
                     return version_id
                 
                 # 模糊匹配（去除空格和大小写）
                 normalized_name = notion_version_name.strip().lower()
                 for notion_name in notion_names:
                     if notion_name.strip().lower() == normalized_name:
+                        self.logger.info(
+                            "找到映射表模糊匹配", 
+                            notion_version=notion_version_name,
+                            matched_name=notion_name,
+                            jira_version=mapping_info.get('jira_name', ''),
+                            version_id=version_id
+                        )
                         return version_id
             
-            # 未找到映射，使用默认版本
+            # === 策略3: 使用默认版本 ===
             default_version_id = mapping_data.get('default_version_id', self.settings.jira.default_version_id)
             self.logger.warning(
                 "未找到版本映射，使用默认版本",
                 notion_version=notion_version_name,
-                default_version_id=default_version_id
+                default_version_id=default_version_id,
+                suggestion="建议保持JIRA版本名与Notion版本名一致，或更新映射配置"
             )
             return default_version_id
             

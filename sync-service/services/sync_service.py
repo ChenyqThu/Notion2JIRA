@@ -128,7 +128,7 @@ class SyncService:
         """解析JIRA URL，提取项目键和Issue Key
         
         Args:
-            jira_url: JIRA链接，如 "http://rdjira.tp-link.com/browse/SMBNET-123"
+            jira_url: JIRA链接，如 "https://pdjira.tp-link.com/browse/SMBNET-123"
             
         Returns:
             Tuple[project_key, issue_key] 或 None
@@ -136,13 +136,14 @@ class SyncService:
         if not jira_url:
             return None
             
-        # 匹配JIRA URL模式
-        pattern = r'http://rdjira\.tp-link\.com/browse/([A-Z]+)-(\d+)'
+        # 匹配JIRA URL模式 - 同时支持新旧域名
+        pattern = r'https?://(rdjira|pdjira)\.tp-link\.com/browse/([A-Z]+)-(\d+)'
         match = re.match(pattern, jira_url)
         
         if match:
-            project_key = match.group(1)  # SMBNET 或 SMBEAP
-            issue_number = match.group(2)  # 123
+            # group(1) = 域名(rdjira|pdjira), group(2) = 项目键, group(3) = issue号码
+            project_key = match.group(2)  # SMBNET 或 SMBEAP
+            issue_number = match.group(3)  # 123
             issue_key = f"{project_key}-{issue_number}"
             return project_key, issue_key
         

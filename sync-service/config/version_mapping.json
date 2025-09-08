@@ -1,9 +1,9 @@
 {
   "_metadata": {
     "description": "JIRA版本到Notion版本名称的映射配置",
-    "generated_time": "2025-05-27T20:19:28.616648",
+    "generated_time": "2025-09-08T10:35:32.680992",
     "jira_project": "SMBNET",
-    "total_versions": 19,
+    "total_versions": 48,
     "instructions": {
       "如何配置": [
         "1. 在每个JIRA版本的notion_names数组中添加对应的Notion版本名称",
@@ -21,196 +21,548 @@
       }
     }
   },
-  "default_version_id": "14577",
-  "last_updated": "2025-05-27T20:25:15.132439",
-  "jira_sync_time": "2025-05-27T20:25:15.132419",
+  "default_version_id": "10871",
+  "last_updated": "2025-09-08T10:40:00.000000",
+  "jira_sync_time": "2025-09-08T10:35:32.680997",
   "version_mappings": {
-    "14577": {
+    "10911": {
+      "jira_name": "25H2",
+      "notion_names": [
+        "25H2"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "",
+      "comment": "自动生成的映射，基于JIRA名称: 25H2"
+    },
+    "10903": {
+      "jira_name": "25H2-Beta",
+      "notion_names": [
+        "25H2-Beta"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "",
+      "comment": "自动生成的映射，基于JIRA名称: 25H2-Beta"
+    },
+    "10898": {
+      "jira_name": "AIO 1.0-APP",
+      "notion_names": [
+        "AIO 1.0-APP"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "",
+      "comment": "自动生成的映射，基于JIRA名称: AIO 1.0-APP"
+    },
+    "10896": {
+      "jira_name": "AIO 1.0-Cloud Portal",
+      "notion_names": [
+        "AIO 1.0-Cloud Portal"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "",
+      "comment": "自动生成的映射，基于JIRA名称: AIO 1.0-Cloud Portal"
+    },
+    "10892": {
+      "jira_name": "AIO 1.0-Gateway",
+      "notion_names": [
+        "AIO 1.0-Gateway"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "",
+      "comment": "自动生成的映射，基于JIRA名称: AIO 1.0-Gateway"
+    },
+    "10891": {
+      "jira_name": "AIO 1.0-Guard",
+      "notion_names": [
+        "AIO 1.0-Guard"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "需求评估总结表：https://pdconfluence.tp-link.com/pages/viewpage.action?pageId=128185506",
+      "comment": "自动生成的映射，基于JIRA名称: AIO 1.0-Guard"
+    },
+    "10913": {
+      "jira_name": "AIO 1.0-NVR",
+      "notion_names": [
+        "AIO 1.0-NVR"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "",
+      "comment": "自动生成的映射，基于JIRA名称: AIO 1.0-NVR"
+    },
+    "10881": {
+      "jira_name": "AIO 1.0-Network",
+      "notion_names": [
+        "AIO GW Controller",
+        "AIO 1.0-Network"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "https://pdconfluence.tp-link.com/pages/viewpage.action?pageId=138140669",
+      "comment": "自动生成的映射，基于JIRA名称: AIO 1.0-Network"
+    },
+    "10890": {
+      "jira_name": "AI售前助手",
+      "notion_names": [
+        "AI售前助手"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "",
+      "comment": "自动生成的映射，基于JIRA名称: AI售前助手"
+    },
+    "10872": {
+      "jira_name": "AP v6.0",
+      "notion_names": [
+        "AP 6.0",
+        "ap 6.0",
+        "AP v6.0"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "",
+      "comment": "自动生成的映射，基于JIRA名称: AP v6.0"
+    },
+    "10893": {
+      "jira_name": "AP v6.1",
+      "notion_names": [
+        "AP 6.1",
+        "AP v6.1",
+        "ap 6.1"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "",
+      "comment": "自动生成的映射，基于JIRA名称: AP v6.1"
+    },
+    "10900": {
+      "jira_name": "AP v6.3",
+      "notion_names": [
+        "AP 6.3",
+        "ap 6.3",
+        "AP v6.3"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "",
+      "comment": "自动生成的映射，基于JIRA名称: AP v6.3"
+    },
+    "10884": {
+      "jira_name": "Cloud Portal v5.1",
+      "notion_names": [
+        "Cloud Portal v5.1",
+        "Cloud Portal 5.1"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "",
+      "comment": "自动生成的映射，基于JIRA名称: Cloud Portal v5.1"
+    },
+    "10885": {
+      "jira_name": "Cloud Portal v5.2",
+      "notion_names": [
+        "Cloud Portal v5.2",
+        "Cloud Portal 5.2"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "",
+      "comment": "自动生成的映射，基于JIRA名称: Cloud Portal v5.2"
+    },
+    "10886": {
+      "jira_name": "Cloud Portal v5.3",
+      "notion_names": [
+        "Cloud Portal v5.3",
+        "Cloud Portal 5.3"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "",
+      "comment": "自动生成的映射，基于JIRA名称: Cloud Portal v5.3"
+    },
+    "10915": {
+      "jira_name": "Cloud Portal v5.4",
+      "notion_names": [
+        "Cloud Portal 5.4",
+        "Cloud Portal v5.4"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "",
+      "comment": "自动生成的映射，基于JIRA名称: Cloud Portal v5.4"
+    },
+    "10916": {
+      "jira_name": "Cloud Portal v5.5",
+      "notion_names": [
+        "Cloud Portal 5.5",
+        "Cloud Portal v5.5"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "",
+      "comment": "自动生成的映射，基于JIRA名称: Cloud Portal v5.5"
+    },
+    "10914": {
+      "jira_name": "Cloud Portal v5.6",
+      "notion_names": [
+        "Cloud Portal v5.6",
+        "Cloud Portal 5.6"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "",
+      "comment": "自动生成的映射，基于JIRA名称: Cloud Portal v5.6"
+    },
+    "10899": {
+      "jira_name": "Controller v5.15.24",
+      "notion_names": [
+        "Controller 5.15.24",
+        "Controller v5.15.24"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "",
+      "comment": "自动生成的映射，基于JIRA名称: Controller v5.15.24"
+    },
+    "10905": {
+      "jira_name": "Controller v6.0",
+      "notion_names": [
+        "Controller v6.0",
+        "Controller 6.0",
+        "controller 6.0",
+        "Controller 6.1 ePOS"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "",
+      "comment": "自动生成的映射，基于JIRA名称: Controller v6.0"
+    },
+    "10877": {
+      "jira_name": "Controller v6.1",
+      "notion_names": [
+        "controller 6.1",
+        "Controller 6.1",
+        "Network 6.1",
+        "Controller v6.1"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "https://pdconfluence.tp-link.com/pages/viewpage.action?pageId=140773579",
+      "comment": "自动生成的映射，基于JIRA名称: Controller v6.1"
+    },
+    "10880": {
+      "jira_name": "Controller v6.4",
+      "notion_names": [
+        "Controller v6.4",
+        "Controller 6.4",
+        "controller 6.4"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "",
+      "comment": "自动生成的映射，基于JIRA名称: Controller v6.4"
+    },
+    "10874": {
+      "jira_name": "Design Hub 1.2",
+      "notion_names": [
+        "Design Hub 1.2",
+        "Design Center 1.2"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "",
+      "comment": "自动生成的映射，基于JIRA名称: Design Hub 1.2"
+    },
+    "10875": {
+      "jira_name": "Design Hub 1.3",
+      "notion_names": [
+        "Design Hub 1.3",
+        "Design Center 1.3"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "",
+      "comment": "自动生成的映射，基于JIRA名称: Design Hub 1.3"
+    },
+    "10895": {
+      "jira_name": "Gateway v6.2",
+      "notion_names": [
+        "Gateway v6.2",
+        "gateway 6.2",
+        "Gateway 6.2"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "SMB路由SDNC 6.2项目需求以及项目进度跟进",
+      "comment": "自动生成的映射，基于JIRA名称: Gateway v6.2"
+    },
+    "10902": {
+      "jira_name": "Gateway v6.3",
+      "notion_names": [
+        "gateway 6.3",
+        "Gateway 6.3",
+        "Gateway v6.3"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "",
+      "comment": "自动生成的映射，基于JIRA名称: Gateway v6.3"
+    },
+    "10907": {
+      "jira_name": "Gateway v6.4",
+      "notion_names": [
+        "Gateway v6.4",
+        "gateway 6.4",
+        "Gateway 6.4"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "SMB路由SDNC 6.4项目需求以及项目进度跟进",
+      "comment": "自动生成的映射，基于JIRA名称: Gateway v6.4"
+    },
+    "10904": {
+      "jira_name": "Gateway需求池",
+      "notion_names": [
+        "Gateway需求池"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "用于记录所有Gateway一侧的需求，便于需求的跟进、数据汇总、分析",
+      "comment": "自动生成的映射，基于JIRA名称: Gateway需求池"
+    },
+    "10887": {
+      "jira_name": "Navi v2.0",
+      "notion_names": [
+        "Navi 2.0",
+        "Navi APP 2.0",
+        "navi 2.0",
+        "Navi v2.0"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "",
+      "comment": "自动生成的映射，基于JIRA名称: Navi v2.0"
+    },
+    "10878": {
+      "jira_name": "Network v6.2",
+      "notion_names": [
+        "network 6.2",
+        "Network v6.2",
+        "Network 6.2"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "https://pdconfluence.tp-link.com/pages/viewpage.action?pageId=138141197",
+      "comment": "自动生成的映射，基于JIRA名称: Network v6.2"
+    },
+    "10879": {
+      "jira_name": "Network v6.3",
+      "notion_names": [
+        "Network 6.3",
+        "network 6.3",
+        "Network v6.3",
+        "网络6.3"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "https://pdconfluence.tp-link.com/pages/viewpage.action?pageId=151247131",
+      "comment": "网络产品6.3版本"
+    },
+    "10910": {
+      "jira_name": "Network v6.4",
+      "notion_names": [
+        "network 6.4",
+        "Network v6.4",
+        "Network 6.4"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "",
+      "comment": "自动生成的映射，基于JIRA名称: Network v6.4"
+    },
+    "10918": {
+      "jira_name": "Network v6.5",
+      "notion_names": [
+        "network 6.5",
+        "Network 6.5",
+        "Network v6.5"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "",
+      "comment": "自动生成的映射，基于JIRA名称: Network v6.5"
+    },
+    "10873": {
+      "jira_name": "ODC v1.1",
+      "notion_names": [
+        "odc 1.1",
+        "Design Center 1.1",
+        "ODC 1.1",
+        "ODC v1.1"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "",
+      "comment": "自动生成的映射，基于JIRA名称: ODC v1.1"
+    },
+    "10876": {
+      "jira_name": "ODC v2.0",
+      "notion_names": [
+        "ODC v2.0",
+        "ODC 2.0",
+        "odc 2.0",
+        "Design Center 2.0"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "",
+      "comment": "自动生成的映射，基于JIRA名称: ODC v2.0"
+    },
+    "10908": {
+      "jira_name": "OLT v6.3",
+      "notion_names": [
+        "OLT v6.3",
+        "olt 6.3",
+        "OLT 6.3"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "",
+      "comment": "自动生成的映射，基于JIRA名称: OLT v6.3"
+    },
+    "10888": {
+      "jira_name": "Omada CBC v5.15.24",
+      "notion_names": [
+        "Controller 5.15.24",
+        "Omada CBC v5.15.24"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "",
+      "comment": "自动生成的映射，基于JIRA名称: Omada CBC v5.15.24"
+    },
+    "10883": {
+      "jira_name": "Omada Central v2.1",
+      "notion_names": [
+        "Omada Central 2.1",
+        "Omada Central v2.1"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "",
+      "comment": "自动生成的映射，基于JIRA名称: Omada Central v2.1"
+    },
+    "10906": {
+      "jira_name": "Omada Config工具2.0",
+      "notion_names": [
+        "Omada Config工具2.0"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "",
+      "comment": "自动生成的映射，基于JIRA名称: Omada Config工具2.0"
+    },
+    "10882": {
+      "jira_name": "Omada Pro v1.10.20",
+      "notion_names": [
+        "Omada Pro v1.10.20"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "",
+      "comment": "自动生成的映射，基于JIRA名称: Omada Pro v1.10.20"
+    },
+    "10889": {
+      "jira_name": "SE工作",
+      "notion_names": [
+        "SE工作"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "",
+      "comment": "自动生成的映射，基于JIRA名称: SE工作"
+    },
+    "10897": {
+      "jira_name": "Switch",
+      "notion_names": [
+        "Switch"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "",
+      "comment": "自动生成的映射，基于JIRA名称: Switch"
+    },
+    "10894": {
+      "jira_name": "Switch v6.1",
+      "notion_names": [
+        "switch 6.1",
+        "Switch v6.1",
+        "Switch 6.1"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "",
+      "comment": "自动生成的映射，基于JIRA名称: Switch v6.1"
+    },
+    "10901": {
+      "jira_name": "Switch v6.3",
+      "notion_names": [
+        "Switch v6.3",
+        "switch 6.3",
+        "Switch 6.3"
+      ],
+      "released": false,
+      "archived": false,
+      "description": "",
+      "comment": "自动生成的映射，基于JIRA名称: Switch v6.3"
+    },
+    "10871": {
       "jira_name": "待评估版本",
       "notion_names": [
         "待评估版本",
         "未分配",
-        "TBD"
+        "TBD",
+        "待定 TBD"
       ],
       "released": false,
       "archived": false,
       "description": "",
       "comment": "默认版本，用于未明确指定版本的需求"
     },
-    "14605": {
-      "jira_name": "v6.0",
+    "10912": {
+      "jira_name": "无",
       "notion_names": [
-        "Controller 6.0",
-        "Controller 6.1 ePOS"
+        "无"
       ],
       "released": false,
       "archived": false,
       "description": "",
-      "comment": "Controller 6.0版本，包含ePOS功能"
+      "comment": "自动生成的映射，基于JIRA名称: 无"
     },
-    "14608": {
-      "jira_name": "ODC v1.1",
+    "10917": {
+      "jira_name": "未发布",
       "notion_names": [
-        "Design Center 1.1"
+        "未发布"
       ],
       "released": false,
       "archived": false,
       "description": "",
-      "comment": ""
+      "comment": "自动生成的映射，基于JIRA名称: 未发布"
     },
-    "14610": {
-      "jira_name": "ODC v1.2",
+    "10909": {
+      "jira_name": "未解决",
       "notion_names": [
-        "Design Center 1.2"
+        "未解决"
       ],
       "released": false,
       "archived": false,
       "description": "",
-      "comment": ""
-    },
-    "14611": {
-      "jira_name": "ODC v1.3",
-      "notion_names": [
-        "Design Center 1.3"
-      ],
-      "released": false,
-      "archived": false,
-      "description": "",
-      "comment": ""
-    },
-    "14612": {
-      "jira_name": "ODC v2.0",
-      "notion_names": [
-        "Design Center 2.0"
-      ],
-      "released": false,
-      "archived": false,
-      "description": "",
-      "comment": ""
-    },
-    "14613": {
-      "jira_name": "Omada v6.1",
-      "notion_names": [
-        "Network 6.1"
-      ],
-      "released": false,
-      "archived": false,
-      "description": "",
-      "comment": "Omada控制器6.1版本"
-    },
-    "14614": {
-      "jira_name": "Omada v6.2",
-      "notion_names": [
-        "Network 6.2"
-      ],
-      "released": false,
-      "archived": false,
-      "description": "",
-      "comment": ""
-    },
-    "14615": {
-      "jira_name": "Omada v6.3",
-      "notion_names": [
-        "Network 6.3"
-      ],
-      "released": false,
-      "archived": false,
-      "description": "",
-      "comment": ""
-    },
-    "14616": {
-      "jira_name": "Omada v6.4",
-      "notion_names": [
-        "Network 6.4"
-      ],
-      "released": false,
-      "archived": false,
-      "description": "",
-      "comment": ""
-    },
-    "14631": {
-      "jira_name": "网安一体机1.0",
-      "notion_names": [
-        "AIO GW Controller"
-      ],
-      "released": false,
-      "archived": false,
-      "description": "",
-      "comment": ""
-    },
-    "14635": {
-      "jira_name": "Omada Pro v1.10.20",
-      "notion_names": [],
-      "released": false,
-      "archived": false,
-      "description": "",
-      "comment": ""
-    },
-    "14638": {
-      "jira_name": "Omada Central v2.1",
-      "notion_names": [],
-      "released": false,
-      "archived": false,
-      "description": "",
-      "comment": ""
-    },
-    "14639": {
-      "jira_name": "Cloud Portal v5.1",
-      "notion_names": [
-        "Cloud Portal 5.1"
-      ],
-      "released": false,
-      "archived": false,
-      "description": "",
-      "comment": ""
-    },
-    "14640": {
-      "jira_name": "Cloud Portal v5.2",
-      "notion_names": [
-        "Cloud Portal 5.2"
-      ],
-      "released": false,
-      "archived": false,
-      "description": "",
-      "comment": ""
-    },
-    "14641": {
-      "jira_name": "Cloud Portal v5.3",
-      "notion_names": [
-        "Cloud Portal 5.3"
-      ],
-      "released": false,
-      "archived": false,
-      "description": "",
-      "comment": ""
-    },
-    "14644": {
-      "jira_name": "Navi v2.0",
-      "notion_names": [
-        "Navi APP 2.0"
-      ],
-      "released": false,
-      "archived": false,
-      "description": "",
-      "comment": ""
-    },
-    "14669": {
-      "jira_name": "Omada CBC v5.15.24",
-      "notion_names": [
-        "Controller 5.15.24"
-      ],
-      "released": false,
-      "archived": false,
-      "description": "",
-      "comment": ""
-    },
-    "14671": {
-      "jira_name": "SE工作",
-      "notion_names": [],
-      "released": false,
-      "archived": false,
-      "description": "",
-      "comment": ""
+      "comment": "自动生成的映射，基于JIRA名称: 未解决"
     }
   }
 }

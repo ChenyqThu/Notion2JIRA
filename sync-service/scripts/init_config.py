@@ -51,7 +51,7 @@ NOTION_API_VERSION=2022-06-28
 
 # ============ JIRA 配置 ============
 # JIRA服务器地址
-JIRA_BASE_URL=http://rdjira.tp-link.com
+JIRA_BASE_URL=https://pdjira.tp-link.com
 # JIRA用户邮箱
 JIRA_USER_EMAIL=your_email@tp-link.com
 # JIRA用户密码或API Token

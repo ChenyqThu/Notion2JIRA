@@ -31,7 +31,7 @@ class JiraConfig:
     project_key: str = "SMBNET"
     project_id: str = "13904"
     default_issue_type_id: str = "10001"  # Story
-    default_version_id: str = "14577"
+    default_version_id: str = "10871"
     timeout: int = 30
     max_retries: int = 3
 

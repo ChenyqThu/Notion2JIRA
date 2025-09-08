@@ -135,7 +135,7 @@ class FieldMapper:
     def get_default_fields(self) -> Dict[str, Any]:
         """获取默认字段配置"""
         return {
-            'project': {'id': self.settings.jira.project_id},
+            'project': {'key': self.settings.jira.project_key},
             'issuetype': {'id': self.settings.jira.default_issue_type_id},
             'fixVersions': [{'id': self.settings.jira.default_version_id}]
         }
