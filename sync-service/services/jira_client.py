@@ -450,6 +450,79 @@ class JiraClient:
         """为JIRA Issue创建多个远程链接（保持兼容性）"""
         return await self.create_or_update_remote_links(issue_key, remote_links)
     
+    async def delete_remote_link(self, issue_key: str, link_id: str) -> bool:
+        """删除JIRA Issue的单个远程链接"""
+        try:
+            url = f"{self.jira_config.base_url}/rest/api/2/issue/{issue_key}/remotelink/{link_id}"
+            
+            self.logger.info(
+                "开始删除远程链接",
+                issue_key=issue_key,
+                link_id=link_id
+            )
+            
+            async with self.session.delete(url) as response:
+                if response.status == 204:
+                    self.logger.info(
+                        "远程链接删除成功",
+                        issue_key=issue_key,
+                        link_id=link_id
+                    )
+                    return True
+                else:
+                    error_text = await response.text()
+                    self.logger.warning(
+                        "删除远程链接失败",
+                        issue_key=issue_key,
+                        link_id=link_id,
+                        status=response.status,
+                        error=error_text
+                    )
+                    return False
+                    
+        except Exception as e:
+            self.logger.error("删除远程链接异常", error=str(e), issue_key=issue_key, link_id=link_id)
+            return False
+    
+    async def sync_remote_links(self, issue_key: str, target_links: List[Dict[str, Any]]) -> bool:
+        """同步远程链接 - 删除不需要的，添加/更新需要的"""
+        try:
+            # 1. 获取现有的远程链接
+            existing_links = await self.get_existing_remote_links(issue_key)
+            
+            # 2. 构建目标链接的globalId集合
+            target_global_ids = set()
+            for link in target_links:
+                if 'globalId' in link:
+                    target_global_ids.add(link['globalId'])
+            
+            # 3. 删除不在目标列表中的远程链接
+            deleted_count = 0
+            for existing_link in existing_links:
+                existing_global_id = existing_link.get('globalId')
+                if existing_global_id and existing_global_id not in target_global_ids:
+                    link_id = existing_link.get('id')
+                    if link_id:
+                        if await self.delete_remote_link(issue_key, str(link_id)):
+                            deleted_count += 1
+            
+            # 4. 添加/更新目标链接
+            success = await self.create_or_update_remote_links(issue_key, target_links)
+            
+            self.logger.info(
+                "远程链接同步完成",
+                issue_key=issue_key,
+                deleted_count=deleted_count,
+                target_count=len(target_links),
+                success=success
+            )
+            
+            return success
+            
+        except Exception as e:
+            self.logger.error("同步远程链接异常", error=str(e), issue_key=issue_key)
+            return False
+    
     async def get_issue_link_types(self) -> List[Dict[str, Any]]:
         """获取JIRA支持的issue link types"""
         try:

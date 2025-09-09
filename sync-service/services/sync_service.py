@@ -353,25 +353,26 @@ class SyncService:
                             jira_fields.get('summary', 'Notion页面')
                         )
                     
-                    if remote_links:
-                        success = await self.jira_client.create_or_update_remote_links(
-                            jira_issue_key, 
-                            remote_links
-                        )
+                    # 同步远程链接（包括删除不需要的链接）
+                    success = await self.jira_client.sync_remote_links(
+                        jira_issue_key, 
+                        remote_links if remote_links else []
+                    )
                         
-                        if success:
-                            self.logger.info(
-                                "远程链接创建成功",
-                                page_id=page_id,
-                                jira_issue_key=jira_issue_key,
-                                link_count=len(remote_links)
-                            )
-                        else:
-                            self.logger.warning(
-                                "远程链接创建失败",
-                                page_id=page_id,
-                                jira_issue_key=jira_issue_key
-                            )
+                    if success:
+                        link_count = len(remote_links) if remote_links else 0
+                        self.logger.info(
+                            "远程链接同步成功",
+                            page_id=page_id,
+                            jira_issue_key=jira_issue_key,
+                            link_count=link_count
+                        )
+                    else:
+                        self.logger.warning(
+                            "远程链接同步失败",
+                            page_id=page_id,
+                            jira_issue_key=jira_issue_key
+                        )
                             
                 except Exception as link_e:
                     self.logger.error(
@@ -538,25 +539,26 @@ class SyncService:
                             jira_fields.get('summary', 'Notion页面')
                         )
                     
-                    if remote_links:
-                        success = await self.jira_client.create_or_update_remote_links(
-                            issue_key, 
-                            remote_links
+                    # 同步远程链接（包括删除不需要的链接）
+                    success = await self.jira_client.sync_remote_links(
+                        issue_key, 
+                        remote_links if remote_links else []
+                    )
+                    
+                    if success:
+                        link_count = len(remote_links) if remote_links else 0
+                        self.logger.info(
+                            "更新操作中远程链接同步成功",
+                            page_id=page_id,
+                            issue_key=issue_key,
+                            link_count=link_count
                         )
-                        
-                        if success:
-                            self.logger.info(
-                                "更新操作中远程链接创建成功",
-                                page_id=page_id,
-                                issue_key=issue_key,
-                                link_count=len(remote_links)
-                            )
-                        else:
-                            self.logger.warning(
-                                "更新操作中远程链接创建失败",
-                                page_id=page_id,
-                                issue_key=issue_key
-                            )
+                    else:
+                        self.logger.warning(
+                            "更新操作中远程链接同步失败",
+                            page_id=page_id,
+                            issue_key=issue_key
+                        )
                             
                 except Exception as link_e:
                     self.logger.error(
