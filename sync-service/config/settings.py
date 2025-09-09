@@ -158,7 +158,7 @@ class Settings:
             project_key=os.getenv("JIRA_PROJECT_KEY", "SMBNET"),
             project_id=os.getenv("JIRA_PROJECT_ID", "13904"),
             default_issue_type_id=os.getenv("JIRA_DEFAULT_ISSUE_TYPE_ID", "10001"),
-            default_version_id=os.getenv("JIRA_DEFAULT_VERSION_ID", "14577"),
+            default_version_id=os.getenv("JIRA_DEFAULT_VERSION_ID", "10871"),
             timeout=int(os.getenv("JIRA_TIMEOUT", "30")),
             max_retries=int(os.getenv("JIRA_MAX_RETRIES", "3"))
         )
