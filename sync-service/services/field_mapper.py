@@ -60,7 +60,8 @@ class FieldMapper:
         
         # 初始化字段映射表
         self.priority_mapping = {
-            '高 High': '1',    # Highest
+            '高 High': '2',    # High
+            '核心需求 Key Feature': '1',  # Highest
             '中 Medium': '3',  # Medium  
             '低 Low': '4',     # Low
             '无 None': '5'     # Lowest
